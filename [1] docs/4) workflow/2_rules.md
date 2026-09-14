@@ -57,7 +57,7 @@ Linear 제목 + ` (SUU-번호)`
 
 ## 5. 커밋 제목
 
-- Squash merge 하므로 **main에 남는 커밋 제목 = PR 제목**
+- Squash merge 하므로 **main에 남는 커밋 제목 = PR 제목** (GitHub이 끝에 `(#PR번호)`를 자동으로 붙인다)
 - 브랜치 안의 중간 커밋은 자유. 단 첫 줄은 `종류(영역): 문장` 모양을 지킨다
 
 ## 6. Merge
@@ -77,7 +77,15 @@ Linear 제목 + ` (SUU-번호)`
 | PR 제목 | Linear 제목 + ` (SUU-번호)` | `feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)` |
 | main 커밋 | PR 제목과 동일 | 위와 같음 |
 
-## 8. CI가 검사하는 패턴
+## 8. 테스트
+
+- Python 3.12 + **pytest**. 설정은 루트 `pyproject.toml`
+- 위치: `<영역 폴더>/tests/test_*.py` (예: `[3] backend/tests/test_calc.py`)
+- 실행: 레포 루트에서 `python -m pytest`
+- 테스트는 **Claude가 쓰고**(`/design`), **Codex는 통과만** 시킨다. Codex는 `tests/` 아래를 수정하지 않는다
+- CI가 매 PR마다 실행한다. 빨강이면 merge 불가
+
+## 9. CI가 검사하는 패턴
 
 ```
 브랜치:  ^(feat|fix|test|chore|docs)/suu-[0-9]+-[a-z0-9-]+$
