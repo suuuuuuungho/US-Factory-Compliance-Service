@@ -16,7 +16,7 @@ argument-hint: "만들고 싶은 기능 한두 줄"
 2. 기능을 티켓 여러 개로 쪼갠다. **티켓 하나 = 테스트 하나로 "됐다/안 됐다" 확인 가능한 크기.**
 3. 아래 형식으로 초안을 터미널에 보여주고 "이대로 발행할까요?"를 묻는다. **아직 발행하지 않는다.**
 4. 사람이 OK 하면 Linear MCP `save_issue`로 발행한다.
-   - team: `Suuuuuuungho`, state: `Todo`, assignee: `me`
+   - team: `Suuuuuuungho`, project: `US Factory Compliance Service`, state: `Todo`, assignee: `me`
    - 순서가 있으면 `blockedBy`로 연결한다
 5. 발행된 이슈 번호·제목·링크를 표로 보여준다.
 
