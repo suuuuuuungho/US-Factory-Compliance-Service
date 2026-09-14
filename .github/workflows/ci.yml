@@ -16,7 +16,7 @@ jobs:
       BRANCH: ${{ github.head_ref }}
       TITLE: ${{ github.event.pull_request.title }}
     steps:
-      # 규칙 원본: [1] docs/4) workflow/2_rules.md (8번)
+      # 규칙 원본: [1] docs/4) workflow/2_rules.md (9번)
       - name: 브랜치 이름 + PR 제목
         run: |
           python3 - <<'PY'
@@ -39,3 +39,19 @@ jobs:
               sys.exit(1)
           print(f"OK  브랜치: {branch}\nOK  제목:   {title}")
           PY
+
+  tests:
+    name: 테스트 (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: 설치
+        run: |
+          pip install -q pytest
+          [ ! -f requirements.txt ] || pip install -q -r requirements.txt
+      - name: pytest (테스트가 0개면 통과)
+        run: python -m pytest || [ $? -eq 5 ]
