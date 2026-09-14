@@ -20,14 +20,14 @@
 [Claude] Linear에 이슈 발행 (제목 규칙은 2_rules.md)
    │
    ▼
-[사람]   /design SUU-20
+[사람]   /spec SUU-20
    │
    ▼
 [Claude] ├─ 티켓 읽고 "무엇을, 어디까지, 어떻게 확인할지" 정리
          ├─ 실패하는 테스트 코드 작성                  ← TDD "빨강"
          ├─ 설계 파일 저장: [5] tickets/SUU-20.md
          └─ 브랜치 feat/suu-20-xxx 에 push + Linear 댓글
-   │                                            ─▶ Linear: In Progress (/design이 바꿈)
+   │                                            ─▶ Linear: In Progress (/spec이 바꿈)
    ▼
 [사람]   Codex 터미널에서  "SUU-20 구현해줘"
    │
@@ -70,7 +70,7 @@
 | 결과물 | Linear 이슈 여러 개 (제목: `종류(영역): 문장`) |
 | 완료 확인 | Linear에 이슈가 보이고 제목이 규칙에 맞음 |
 
-### 1단계. 설계 — `/design SUU-20`
+### 1단계. 설계 — `/spec SUU-20`
 
 | | |
 |---|---|
@@ -78,7 +78,7 @@
 | 입력 | Linear 이슈 번호 |
 | Claude가 하는 일 | 1) 이슈 읽기 2) 건드릴 파일·범위 정하기 3) 완료 기준 쓰기 4) **실패하는 테스트 코드** 작성 (`<영역>/tests/test_*.py`, pytest) 5) `main`에서 브랜치 만들기 6) 설계 파일 + 테스트 commit·push 7) Linear 댓글로 요약 |
 | 결과물 | 브랜치 `feat/suu-20-xxx`, 설계 파일 `[5] tickets/SUU-20.md`, 실패하는 테스트 |
-| Linear | `/design`이 상태를 In Progress로 바꿈 (Linear 자동화는 PR 열림·merge만 다룸) |
+| Linear | `/spec`이 상태를 In Progress로 바꿈 (Linear 자동화는 PR 열림·merge만 다룸) |
 | 완료 확인 | 테스트 돌리면 빨강 (아직 구현 없으니 당연) |
 
 ### 2단계. 구현 — Codex
@@ -127,7 +127,7 @@
 |---|---|---|
 | `[1] docs/4) workflow/2_rules.md` | 규칙 | 제목·브랜치·PR·커밋 규칙. **단 하나의 원본** |
 | `.claude/commands/ticket.md` | Claude | `/ticket "기능"` → 티켓 초안 → 확인 → Linear 발행 |
-| `.claude/commands/design.md` | Claude | `/design SUU-20` → 설계 + 실패 테스트 + 브랜치 |
+| `.claude/commands/spec.md` | Claude | `/spec SUU-20` → 설계 + 실패 테스트 + 브랜치 |
 | `AGENTS.md` (루트) | Codex | Codex가 지킬 규칙 (설계 파일 읽기, 테스트 금지, PR 제목) |
 | `.github/workflows/ci.yml` | CI | pytest 실행 + 규칙 검사 |
 | `pyproject.toml` | 테스트 | pytest 설정 (`[3] backend` 같은 폴더를 import 가능하게) |
@@ -161,7 +161,7 @@
 | 2 | GitHub 브랜치 보호 + merge 설정 | main에 직접 push 하면 거부됨 | ✅
 | 3 | Linear ↔ GitHub 연동 | PR 열면 이슈에 자동 연결, merge 시 Done |  ✅
 | 4 | `slack.yml` | PR 열면 Slack에 메시지 옴 | ✅ SUU-29
-| 5 | `/ticket`, `/design`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
+| 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
 | 6 | `cd.yml` + Vercel 연결 | main merge 시 배포 성공 알림 | |
 
 ## 8. 결정 기록 (왜 이렇게 했나)

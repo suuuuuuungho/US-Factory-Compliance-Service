@@ -6,7 +6,7 @@
 
 | 누가 | 언제 |
 |---|---|
-| Claude Code | Linear 이슈·브랜치를 만들기 전 (`CLAUDE.md`, `/ticket`, `/design`) |
+| Claude Code | Linear 이슈·브랜치를 만들기 전 (`CLAUDE.md`, `/ticket`, `/spec`) |
 | Codex CLI | commit·PR을 만들기 전 (`AGENTS.md`) |
 | CI (`ci.yml`) | PR이 열릴 때 브랜치 이름·PR 제목을 검사. 틀리면 ❌ → merge 불가 |
 
@@ -82,7 +82,7 @@ Linear 제목 + ` (SUU-번호)`
 - Python 3.12 + **pytest**. 설정은 루트 `pyproject.toml`
 - 위치: `<영역 폴더>/tests/test_*.py` (예: `[3] backend/tests/test_calc.py`)
 - 실행: 레포 루트에서 `python -m pytest`
-- 테스트는 **Claude가 쓰고**(`/design`), **Codex는 통과만** 시킨다. Codex는 `tests/` 아래를 수정하지 않는다
+- 테스트는 **Claude가 쓰고**(`/spec`), **Codex는 통과만** 시킨다. Codex는 `tests/` 아래를 수정하지 않는다
 - CI가 매 PR마다 실행한다. 빨강이면 merge 불가
 
 ## 9. CI가 검사하는 패턴
