@@ -1,0 +1,42 @@
+name: Slack
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    # 알리지 않는 것: merge 없이 닫힌 PR, CI 성공
+    if: >-
+      (github.event_name == 'pull_request' &&
+        (github.event.action != 'closed' || github.event.pull_request.merged)) ||
+      (github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      EVENT: ${{ github.event_name }}
+      ACTION: ${{ github.event.action }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+      RUN_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
+    steps:
+      - name: Slack에 보내기
+        run: |
+          if [ "$EVENT" = workflow_run ]; then
+            text="🔴 *CI 실패* — \`$RUN_BRANCH\`  <$RUN_URL|로그 보기>"
+          elif [ "$ACTION" = closed ]; then
+            text="🟢 *병합 완료* — <$PR_URL|$PR_TITLE>"
+          else
+            text="🟡 *PR 열림* — <$PR_URL|$PR_TITLE>  (CI 확인 후 Merge)"
+          fi
+          jq -n --arg text "$text" '{text: $text}' \
+            | curl -sS -f -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"
