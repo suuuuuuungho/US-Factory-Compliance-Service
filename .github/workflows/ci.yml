@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    name: 이름 규칙 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      BRANCH: ${{ github.head_ref }}
+      TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      # 규칙 원본: [1] docs/4) workflow/2_rules.md (8번)
+      - name: 브랜치 이름 + PR 제목
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          branch = os.environ["BRANCH"]
+          title = os.environ["TITLE"]
+          errors = []
+
+          if not re.fullmatch(r"(feat|fix|test|chore|docs)/suu-[0-9]+-[a-z0-9-]+", branch):
+              errors.append(f"브랜치 이름 위반: '{branch}'  →  예: feat/suu-20-ecfr-ingest")
+
+          if not re.fullmatch(r"(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} \(SUU-[0-9]+\)", title):
+              errors.append(f"PR 제목 위반: '{title}'  →  예: feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)")
+
+          for e in errors:
+              print(f"::error::{e}")
+          if errors:
+              print("규칙: [1] docs/4) workflow/2_rules.md")
+              sys.exit(1)
+          print(f"OK  브랜치: {branch}\nOK  제목:   {title}")
+          PY
