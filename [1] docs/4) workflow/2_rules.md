@@ -85,7 +85,7 @@ Linear 제목 + ` (SUU-번호)`
 ## 8. 테스트
 
 - Python 3.12 + **pytest**. 설정은 루트 `pyproject.toml`
-- 위치: `<영역 폴더>/tests/test_*.py` (예: `[3] backend/tests/test_calc.py`)
+- 위치: `<영역 폴더>/tests/test_*.py` (예: `[3] backend/tests/test_calc.py`). DB는 데이터셋별로 `[2] db/tests/<데이터셋>/test_*.py`에 두고 fixture도 같은 폴더의 `fixtures/`에 둔다.
 - 실행: 레포 루트에서 `python -m pytest`
 - 테스트는 **Claude가 쓰고**(`/spec`), **Codex는 통과만** 시킨다. Codex는 `tests/` 아래를 수정하지 않는다
 - CI가 매 PR마다 실행한다. 빨강이면 merge 불가
@@ -94,7 +94,7 @@ Linear 제목 + ` (SUU-번호)`
 
 - 일반 코드와 테스트 파일은 티켓 번호보다 **기능과 책임**을 이름에 쓴다. 코드는 티켓보다 오래 유지되며 여러 티켓에서 함께 수정될 수 있기 때문이다.
 - 파이프라인은 `<데이터셋>_<동작>.py`로 짓는다. 예: `[2] db/pipeline/1_eCFR/ecfr_titles.py`, `echo_refresh.py`.
-- 테스트는 `test_<대상 기능>.py`로 짓는다. 예: `[2] db/tests/test_ecfr_titles.py`, `test_echo_refresh.py`.
+- 테스트는 `test_<대상 기능>.py`로 짓는다. 예: `[2] db/tests/1_ecfr/test_ecfr_titles.py`, `test_echo_refresh.py`.
 - 티켓 번호는 설계 문서·커밋·PR에 기록한다. 예: `[5] tickets/SUU-31.md`, `feat(db): ... (SUU-31)`.
 - 티켓 하나에만 존재하는 일회성 산출물이나 마이그레이션은 예외적으로 `SUU-31_<설명>.sql`처럼 티켓 번호를 앞에 붙일 수 있다.
 - 한 파일이 두 개 이상의 티켓과 관련되는 것은 허용한다. 파일명을 매번 바꾸지 말고, 주 티켓은 커밋·PR 제목에, 추가 티켓은 PR 본문에 적는다.

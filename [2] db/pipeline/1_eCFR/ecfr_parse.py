@@ -130,7 +130,7 @@ def parse_release(root: Path, as_of: str) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    pipeline_root = Path(__file__).resolve().parents[2] / "1_eCFR"
+    pipeline_root = Path(__file__).resolve().parents[2] / "1) eCFR"
     raw_root = pipeline_root / "raw"
     selected_as_of = (
         sys.argv[1]

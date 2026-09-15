@@ -21,7 +21,7 @@
 | `(4)(i)` 한 문단은 두 단계 다, `(a) <I>General.</I> (1)`은 소제목 건너뛰고 두 단계. 번호 없는 문단·문단 아닌 블록은 직전 경로 + `inherited`. 같은 번호 반복은 `uncertain` | `test_multi_label_and_unnumbered_blocks_inherit` |
 | `<P><I>용어</I> means …` 정의 문단은 용어 이름이 경로에 들어가고, 바깥 `(b)`가 있으면 `["b","용어"]`, 그 밑 `(i)`는 `["b","용어","i"]` | `test_definition_terms_become_labels` |
 
-테스트 파일: `[2] db/tests/test_ecfr_labels.py`
+테스트 파일: `[2] db/tests/1_ecfr/test_ecfr_labels.py`
 
 ## Codex 메모
 

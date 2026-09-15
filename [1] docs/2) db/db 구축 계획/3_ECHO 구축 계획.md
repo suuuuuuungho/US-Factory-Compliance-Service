@@ -70,7 +70,7 @@
    - 출처: [Pipeline 사전](https://echo.epa.gov/tools/data-downloads/caa-pipeline-download-summary), [FRS 사전](https://echo.epa.gov/tools/data-downloads/frs-download-summary), [FE&C 사전](https://echo.epa.gov/tools/data-downloads/icis-fec-download-summary).
 
 7) 1-2. 수집 방법
-   - 작업 위치: `[2] db/3_ECHO/`. 원본 ZIP과 내부 파일 명세를 `raw/{확인일}/{zip_sha256}/`에 보관한다.
+   - 작업 위치: `[2] db/3) ECHO/`. 원본 ZIP과 내부 파일 명세를 `raw/{확인일}/{zip_sha256}/`에 보관한다.
    - 공식 [다운로드 목록](https://echo.epa.gov/tools/data-downloads)에서 최신 ZIP 링크를 확인한다. 핵심은 [ICIS-Air ZIP](https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip)과 [CAA Pipeline ZIP](https://echo.epa.gov/files/echodownloads/pipeline_caa_downloads.zip)이다.
    - ZIP 형식·CRC·전체 바이트·필수 멤버·헤더를 검사한다. ZIP 내부 경로가 작업 폴더 밖으로 나가지 않게 검사한다.
    - FRS 연결 보완을 다음 단계에 추가하고, FE&C는 핵심 사건과 연결되는 자료부터 범위를 확정한다. 선택 자료를 핵심 11개 CSV 완료율에 섞지 않는다.

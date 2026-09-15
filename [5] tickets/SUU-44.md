@@ -9,7 +9,7 @@
   - `parse_release(root: Path, as_of: str) -> dict` — report dict를 돌려주고, 같은 내용을 `quality_report.json`에 쓴다
   - `__main__` — `ecfr_collect.py`와 같은 모양
 - 그대로 쓰기만 (수정 금지): `ecfr_nodes.py`(`parse_nodes`), `ecfr_blocks.py`(`parse_blocks`), `ecfr_labels.py`(`assign_label_paths`), `ecfr_structure.py`(`find_part`, `count_by_type`)
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_parse.py`, fixture `ecfr_part63_sample.xml`·`ecfr_structure_sample.json`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_parse.py`, fixture `ecfr_part63_sample.xml`·`ecfr_structure_sample.json`
 
 ## 안 하는 것
 - `references.jsonl`, `assets.jsonl`, DB 적재, `_SUBSTITUTE_DATE_` 치환 (뒤 티켓)
@@ -24,7 +24,7 @@
 | 두 번 실행하면 `nodes.jsonl`·`blocks.jsonl` 바이트가 똑같음 (줄 끝 LF, 시각은 report에만) | `test_second_run_writes_identical_bytes` |
 | 목차와 개수가 다르면 `status = failed` (report 파일도 `failed`), 예외 없이 끝남. `__main__`은 `failed`면 exit 2 | `test_fails_when_counts_differ_from_structure` |
 
-테스트 파일: `[2] db/tests/test_ecfr_parse.py`
+테스트 파일: `[2] db/tests/1_ecfr/test_ecfr_parse.py`
 
 ## Codex 메모
 
@@ -104,7 +104,7 @@ data = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows).encod
 ### 7. 실행 입구
 ```python
 if __name__ == "__main__":
-    root = Path(__file__).resolve().parents[2] / "1_eCFR"                       # → "[2] db/1_eCFR"
+    root = Path(__file__).resolve().parents[2] / "1) eCFR"                       # → "[2] db/1) eCFR"
     raw = root / "raw"
     as_of = sys.argv[1] if len(sys.argv) > 1 else max(p.name for p in raw.iterdir() if p.is_dir())
     report = parse_release(root, as_of)

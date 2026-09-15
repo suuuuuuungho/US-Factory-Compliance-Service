@@ -5,7 +5,7 @@ titles.json에서 Title 40의 반영 완료일·변경일과 "정부 작업 중"
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_titles.py` (이 파일 하나)
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_titles.py`, `[2] db/tests/fixtures/ecfr_titles.json`, `pyproject.toml`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_titles.py`, `[2] db/tests/1_ecfr/fixtures/ecfr_titles.json`, `pyproject.toml`
 
 ## 안 하는 것
 - XML·목차·이력 다운로드, DB 저장, 스케줄링

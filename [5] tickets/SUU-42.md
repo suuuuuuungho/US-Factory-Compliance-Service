@@ -6,7 +6,7 @@
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_blocks.py`
   - `parse_blocks(element) -> list[dict]` — `element`는 lxml `DIV8`/`DIV9` 요소 하나
-- 이미 있음: `[2] db/tests/fixtures/ecfr_part63_sample.xml` (SUU-41), `requirements.txt` (`lxml`)
+- 이미 있음: `[2] db/tests/1_ecfr/fixtures/ecfr_part63_sample.xml` (SUU-41), `requirements.txt` (`lxml`)
 
 ## 안 하는 것
 - 문단 번호 `label_path` (SUU-43), 파일 저장·품질 보고 (SUU-44)
@@ -20,7 +20,7 @@
 | 블록 `text_content`를 다 이으면 본문(HEAD 제외) 글자와 같음. 블록 수 = HEAD 뺀 자식 수. 예약 노드는 블록 0개 | `test_no_text_is_lost_and_reserved_has_no_blocks` |
 | 표 블록 `markup`에 `<TABLE` 원문 그대로. 그림 `src`는 전체 주소, 원본 트리는 안 바뀜. 모르는 태그(`STARS`)는 `kind=other` + `parse_status=unknown_tag` | `test_table_markup_kept_and_unknown_tag_marked` |
 
-테스트 파일: `[2] db/tests/test_ecfr_blocks.py`
+테스트 파일: `[2] db/tests/1_ecfr/test_ecfr_blocks.py`
 
 ## Codex 메모
 

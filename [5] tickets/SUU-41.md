@@ -6,7 +6,7 @@ Part 63 XML을 읽어 Part·Subpart·중간제목·조문·부록을 한 줄씩 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_nodes.py`
   - `parse_nodes(xml_bytes: bytes) -> list[dict]`
-- 이미 있음 (Claude가 넣음): `requirements.txt` (`lxml==6.1.3`), `[2] db/tests/fixtures/ecfr_part63_sample.xml`
+- 이미 있음 (Claude가 넣음): `requirements.txt` (`lxml==6.1.3`), `[2] db/tests/1_ecfr/fixtures/ecfr_part63_sample.xml`
 
 ## 안 하는 것
 - 본문 블록 나누기 (SUU-42), 문단 번호 `label_path` (SUU-43), 파일 저장·목차 대조 (SUU-44)
@@ -20,7 +20,7 @@ Part 63 XML을 읽어 Part·Subpart·중간제목·조문·부록을 한 줄씩 
 | `[Reserved]` 노드 3개만 `reserved=True`. Part 바로 아래 조문·부록의 `parent_key`는 `40/63`, 중간제목 아래 조문의 부모는 중간제목 | `test_reserved_flag_and_part_level_parent` |
 | `node_key` 전부 유일, `parent_key`는 존재하는 키. `hierarchy_path`·`citation`·`heading`·`source_locator`·`xml_fragment`·`content_hash` 값이 맞음 | `test_node_keys_unique_and_hierarchy_path` |
 
-테스트 파일: `[2] db/tests/test_ecfr_nodes.py`
+테스트 파일: `[2] db/tests/1_ecfr/test_ecfr_nodes.py`
 
 ## Codex 메모
 
