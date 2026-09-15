@@ -220,7 +220,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - `index_status text`: `pending` / `contextualized` / `embedded` / `failed`. 실패한 청크는 남기고 검색에서만 뺀다.
 
 3) `rag_eval_case`, `rag_eval_result` — 평가용
-   - `rag_eval_case`: `case_id text PK`, `question text`, `gold_citations text[]`, `gold_subparts text[]`, `source text`(adi/dashboard/manual), `notes text`.
+   - `rag_eval_case`: `case_id text PK`, `question text`, `gold_citations text[]`, `gold_subparts text[]`, `source text`(adi/dashboard/manual), `source_ref text NULL`(ADI Control Number 또는 Dashboard 회신 URL), `notes text`.
    - `rag_eval_result`: `(eval_run_id, case_id) PK`, `config text`(baseline/contextual/hybrid/rerank), `release_id FK`, `first_gold_rank integer NULL`, `top20_hit boolean`, `subpart_hit boolean`, `returned_keys text[]`.
 
 4) 인덱스
@@ -257,7 +257,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - ADI/Dashboard 회신이 자연스러운 정답 자료다. Dashboard의 Part 63 명시 132건과 ADI의 Part 63 관련 문서에서 만든다.
    - 질문 = 회신의 "요청 내용"(시설·공정 설명)만 뽑아 실무자 말투로 다시 쓴다. 답 부분은 질문에 넣지 않는다.
    - 정답 = 회신이 적용/비적용 판단의 근거로 인용한 Subpart와 section. `gold_subparts`와 `gold_citations`에 나눠 둔다.
-   - 회신 원문을 아직 수집하지 않았으므로 평가셋 작성은 ADI/Dashboard 적재 후다. 그 전에는 I-COMP 매뉴얼과 Subpart 적용대상 조문을 보고 사람이 20~30개를 직접 쓴 `manual` 세트로 시작한다.
+   - 회신 전체를 기계로 적재하는 것은 뒤의 일이다. 그 전에 ADI/Dashboard 회신 30건을 사람이 읽어 만든 `manual` 세트(SUU-46)로 시작한다. 파서 없이 ADI Abstract·Dashboard Affected Subpart·회신 PDF를 직접 읽는다. 적재 후 같은 방식으로 50개 이상으로 늘린다.
    - 목표 크기: 50개 이상. 업종(Subpart)이 한쪽으로 몰리지 않게 한다.
 
 2) 지표
@@ -299,7 +299,24 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 4) 지금 남겨두는 것
    - 위 재검토를 쉽게 하려고 `ecfr_reference`, `adi_cfr_reference`, `fr_cfr_reference`의 연결 상태(`resolution_status`)를 DB 계획대로 채운다. 이 값이 있으면 나중에 그래프로 옮기는 비용이 작다.
 
-## [12] 구축 순서와 완료 조건
+## [12] 데이터 적재 우선순위
+
+1) 순서 — 이 순서대로만 진행한다
+   - **1차: eCFR** — 기준 규정. 검색 코퍼스 1순위.
+   - **2차: ADI + CAA** — 실무자의 실제 질문 데이터. 평가셋 기반.
+   - **3차: Federal Register** — 개정 이력. 덧붙임용.
+   - **4차: ECHO** — 시설 정보. 덧붙임용.
+
+2) RAG 평가 정답지 만드는 방식 — 티켓 순서 (47~49는 예정 번호)
+   - **SUU-46**: RAG 평가 정답지 30건 — ADI+CAA 회신을 사람이 읽어 작성. 파서 없이, 색인 전에 한다
+   - **SUU-47**: ADI+CAA 파서 만들기
+   - **SUU-48**: ADI+CAA 데이터 로딩 (실제 회신 내용을 DB에 적재)
+   - **SUU-49**: RAG 평가 정답지 50개+로 확장 (ADI+CAA 적재 후)
+     - ADI+CAA 회신의 "질문 + EPA 답변 근거 조문"에서 질문/정답 세트 추출. SUU-46의 30건은 그대로 재사용
+     - 50개 이상 평가셋 구성 (업종 분산, 양식 다양성 고려)
+     - [10]의 평가 실행: baseline → contextual → hybrid → rerank
+
+## [13] 구축 순서와 완료 조건
 
 1) v1 — 지금
    - 이 문서 승인.
@@ -308,20 +325,25 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 
 2) eCFR 적재 후 — v2
    - section별 토큰 분포 측정 → 청크 상한 확정 → 20만 토큰 넘는 Subpart 목록 확정.
-   - `manual` 평가셋 20~30개 작성.
+   - `manual` 평가셋 30건(SUU-46)은 eCFR 적재를 기다리지 않고 병행해 만든다.
    - Subpart 3개(작은 것·중간·큰 것)로 시범 색인 → 컨텍스트 표본 검수 → 비용 실측.
    - Part 63 전체 색인 → baseline/contextual/hybrid/rerank 비교 → 합격 기준 확정.
    - 완료 조건: [10]-5의 기록이 있고, 이 문서의 `실측 후 기입`이 모두 숫자로 바뀌었다.
 
-3) FR·ADI/Dashboard 적재 후
-   - 각 데이터셋 청크 규칙으로 색인 → ADI/Dashboard 기반 평가셋으로 교체·확장 → 결과 형식의 "덧붙임" 연결 검증.
-   - 완료 조건: 검색 결과에 개정 여부·선례가 붙고, 제안 규칙이 현행 규정처럼 나오는 경우가 0건이다.
+3) ADI+CAA 적재 후
+   - ADI+CAA 데이터셋 청크 규칙으로 색인.
+   - **SUU-49**: ADI+CAA 기반 평가셋 50개+ 작성 → [10]의 평가 실행 → 합격/재검토.
+   - 완료 조건: RAG 평가 결과(top-20 실패율, Subpart 적중률, 원인 분류)가 기록되었다.
 
-4) 자동 갱신 검증
+4) Federal Register 적재 후
+   - FR 데이터셋 청크 규칙으로 색인 → 검색 결과의 "개정 여부·시행일" 덧붙임 검증.
+   - 완료 조건: 제안 규칙이 현행 규정처럼 나오는 경우가 0건이다.
+
+5) 자동 갱신 검증
    - 변경 없음 / 조문 1개 변경 / Subpart 구성 변경 / 프롬프트 버전 변경 / 임베딩 실패 주입 / 되돌리기를 시험한다.
    - 완료 조건: 재실행 중복 0, 실패 시 이전 색인 유지, 바뀐 조문만 재임베딩된 것이 기록으로 확인된다.
 
-## [13] 아직 못 정한 것
+## [14] 아직 못 정한 것
 
 1) 한국어 입력을 받을지, 받는다면 어디서 영어로 바꿀지. 서비스 타겟이 미국 공장 실무자라 v1은 영어만이다.
 2) 청크 상한 토큰 수(가칭 1,500)와 벡터 차원(1,792 유지 vs 1,024). eCFR 실측 후.
@@ -331,7 +353,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 6) 답변 생성 단계의 모델·프롬프트·인용 강제 방식. 백엔드 계획에서.
 7) Isaacus API 호출 제한과 월 예산. 첫 시범 색인 후.
 
-## [14] 출처
+## [15] 출처
 
 1) [Anthropic — Introducing Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval): 원칙, 실패율 수치, 비용, top-20, 리랭킹 150→20, 20만 토큰 기준.
 2) [Isaacus — Introducing Kanon 2 Embedder](https://isaacus.com/blog/introducing-kanon-2-embedder): 16,384토큰, 1,792차원, Matryoshka, MLEB 순위, AWS Marketplace.
