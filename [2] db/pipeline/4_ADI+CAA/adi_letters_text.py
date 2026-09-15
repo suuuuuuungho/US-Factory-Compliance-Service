@@ -1,3 +1,5 @@
+"""Extract page text from an ADI response PDF."""
+
 from __future__ import annotations
 
 import io
@@ -15,6 +17,8 @@ def extract_pages(
     *,
     reader_factory: Callable[[bytes], Any] = _default_reader,
 ) -> list[dict[str, Any]]:
+    """Return page text while preserving empty and failed pages."""
+
     reader = reader_factory(pdf_bytes)
     pages: list[dict[str, Any]] = []
     for index, page in enumerate(reader.pages):
@@ -31,8 +35,10 @@ def extract_pages(
                 }
             )
             continue
+
         status = "ok" if text.strip() else "empty"
         pages.append({"page_no": page_no, "text": text, "status": status})
+
     return pages
 
 
