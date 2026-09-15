@@ -99,7 +99,7 @@ def collect(
 
 
 if __name__ == "__main__":
-    root = Path(__file__).resolve().parents[2] / "1_eCFR"
+    root = Path(__file__).resolve().parents[2] / "1) eCFR"
     result = collect(root)
     print(json.dumps(result, indent=2, ensure_ascii=False))
     raise SystemExit(0 if result["status"] == "succeeded" else 2)

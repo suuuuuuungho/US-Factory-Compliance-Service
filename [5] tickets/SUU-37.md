@@ -6,7 +6,7 @@
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_raw.py`
 - 이미 고침 (건드리지 말 것): `.gitignore` — `[2] db/*/raw/`, `[2] db/*/parsed/` 무시
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_raw.py`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_raw.py`
 
 ## 안 하는 것
 - 네트워크 (SUU-36), 전후 비교·실행 (SUU-38), 파싱

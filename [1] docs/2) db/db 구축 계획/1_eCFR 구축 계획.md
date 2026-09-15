@@ -23,7 +23,7 @@
    - 출처: [전체 XML](https://www.ecfr.gov/api/versioner/v1/full/2026-09-10/title-40.xml?part=63), [목차](https://www.ecfr.gov/api/versioner/v1/structure/2026-09-10/title-40.json), [날짜 설명](https://www.ecfr.gov/reader-aids/ecfr-developer-resources/understanding-ecfr-dates).
 
 2) 1-2. 수집 방법
-   - 작업 위치: `[2] db/1_eCFR/`. 원본은 `raw/{기준일}/{sha256}/`, 파서 결과는 `parsed/{기준일}/{parser_version}/`에 저장하는 계획이다.
+   - 작업 위치: `[2] db/1) eCFR/`. 원본은 `raw/{기준일}/{sha256}/`, 파서 결과는 `parsed/{기준일}/{parser_version}/`에 저장하는 계획이다.
    - 제목 API에서 Title 40의 반영 완료일을 읽는다. PC의 오늘 날짜를 XML 기준일로 바로 넣지 않는다.
    - 같은 기준일의 Title 40 목차에서 Part 63 가지 전체를 찾고, Part 63 XML 전체를 가져온다.
    - HTTP 요청에 `Accept-Encoding: gzip`을 사용하고 실제 응답 헤더에 맞게 압축을 푼다.

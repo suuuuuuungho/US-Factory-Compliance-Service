@@ -5,7 +5,7 @@ CAA Dashboard 페이지 HTML의 표(236행)를 읽어 한 행 = dict 하나인 �
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/4_ADI+CAA/adi_dashboard.py` — `parse_dashboard(html: bytes) -> list[dict]`
-- 이미 있음 (수정 금지): `[2] db/tests/test_adi_dashboard.py`, fixture `[2] db/tests/fixtures/adi_dashboard_sample.html` (2026-09-15 실제 페이지에서 `<table>`만 잘라낸 것. Safe Links 안 직원 이메일만 `staff@epa.gov`로 바꿈)
+- 이미 있음 (수정 금지): `[2] db/tests/4_ADI+CAA/test_adi_dashboard.py`, fixture `[2] db/tests/4_ADI+CAA/fixtures/adi_dashboard_sample.html` (2026-09-15 실제 페이지에서 `<table>`만 잘라낸 것. Safe Links 안 직원 이메일만 `staff@epa.gov`로 바꿈)
 - 이미 고침 (이 브랜치): `pyproject.toml` pythonpath에 `[2] db/pipeline/4_ADI+CAA` 추가, RAG 계획 [12]-2 티켓 순서
 
 ## 안 하는 것
@@ -22,7 +22,7 @@ CAA Dashboard 페이지 HTML의 표(236행)를 읽어 한 행 = dict 하나인 �
 | `Affected Subpart`에서 `{"part": "60", "subpart": "IIII"}` 쌍을 `;` 구분마다 하나씩. 전체 281쌍. 소문자 섞인 코드(`Db`) 그대로 | `test_affected_subpart_splits_into_part_subpart_pairs` |
 | 네 열 중 하나라도 없는 표, 또는 표가 없으면 `ValueError` | `test_missing_column_raises` |
 
-테스트 파일: `[2] db/tests/test_adi_dashboard.py`
+테스트 파일: `[2] db/tests/4_ADI+CAA/test_adi_dashboard.py`
 
 ## Codex 메모
 

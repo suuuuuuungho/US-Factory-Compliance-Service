@@ -5,7 +5,7 @@ eCFR 주소 하나를 gzip으로 받아 원래 바이트와 응답 정보를 돌
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_fetch.py`
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_fetch.py`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_fetch.py`
 
 ## 안 하는 것
 - `ecfr_titles.py`, `ecfr_structure.py` 수정

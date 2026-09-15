@@ -5,7 +5,7 @@ Title 40 목차 JSON에서 Part 63 노드를 찾고, 그 아래 항목을 종류
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_structure.py`
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_structure.py`, `[2] db/tests/fixtures/ecfr_structure_sample.json`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_structure.py`, `[2] db/tests/1_ecfr/fixtures/ecfr_structure_sample.json`
 
 ## 안 하는 것
 - 네트워크로 목차 받아오기 (SUU-36)

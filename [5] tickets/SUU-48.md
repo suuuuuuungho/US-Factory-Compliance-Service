@@ -5,7 +5,7 @@ ADI 검색 결과 페이지 HTML의 표를 읽어 한 행 = dict 하나인 목�
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/4_ADI+CAA/adi_results.py` — `parse_results(html: bytes) -> dict`
-- 이미 있음 (수정 금지): `[2] db/tests/test_adi_results.py`, fixture `[2] db/tests/fixtures/adi_results_sample.html` (2026-09-15 Category=MACT 결과 762행에서 폼+표만 잘라냄. 처음 30행 + 특수 행 9개 = 39행. 세션 값 CFID/CFTOKEN은 지움)
+- 이미 있음 (수정 금지): `[2] db/tests/4_ADI+CAA/test_adi_results.py`, fixture `[2] db/tests/4_ADI+CAA/fixtures/adi_results_sample.html` (2026-09-15 Category=MACT 결과 762행에서 폼+표만 잘라냄. 처음 30행 + 특수 행 9개 = 39행. 세션 값 CFID/CFTOKEN은 지움)
 - 참고만: `[2] db/pipeline/4_ADI+CAA/adi_dashboard.py` (같은 모양의 표 읽기. 수정 금지)
 
 ## 안 하는 것
@@ -21,7 +21,7 @@ ADI 검색 결과 페이지 HTML의 표를 읽어 한 행 = dict 하나인 목�
 | `Categories` 쉼표 나열 → 리스트. 반환 dict는 `{"results_length": int, "rows": [...]}` 이 순서, `results_length`는 hidden 값 그대로 (762, 행 수와 달라도 됨) | `test_categories_split_and_results_length_returned` |
 | 열 7개 중 하나라도 없음 / `results_length` hidden 없음 / 표 없음 → `ValueError` | `test_missing_column_raises` |
 
-테스트 파일: `[2] db/tests/test_adi_results.py`
+테스트 파일: `[2] db/tests/4_ADI+CAA/test_adi_results.py`
 
 ## Codex 메모
 

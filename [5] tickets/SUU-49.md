@@ -5,7 +5,7 @@ ADI 검색 폼을 홈(GET) → 조건 확인(POST) → 결과(POST)로 지나가
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/4_ADI+CAA/adi_fetch.py` — `fetch_results(category="ALL", *, request=None) -> dict`, `HOME_URL`, `build_opener()`
-- 이미 있음 (수정 금지): `[2] db/tests/test_adi_fetch.py`, fixture `adi_home_form.html`(홈 검색 폼, 긴 select 잘라냄)·`adi_review_form.html`(확인 페이지, hidden 43개, category=MACT)·`adi_results_sample.html`(SUU-48 것 재사용)
+- 이미 있음 (수정 금지): `[2] db/tests/4_ADI+CAA/test_adi_fetch.py`, fixture `adi_home_form.html`(홈 검색 폼, 긴 select 잘라냄)·`adi_review_form.html`(확인 페이지, hidden 43개, category=MACT)·`adi_results_sample.html`(SUU-48 것 재사용)
 - 참고만: `[2] db/pipeline/1_eCFR/ecfr_fetch.py`(주입 패턴), `adi_results.py`(다음 단계가 이 HTML을 읽음)
 
 ## 안 하는 것
@@ -23,7 +23,7 @@ ADI 검색 폼을 홈(GET) → 조건 확인(POST) → 결과(POST)로 지나가
 | 기본 요청기 `build_opener()`는 `HTTPCookieProcessor`+`CookieJar`를 가짐 (세션 쿠키 이어짐) | `test_default_requester_keeps_cookies` |
 | 홈/확인 페이지에서 해당 `fuseaction` 폼을 못 찾으면 `ValueError` | `test_raises_when_form_missing` |
 
-테스트 파일: `[2] db/tests/test_adi_fetch.py`
+테스트 파일: `[2] db/tests/4_ADI+CAA/test_adi_fetch.py`
 
 ## Codex 메모
 

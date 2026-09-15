@@ -5,7 +5,7 @@
 
 ## 건드릴 파일
 - 만들 것: `[2] db/pipeline/1_eCFR/ecfr_collect.py`
-- 이미 있음 (수정 금지): `[2] db/tests/test_ecfr_collect.py`
+- 이미 있음 (수정 금지): `[2] db/tests/1_ecfr/test_ecfr_collect.py`
 - 그대로 쓰기만 (수정 금지): `ecfr_titles.py`, `ecfr_structure.py`, `ecfr_fetch.py`, `ecfr_raw.py`
 
 ## 안 하는 것
@@ -46,7 +46,7 @@ def collect(root: Path, *, fetch_titles=ecfr_titles.fetch_titles, fetch=ecfr_fet
 - 실행 입구:
   ```python
   if __name__ == "__main__":
-      root = Path(__file__).resolve().parents[2] / "1_eCFR"   # → "[2] db/1_eCFR"
+      root = Path(__file__).resolve().parents[2] / "1) eCFR"   # → "[2] db/1) eCFR"
       run = collect(root)
       print(json.dumps(run, indent=2, ensure_ascii=False))
       raise SystemExit(0 if run["status"] == "succeeded" else 2)

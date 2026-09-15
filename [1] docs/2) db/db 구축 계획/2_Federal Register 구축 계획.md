@@ -26,7 +26,7 @@
    - 출처: [실제 상세 JSON](https://www.federalregister.gov/api/v1/documents/2026-03638.json), [API 안내](https://www.federalregister.gov/developers/documentation/api/v1).
 
 2) 1-2. 수집 방법
-   - 작업 위치: `[2] db/2_Federal Register/`. 원본 경로는 `raw/{발행연도}/{발행일}_{문서번호}/{sha256}/`으로 계획한다.
+   - 작업 위치: `[2] db/2) Federal Register/`. 원본 경로는 `raw/{발행연도}/{발행일}_{문서번호}/{sha256}/`으로 계획한다.
    - 1차 전체 목록: [Part 63 조건 API](https://www.federalregister.gov/api/v1/documents.json?per_page=1000&conditions%5Bcfr%5D%5Btitle%5D=40&conditions%5Bcfr%5D%5Bpart%5D=63&order=oldest). 1994년부터 수집 종료일까지만 대상으로 고정한다.
    - `next_page_url`이 없어질 때까지 따라간다. 반환된 `search_after_cursor`를 버리거나 페이지 번호만 추측해서 만들지 않는다.
    - 목록을 날짜 구간별로 나누면 전체 건수와 고유 문서 키를 대조한다. 겹치는 구간은 근거 있는 중복만 합친다.
