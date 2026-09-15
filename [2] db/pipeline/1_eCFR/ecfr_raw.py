@@ -10,9 +10,24 @@ from pathlib import Path
 from typing import Any
 
 
+def _long_path(path: Path) -> Path:
+    """Prefix with ``\\\\?\\`` on Windows so paths over 260 chars still work.
+
+    Left untouched under the limit so callers that compare the plain path
+    (e.g. against ``os.replace`` arguments) keep seeing the original string.
+    """
+
+    if os.name == "nt" and len(str(path)) > 240:
+        resolved = str(path.resolve())
+        if not resolved.startswith("\\\\?\\"):
+            return Path(f"\\\\?\\{resolved}")
+    return path
+
+
 def _atomic_write(path: Path, data: bytes) -> None:
     """Write bytes to the required adjacent ``.part`` path, then replace."""
 
+    path = _long_path(path)
     part = Path(f"{path}.part")
     part.write_bytes(data)
     os.replace(str(part), str(path))
@@ -51,7 +66,7 @@ def save_raw(
             return entry
 
     final_path = raw_root / digest / name
-    final_path.parent.mkdir(parents=True, exist_ok=True)
+    _long_path(final_path.parent).mkdir(parents=True, exist_ok=True)
     _atomic_write(final_path, body)
 
     entry: dict[str, Any] = {
