@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Applicability Determination Index (ADI) | US EPA</title></head>
+<body>
+<!-- https://cfpub.epa.gov/adi/ search form, saved 2026-09-15. FORM only; long <select> option lists trimmed. session CFID/CFTOKEN expired -->
+<FORM ACTION="index.cfm?CFID=34967852&CFTOKEN=1871e1bbf8a9d592-68C8D577-020D-4F45-D77A7810BA97B295" METHOD="POST">
+<INPUT TYPE="Hidden" NAME="fuseaction" VALUE="home.dsp_review_critieria">
+
+<br>
+<table class="nostyle" align="center">
+	<tr>
+		<td align="center">&nbsp;<INPUT TYPE="button" VALUE="Display / Submit Query" onClick="return sendThis(this,this.form);">&nbsp;&nbsp;&nbsp;<INPUT TYPE="reset"  VALUE="Clear Entries"></td>
+	</tr>
+</table>
+	<table class="nostyle" align="center">
+	<tr>
+		<td align="left" valign="top" WIDTH="69"><b>Control<br>Number:</b></td>
+		<td align="left" valign="top" WIDTH="160"><input name="controlnumvalue"></td>
+		<td align="left" valign="top"  WIDTH="69"><b>Recent Update:</b></td>
+		<td align="left" valign="top"  WIDTH="160" >
+			
+			<select name="recentupdatevalue" size="4"><option value="ALL" selected>All Updates</option><option value="20201022">October 22, 2020</option><option value="20200207">February 7, 2020</option>
+<!-- 8 more options trimmed for fixture -->
+</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="left" VALIGN="TOP" WIDTH="69" ><b>Category:</b></td>
+		<td align="left" VALIGN="TOP" WIDTH="160" >
+			<select name="categoryvalue" size="4" multiple>
+			<option value="ALL" selected>All Categories</option>
+				
+					<option value="Asbestos">Asbestos</option>
+				
+					<option value="CFC">CFC</option>
+				
+					<option value="Federal Plan">Federal Plan</option>
+				
+					<option value="GACT">GACT</option>
+				
+					<option value="MACT">MACT</option>
+				
+					<option value="NESHAP">NESHAP</option>
+				
+					<option value="NSPS">NSPS</option>
+				
+					<option value="Woodstoves">Woodstoves</option>
+				
+			</select>
+		</td>
+		<td align="left" VALIGN="TOP" width="69" ><b>EPA Office:</b></td>
+		<td valign="top" align="left" width="160" >
+			<select name="regionvalue" size="4" multiple><option value="ALL" selected>All Offices</option><option value="(empty)"></option><option value="AED">Air Enforcement Division (AED)</option>
+<!-- 28 more options trimmed for fixture -->
+</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">&nbsp;</td>
+	</tr>
+	<tr class="noPadding">
+		<td class="noPadding" align="left" valign="bottom" colspan="4"><b>Date Range:</b></td>
+	</tr>
+	<tr class="noPadding" >
+		<td class="noPadding2" align="left" valign="top" WIDTH="69" ><b>From:</b></td>
+		<TD class="noPadding2" valign="top" WIDTH="160" >
+			<INPUT TYPE="text" id="begindate" NAME="begindate" SIZE="12" maxlength = "10">
+		</TD>
+		<td class="noPadding2" align="right" valign="top" WIDTH="69" ><b>To:</b></td>
+		<td class="noPadding2" valign="top" WIDTH="160" >
+			<INPUT TYPE="text" id="enddate" NAME="enddate" SIZE="12" maxlength = "10">
+		</TD>
+	</tr>
+	<tr>
+		<TD valign="top"><b>Letter Author:</b></TD>
+		<TD valign="top" colspan="3" >You may enter the EPA author's last name below. We recommend searching for the letter author using this approach.  The word search feature (below) does not necessarily produce accurate results for author's name.</TD>
+	</tr>
+	<TR>
+		<th align="left" valign="top">&nbsp;</td>
+		<td align="left" valign="top" width="25"><input name="letterauthortext"></td>
+	</TR>
+	<TR>
+		<TD valign="top"><b>Word Search:</b></TD>
+		<TD valign="top" colspan="3" >You may enter up to 10 search strings separated by commas. (<B>,</B>)</TD>
+	</TR>
+	<TR>
+		<th align="left" valign="top">&nbsp;</td>
+		<TD valign="top" colspan="3" align="right">
+			<textarea cols="36" rows="5" name="wordsearchtext" wrap="soft"></textarea>
+		</TD>
+	</TR>
+	<TR>
+		<TD valign="top"><b>Subpart:</b></TD>
+		<TD valign="top" colspan="3" >&nbsp;</TD>
+</TR>
+</TR>
+	<TR>
+		<TD valign="top">&nbsp;</TD>
+		<TD valign="top" colspan="3" >
+		<TABLE class="borderDarkGrey">
+<TR>
+<TD valign="top" WIDTH="100" class="smallPadding">Asbestos,</TD>
+<TD valign="top" class="smallPadding">Part 61 - Subpart M</TD>
+</TR>
+<TR>
+<TD valign="top" class="smallPadding">CFC,</TD>
+<TD valign="top" class="smallPadding">Part 82 - Subpart F</TD>
+</TR>
+<TR>
+<TD valign="top" class="smallPadding">MACT,</TD>
+<TD valign="top" class="smallPadding">Part 63</TD>
+</TR>
+<TR>
+<TD valign="top" class="smallPadding">NESHAP,</TD>
+<TD valign="top" class="smallPadding">Part 61</TD>
+</TR>
+<TR>
+<TD valign="top" class="smallPadding">NSPS,</TD>
+<TD valign="top" class="smallPadding">Part 60</TD>
+</TR>
+<TR>
+<TD valign="top" class="smallPadding">Woodstoves,</TD>
+<TD valign="top" class="smallPadding">Part 60 - Subpart AAA</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+<TR>
+<td>&nbsp;</td>
+<TD colspan="3" valign="top" >
+	<select name="subpartvalue" size="8" multiple><option value="ALL" selected>All Subparts</option><option value="Part 60$A">Part 60, A 
+					&nbsp;-&nbsp;General Provisions 
+				</option><option value="Part 60$B">Part 60, B 
+					&nbsp;-&nbsp;State Plans for Designated Facilities 
+				</option>
+<!-- 253 more options trimmed for fixture -->
+</select>
+</TD>
+</TR>
+</TR>
+	<TR>
+		<TD valign="top"><b>Reference:</b></TD>
+		<TD valign="top" colspan="3" >Numbers in the list refer to sections of the Clean Air
+Act and regulations at 40 CFR.  Reference Test Methods / CEM Performance
+Specifications are also included where specified.  </TD>
+</TR>
+<TR>
+<td valign="top" WIDTH="100" >&nbsp;</td>
+<TD valign="top" align="left" WIDTH="120" colspan="3">
+	<select name="cfrvalue" size="15" multiple><option value="ALL" selected>All References</option><option value="1068.30">1068.30</option><option value="110">110</option>
+<!-- 2816 more options trimmed for fixture -->
+</select>
+</TD>
+</TR>
+</table>
+<table class="nostyle" align="center">
+	<tr>
+		<td align="center">&nbsp;<INPUT TYPE="button" VALUE="Display / Submit Query" onClick="return sendThis(this,this.form);">&nbsp;&nbsp;&nbsp;<INPUT TYPE="reset"  VALUE="Clear Entries"></td>
+	</tr>
+</table>
+</form>
+</body></html>
