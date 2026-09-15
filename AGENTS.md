@@ -27,9 +27,9 @@
 ## 끝낼 때
 
 1. `python -m pytest` 전부 초록 확인
-2. commit — 첫 줄: `종류(영역): 문장 (SUU-N)` (Linear 제목 그대로 + 번호)
+2. commit — 첫 줄: `[5] tickets/SUU-N.md` 첫 줄에서 `# SUU-N ` 뒤의 제목을 **글자 그대로** 복사하고 끝에 ` (SUU-N)`을 붙인다. 제목을 새로 짓거나 바꾸지 않는다
 3. push
-4. PR 생성: `gh pr create --base main --title "<Linear 제목> (SUU-N)"` — 본문은 `.github/pull_request_template.md` 형식
+4. PR 생성: `gh pr create --base main --title "<설계 파일 첫 줄 제목> (SUU-N)"` — 커밋 첫 줄과 같은 제목. 본문은 `.github/pull_request_template.md` 형식
 5. 터미널에 PR 링크를 보여준다. **merge는 사람이 한다.**
 
 ## 환경
