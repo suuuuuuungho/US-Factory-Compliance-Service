@@ -3,4 +3,5 @@
 !.env.example
 __pycache__/
 *.pyc
-/[[]2] db/data/
+/[[]2] db/*/raw/
+/[[]2] db/*/parsed/
