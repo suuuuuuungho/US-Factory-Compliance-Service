@@ -65,8 +65,9 @@ Linear 제목 + ` (SUU-번호)`
 
 - **Squash** 만 사용 (merge commit / rebase 금지)
 - CI 초록 ✅ 이어야 merge 가능
-- 사람이 Merge 버튼을 누르는 것이 승인이다 ("승인 1명 필수"는 켜지 않음)
-- merge 되면 브랜치 자동 삭제
+- Codex는 PR 생성 후 `gh pr checks <PR번호> --watch`로 CI를 확인하고 결과를 사용자에게 요약한다.
+- Codex는 CI 통과 후에도 자동 merge하지 않는다. 사용자가 명시적으로 merge를 승인한 경우에만 `gh pr merge <PR번호> --squash --delete-branch`를 실행한다.
+- merge 후에는 로컬·원격 작업 브랜치를 삭제한다.
 - 긴급 수정도 같은 길 (`fix/` 브랜치 → PR → CI → merge). 예외 없음
 
 ## 7. 한눈에

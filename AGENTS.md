@@ -30,7 +30,9 @@
 2. commit — 첫 줄: `[5] tickets/SUU-N.md` 첫 줄에서 `# SUU-N ` 뒤의 제목을 **글자 그대로** 복사하고 끝에 ` (SUU-N)`을 붙인다. 제목을 새로 짓거나 바꾸지 않는다
 3. push
 4. PR 생성: `gh pr create --base main --title "<설계 파일 첫 줄 제목> (SUU-N)"` — 커밋 첫 줄과 같은 제목. 본문은 `.github/pull_request_template.md` 형식
-5. 터미널에 PR 링크를 보여준다. **merge는 사람이 한다.**
+5. PR을 만든 뒤 `gh pr checks <PR번호> --watch`로 CI가 모두 통과할 때까지 확인한다.
+6. 테스트·CI 결과와 PR 링크를 사용자에게 요약해 보여주고 멈춘다. **merge는 사용자가 명시적으로 승인한 뒤에만 한다.**
+7. 사용자가 `PR #N merge해`처럼 명시적으로 승인하면 `gh pr merge N --squash --delete-branch`를 실행한다.
 
 ## 환경
 

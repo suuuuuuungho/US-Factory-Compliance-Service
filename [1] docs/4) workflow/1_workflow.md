@@ -54,7 +54,7 @@
 | **사람** | 기능 아이디어 던지기, 티켓 확인, PR 확인·Merge | 코드 직접 작성, 티켓 직접 작성 |
 | **Linear** | 티켓·상태판 (Todo → In Progress → In Review → Done) | - |
 | **Claude Code** | 티켓 만들기, 티켓 분석, 변경 범위 결정, 완료 기준, **실패하는 테스트 작성** | 기능 구현 |
-| **Codex CLI** | 테스트 통과시키는 구현, commit / push / **PR 생성** | 테스트 수정·삭제 (금지) |
+| **Codex CLI** | 테스트 통과시키는 구현, commit / push / PR 생성·CI 확인·결과 요약 | 테스트 수정·삭제 (금지), 사용자 승인 전 merge |
 | **GitHub Actions** | CI (테스트 + 규칙 검사), CD (배포), Slack 알림 | - |
 | **Slack** | 알림만 받음 | - |
 
@@ -87,12 +87,12 @@
 |---|---|
 | 누가 | Codex CLI |
 | 입력 | "SUU-20 구현해줘" |
-| Codex가 하는 일 | 1) `AGENTS.md` 규칙 읽기 2) 브랜치 checkout 3) 설계 파일 + 테스트 읽기 4) 테스트 통과할 때까지 구현 5) commit → push → PR 생성 |
+| Codex가 하는 일 | 1) `AGENTS.md` 규칙 읽기 2) 브랜치 checkout 3) 설계 파일 + 테스트 읽기 4) 테스트 통과할 때까지 구현 5) commit → push → PR 생성 6) CI 확인 및 결과 요약 |
 | 하면 안 되는 것 | 테스트 파일 수정·삭제, `main`에 직접 push |
 | 이때 Claude는 | **git을 건드리지 않는다** (브랜치 전환·커밋 금지). 같은 폴더를 같이 쓰기 때문. Codex가 PR 링크를 보여준 뒤에 이어서 한다 |
 | 결과물 | PR (제목: Linear 제목 + ` (SUU-20)`) |
 | 자동으로 | Linear → In Review, Slack 🟡 |
-| 완료 확인 | 로컬에서 테스트 초록, PR이 열려 있음 |
+| 완료 확인 | 로컬 테스트와 CI가 모두 초록이고, Codex가 결과를 요약한 뒤 merge 승인 대기 |
 
 ### 3단계. 검사 — CI
 
@@ -104,13 +104,13 @@
 | 실패하면 | Slack 🔴 → Codex가 고쳐서 다시 push |
 | 완료 확인 | PR에 초록 체크 ✅ |
 
-### 4단계. 확인·Merge — 사람
+### 4단계. 확인·Merge — Codex 확인, 사람 승인
 
 | | |
 |---|---|
-| 누가 | 사람 |
-| 하는 일 | PR 훑어보기 → Merge 버튼 (Squash) |
-| 자동으로 | Linear → Done, Slack 🟢, 브랜치 삭제 |
+| 누가 | Codex + 사람 |
+| 하는 일 | Codex가 PR과 CI를 확인·요약 → 사람이 명시적으로 승인 → Codex가 `gh pr merge <PR번호> --squash --delete-branch` 실행 |
+| 자동으로 | Linear → Done, Slack 🟢, merge 후 로컬·원격 브랜치 삭제 |
 
 ### 5단계. 배포 — CD
 
