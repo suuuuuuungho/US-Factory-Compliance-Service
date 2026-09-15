@@ -54,6 +54,8 @@ Linear 제목 + ` (SUU-번호)`
 ```
 
 - 예: `feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)`
+- 제목은 설계 파일 `[5] tickets/SUU-번호.md` 첫 줄(`# SUU-번호 제목`)의 제목과 **글자까지 같아야** 한다. CI가 비교한다
+- **모든 PR에 설계 파일이 있어야 한다.** chore/docs처럼 작은 것도 5줄짜리 설계 파일을 만든다
 - PR 본문은 `.github/pull_request_template.md` 틀을 따른다
 
 ## 5. 커밋 제목
@@ -104,6 +106,9 @@ Linear 제목 + ` (SUU-번호)`
 브랜치:  ^(feat|fix|test|chore|docs)/suu-[0-9]+-[a-z0-9-]+$
 PR 제목: ^(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} \(SUU-[0-9]+\)$
 ```
+
+- 브랜치의 `suu-번호`와 PR 제목의 `(SUU-번호)`가 같아야 한다
+- `[5] tickets/SUU-번호.md`가 있어야 하고, PR 제목 = 그 첫 줄에서 `# SUU-번호 ` 뒤의 제목 + ` (SUU-번호)`
 
 ## 11. Supabase 테이블 이름
 
