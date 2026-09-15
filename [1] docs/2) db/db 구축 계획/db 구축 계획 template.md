@@ -1,6 +1,6 @@
 DB 구축 계획 Template.
 
-- 각 데이터셋에대한 설명은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db\1_db descriptions.md`에 있다.
+- 각 데이터셋에대한 설명은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db\db overview\1_db descriptions.md`에 있다.
 - 5살도 보고 이해할 수 있게 아주 쉽게 설명한다. 
 - 간결하게 작성한다. 
 - 아래 형식을 맞추되 너무 얽매이지는 않는다. 아래 형식을 뼈대 삼되 필요하면 새로운 카테고리를 형성해도 된다. 
@@ -10,7 +10,7 @@ DB 구축 계획 Template.
 
 1. Step.1 수집
 1-1. 데이터 Overview
-> guide: 반드시 전수 데이터를 살펴보고 데이터 수집 계획을 세운다. 각 데이터셋 수집 계획은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db`에 빈 md 파일을 만들어두었다. 여기에 작성한다. 
+> guide: 반드시 전수 데이터를 살펴보고 데이터 수집 계획을 세운다. 각 데이터셋 수집 계획은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db\db 구축 계획`에 빈 md 파일을 만들어두었다. 여기에 작성한다. 
 > guide: 원본 데이터의 필드, 필드설명, 실제 값 예시를 적어주고, 채택한 필드는 별표 표시하고 그 이유를 적는다.
 1-2. 수집 방법
 > guide: 수집 출처와 경로를 남긴다. 

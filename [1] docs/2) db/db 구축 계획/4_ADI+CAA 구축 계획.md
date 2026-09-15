@@ -1,6 +1,6 @@
 # ADI + CAA Dashboard DB 구축 계획
 
-[전수조사 결과](<3_db 전수조사 결과.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 운영 수집·파싱·DB 적재는 미실행이다.
+[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 운영 수집·파싱·DB 적재는 미실행이다.
 
 ## [1] Step.1 수집
 
@@ -110,7 +110,7 @@
 ## [3] Step.3 DB 적재
 
 1) 3-1. DB 적재 방법
-   - [eCFR 계획의 공통 운영 테이블](<4_eCFR 구축 계획.md>)을 공유하고 ADI와 Dashboard의 source를 분리한다.
+   - [eCFR 계획의 공통 운영 테이블](<1_eCFR 구축 계획.md>)을 공유하고 ADI와 Dashboard의 source를 분리한다.
    - 목록 원본 → 상세 원본 → 회신 파일 → 페이지·블록·규정 연결 → 검사 → 새 release 공개 순서다.
    - 최초에는 두 목록 전체를 보관한다. Part 63 근거 서비스는 전문 확보·품질 검사를 통과한 문서만 사용한다. 미확보 목록도 조회할 수 있게 한다.
    - 같은 원본은 해시로 재사용한다. 같은 URL의 내용이 바뀌면 새 버전으로 보존한다.
@@ -132,15 +132,16 @@
 
 5) 3-5. 테이블 스키마
    - 아래 UUID·source_key·review_status는 새로 만드는 설계 필드다. 원본 예시는 위 목록·상세 응답에서 확인했다.
-   - `epa_source_entry`: `(release_id FK, source_system text, source_key text) PK`, `control_number text NULL`, `facility_name/title text`, `categories jsonb`, `office/author/recipient text NULL`, `letter_date_raw/link_text/affected_subpart_raw text NULL`, `abstract text NULL`, `source_url/canonical_url text`, `source_object_id FK`, `scope_status text`. ADI 예: `source_system=adi`, `control_number=M200005`; Dashboard에는 control_number가 없다.
-   - `epa_document`: `document_id uuid PK`, `canonical_identity text UNIQUE`, `created_at timestamptz`. 같은 회신의 스캔본·재입력본을 연결하는 내부 이름표다. 동일 판정으로 확인되기 전에는 자동 합치지 않는다.
-   - `epa_document_version`: `version_id uuid PK`, `document_id FK`, `object_id FK → raw_object`, `sha256 text`, `signed_on date NULL`, `signed_on_raw/date_source text`, `text_content text NULL`, `extraction_method/parser_version text`, `quality_status text`, `legal_status text`. `(document_id, sha256, parser_version)`에 고유 제약. 실제 M200005 파일 해시는 `da3f9387a6c176117448676c5835b280ddadf557cbe92709107587563cfaabc5`다.
-   - `epa_entry_document`: `(release_id, source_system, source_key, version_id) PK`, source_entry와 document_version에 FK, `match_method/match_status text`. 한 파일이 두 저장소에 실려도 두 원본 항목을 유지한다.
-   - `epa_page`: `(version_id FK, page_no integer) PK`, `text_content text`, `extraction_method text`, `ocr_confidence numeric NULL`, `review_status text`. OCR 도구가 점수를 주지 않으면 임의 점수를 만들지 않는다.
-   - `epa_block`: `(version_id, block_no integer) PK`, `page_no integer NULL`, `kind text`, `text_content text`, `source_locator text`, `review_status text`. 질문·답변·조건·서명 블록을 구분한다. 텍스트형 원본에는 page_no가 없을 수 있다.
-   - `epa_cfr_reference`: `reference_id uuid PK`, `version_id FK`, `block_no integer`, `raw_citation text`, `title integer NULL`, `part/subpart/section/paragraph text NULL`, `reference_role text`, `evidence_locator/review_status text`, `historical_ecfr_release_id/historical_node_key NULL`, `current_ecfr_release_id/current_node_key NULL`. 해결된 eCFR 연결에는 복합 FK를 둔다. 예: M200005 요약의 `40 CFR 63.11607`.
-   - `epa_document_relation`: `(from_document_id FK, to_document_id FK, relation_type) PK`, `evidence_version_id FK`, `evidence_locator text`, `review_status text`. 동일 문서·수정·철회·대체 관계를 저장한다.
-   - `epa_facility_candidate`: `(document_id FK, echo_release_id, echo_pgm_sys_id) PK`, `match_evidence text`, `review_status text`, ECHO 시설에 복합 FK. 공식 ID나 주소까지 확인하기 전에는 후보로만 둔다.
+   - 테이블 접두사는 `adi_`다. CAA Dashboard 회신도 별도 표를 만들지 않고 같은 `adi_` 표에 `source_system=caa_dashboard`로 들어간다. 접두사 규칙은 [2_rules.md](<../../4) workflow/2_rules.md>) 11절을 따른다.
+   - `adi_source_entry`: `(release_id FK, source_system text, source_key text) PK`, `control_number text NULL`, `facility_name/title text`, `categories jsonb`, `office/author/recipient text NULL`, `letter_date_raw/link_text/affected_subpart_raw text NULL`, `abstract text NULL`, `source_url/canonical_url text`, `source_object_id FK`, `scope_status text`. ADI 예: `source_system=adi`, `control_number=M200005`; Dashboard에는 control_number가 없다.
+   - `adi_document`: `document_id uuid PK`, `canonical_identity text UNIQUE`, `created_at timestamptz`. 같은 회신의 스캔본·재입력본을 연결하는 내부 이름표다. 동일 판정으로 확인되기 전에는 자동 합치지 않는다.
+   - `adi_document_version`: `version_id uuid PK`, `document_id FK`, `object_id FK → common_raw_object`, `sha256 text`, `signed_on date NULL`, `signed_on_raw/date_source text`, `text_content text NULL`, `extraction_method/parser_version text`, `quality_status text`, `legal_status text`. `(document_id, sha256, parser_version)`에 고유 제약. 실제 M200005 파일 해시는 `da3f9387a6c176117448676c5835b280ddadf557cbe92709107587563cfaabc5`다.
+   - `adi_entry_document`: `(release_id, source_system, source_key, version_id) PK`, source_entry와 document_version에 FK, `match_method/match_status text`. 한 파일이 두 저장소에 실려도 두 원본 항목을 유지한다.
+   - `adi_page`: `(version_id FK, page_no integer) PK`, `text_content text`, `extraction_method text`, `ocr_confidence numeric NULL`, `review_status text`. OCR 도구가 점수를 주지 않으면 임의 점수를 만들지 않는다.
+   - `adi_block`: `(version_id, block_no integer) PK`, `page_no integer NULL`, `kind text`, `text_content text`, `source_locator text`, `review_status text`. 질문·답변·조건·서명 블록을 구분한다. 텍스트형 원본에는 page_no가 없을 수 있다.
+   - `adi_cfr_reference`: `reference_id uuid PK`, `version_id FK`, `block_no integer`, `raw_citation text`, `title integer NULL`, `part/subpart/section/paragraph text NULL`, `reference_role text`, `evidence_locator/review_status text`, `historical_ecfr_release_id/historical_node_key NULL`, `current_ecfr_release_id/current_node_key NULL`. 해결된 eCFR 연결에는 복합 FK를 둔다. 예: M200005 요약의 `40 CFR 63.11607`.
+   - `adi_document_relation`: `(from_document_id FK, to_document_id FK, relation_type) PK`, `evidence_version_id FK`, `evidence_locator text`, `review_status text`. 동일 문서·수정·철회·대체 관계를 저장한다.
+   - `adi_facility_candidate`: `(document_id FK, echo_release_id, echo_pgm_sys_id) PK`, `match_evidence text`, `review_status text`, ECHO 시설에 복합 FK. 공식 ID나 주소까지 확인하기 전에는 후보로만 둔다.
    - 인덱스: Control Number, source_key, 서명일, 문서 해시, CFR Part/Subpart/section, 기관, 관계 FK. 외부 링크를 키로 사용할 때 세션 토큰·추적 매개변수는 분리한다.
 
 ## [4] Step.4 갱신되는 데이터 자동 적재
@@ -150,7 +151,7 @@
    - 이 일정은 우리 운영안이다. ADI 구형 가이드의 분기별 갱신 설명을 현재의 보장으로 사용하지 않는다.
    - 목록 ID·정규화 링크·메타데이터 해시를 비교해 추가·수정·미노출을 찾고 바뀐 항목의 상세·원문을 가져온다.
    - 목록이 같아도 원문이 교체될 수 있다. 분기마다 기존 원문 링크·해시를 재검사하는 별도 대조 작업을 둔다.
-   - 파싱·품질 검사 후 새 release를 공개하고 `change_log`에 변경을 남긴다. 임베딩·검색 색인 갱신은 그 뒤의 작업이다.
+   - 파싱·품질 검사 후 새 release를 공개하고 `common_change_log`에 변경을 남긴다. 임베딩·검색 색인 갱신은 그 뒤의 작업이다.
 
 2) 4-2. DB 적재 관련 유의점
    - 최근 서명일 이후 자료만 수집하지 않는다. 예전 회신이 늦게 올라오거나 수정될 수 있다.

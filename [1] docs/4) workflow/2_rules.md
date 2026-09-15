@@ -77,6 +77,7 @@ Linear 제목 + ` (SUU-번호)`
 | 브랜치 | `종류/suu-번호-영어짧게` | `feat/suu-20-ecfr-ingest` |
 | PR 제목 | Linear 제목 + ` (SUU-번호)` | `feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)` |
 | main 커밋 | PR 제목과 동일 | 위와 같음 |
+| Supabase 테이블 | `<데이터셋>_<내용>` | `ecfr_node`, `common_ingest_run` (11절) |
 
 ## 8. 테스트
 
@@ -102,3 +103,25 @@ Linear 제목 + ` (SUU-번호)`
 브랜치:  ^(feat|fix|test|chore|docs)/suu-[0-9]+-[a-z0-9-]+$
 PR 제목: ^(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} \(SUU-[0-9]+\)$
 ```
+
+## 11. Supabase 테이블 이름
+
+```
+<데이터셋>_<내용>
+```
+
+- 이름만 보고 **어느 자료의 표인지** 바로 알 수 있어야 한다. 접두사는 아래 6개만 쓴다.
+
+| 접두사 | 자료 | 예시 |
+|---|---|---|
+| `ecfr_` | eCFR 규정 원문 | `ecfr_node`, `ecfr_block` |
+| `fr_` | Federal Register 규정 변경 문서 | `fr_document`, `fr_date_event` |
+| `echo_` | ECHO 시설·점검·위반·처분 | `echo_facility`, `echo_violation` |
+| `adi_` | ADI + CAA Dashboard 적용 판정 회신 (Dashboard 회신도 여기) | `adi_document`, `adi_cfr_reference` |
+| `rag_` | 검색 색인·평가 (청크, 임베딩, 평가셋) | `rag_chunk`, `rag_eval_case` |
+| `common_` | 모든 데이터셋이 같이 쓰는 운영 표 (실행 기록, 원본 보관, release, 변경 기록) | `common_ingest_run`, `common_dataset_release` |
+
+- 소문자와 `_`만. 접두사 없는 테이블, 목록에 없는 접두사는 만들지 않는다
+- 새 데이터셋이 생기면 **이 표에 먼저 추가**하고 테이블을 만든다
+- 컬럼 이름에는 접두사를 붙이지 않는다. `ecfr_node.node_key` ✅ / `ecfr_node.ecfr_node_key` ❌
+- 각 테이블의 정의는 `[1] docs/2) db/db 구축 계획/` 아래 데이터셋별 계획 문서 3-5절에 있다

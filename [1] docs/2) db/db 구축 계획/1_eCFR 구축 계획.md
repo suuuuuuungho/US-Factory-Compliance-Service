@@ -1,6 +1,6 @@
 # eCFR DB 구축 계획
 
-이 문서는 [전수조사 결과](<3_db 전수조사 결과.md>)를 바탕으로 만든 실행 계획이다. 규정 범위는 40 CFR Part 63 전체다. `★`는 검색·연결용으로 채택한 원본 필드다. 나머지 원본도 파일 그대로 보존한다. 아래 DB 구조는 PostgreSQL 기준 설계안이며 실제 적재는 미실행이다.
+이 문서는 [전수조사 결과](<../db overview/2_db 전수조사 결과.md>)를 바탕으로 만든 실행 계획이다. 규정 범위는 40 CFR Part 63 전체다. `★`는 검색·연결용으로 채택한 원본 필드다. 나머지 원본도 파일 그대로 보존한다. 아래 DB 구조는 PostgreSQL 기준 설계안이며 실제 적재는 미실행이다.
 
 ## [1] Step.1 수집
 
@@ -99,7 +99,7 @@
    - 원본 파일은 파일 저장소, 검색·관계 정보는 PostgreSQL에 둔다. 대형 원본을 모든 행에 반복 저장하지 않는다.
    - 실행 기록 생성 → 원본 보관 → 임시 적재 → 구조·연결 검사 → 정상 묶음 공개 순서로 진행한다.
    - `COPY FROM STDIN`으로 임시 테이블에 묶어 넣는다. 작은 메타데이터는 고유키를 기준으로 `ON CONFLICT` 처리한다.
-   - 공개 시 `dataset_current`가 가리키는 release만 짧은 트랜잭션에서 바꾼다. 사용자는 완성된 묶음을 읽는다.
+   - 공개 시 `common_dataset_current`가 가리키는 release만 짧은 트랜잭션에서 바꾼다. 사용자는 완성된 묶음을 읽는다.
    - 동일 원본 해시·파서 버전·범위는 기존 성공 결과를 재사용한다. 파서가 달라지면 같은 원문이라도 새 release로 검증한다.
    - 출처: [PostgreSQL COPY](https://www.postgresql.org/docs/current/sql-copy.html), [INSERT](https://www.postgresql.org/docs/current/sql-insert.html).
 
@@ -120,21 +120,21 @@
 
 5) 3-5. 테이블 스키마 — 네 데이터셋 공통
    - 아래 공통 운영 필드는 새로 만드는 설계다. UUID·상태·경로 예시는 실제 적재값이 아닌 설명용이다.
-   - `ingest_run`: `run_id uuid PK`(실행 이름표), `dataset text`(예: `ecfr`), `scope jsonb`(예: title 40/part 63), `status text`(running/succeeded/failed/no_change), `started_at/finished_at timestamptz`, `counts jsonb`(수집·적재·보류 수), `error_summary text`.
-   - `raw_object`: `object_id uuid PK`, `run_id FK → ingest_run`(최초 확보 실행), `source_url/final_url text`, `storage_uri text`, `sha256 text`, `byte_size bigint`, `media_type text`, `fetched_at timestamptz`, `source_modified_at timestamptz NULL`, `etag text NULL`. `(source_url, sha256)`에 고유 제약을 둔다. 예: XML URL과 이번 조사 해시. 같은 URL·해시의 파일은 재사용하고 재확인 시각은 실행 기록에 남긴다.
-   - `dataset_release`: `release_id uuid PK`, `dataset text`, `scope_key text`, `run_id FK`, `source_as_of date NULL`, `manifest_hash text`, `parser_version text`, `status text`(staging/validated/published/failed), `published_at timestamptz NULL`. 동일 dataset/scope/manifest/parser 조합에 고유 제약을 둔다.
-   - `dataset_current`: `(dataset, scope_key) PK`, `release_id FK → dataset_release`, `last_checked_at timestamptz`, `latest_source_as_of date NULL`. 예: `ecfr`, `40/63`이 현재 공개 묶음을 가리킨다. 내용이 같아 새 release를 만들지 않아도 마지막 확인 시각과 원본 반영 기준일은 기록한다.
-   - `release_object`: `(release_id FK, object_id FK) PK`, `role text`. 한 release에서 사용한 XML·JSON·PDF·ZIP을 빠짐없이 연결한다.
-   - `ingest_checkpoint`: `(dataset, scope_key, partition_key) PK`, `cursor jsonb`, `completed_run_id FK`, `completed_at timestamptz`. 예: FR의 날짜 구간과 next_page_url. 실패한 페이지를 성공한 위치로 기록하지 않는다.
-   - `ingest_error`: `error_id uuid PK`, `run_id FK`, `object_id FK NULL`, `record_locator text`, `stage/error_code/message text`, `retryable boolean`, `resolved_at timestamptz NULL`. 예: `ICIS-AIR_FACILITIES.csv:2`와 잘못된 날짜.
-   - `change_log`: `change_id uuid PK`, `event_key text UNIQUE NOT NULL`, `run_id FK`, `dataset/source_key/change_type text`, `old_release_id FK NULL`, `new_release_id FK`, `old_hash/new_hash text NULL`, `detected_at timestamptz`, `delivery_status text`. dataset·source_key·이전/다음 release·변경 종류를 일정한 형식으로 묶은 해시를 event_key로 사용한다. 이전 값이 없는 초기 수집도 해시 입력에 `baseline`을 넣어 동일 이벤트가 반복 생성되지 않게 한다.
+   - `common_ingest_run`: `run_id uuid PK`(실행 이름표), `dataset text`(예: `ecfr`), `scope jsonb`(예: title 40/part 63), `status text`(running/succeeded/failed/no_change), `started_at/finished_at timestamptz`, `counts jsonb`(수집·적재·보류 수), `error_summary text`.
+   - `common_raw_object`: `object_id uuid PK`, `run_id FK → common_ingest_run`(최초 확보 실행), `source_url/final_url text`, `storage_uri text`, `sha256 text`, `byte_size bigint`, `media_type text`, `fetched_at timestamptz`, `source_modified_at timestamptz NULL`, `etag text NULL`. `(source_url, sha256)`에 고유 제약을 둔다. 예: XML URL과 이번 조사 해시. 같은 URL·해시의 파일은 재사용하고 재확인 시각은 실행 기록에 남긴다.
+   - `common_dataset_release`: `release_id uuid PK`, `dataset text`, `scope_key text`, `run_id FK`, `source_as_of date NULL`, `manifest_hash text`, `parser_version text`, `status text`(staging/validated/published/failed), `published_at timestamptz NULL`. 동일 dataset/scope/manifest/parser 조합에 고유 제약을 둔다.
+   - `common_dataset_current`: `(dataset, scope_key) PK`, `release_id FK → common_dataset_release`, `last_checked_at timestamptz`, `latest_source_as_of date NULL`. 예: `ecfr`, `40/63`이 현재 공개 묶음을 가리킨다. 내용이 같아 새 release를 만들지 않아도 마지막 확인 시각과 원본 반영 기준일은 기록한다.
+   - `common_release_object`: `(release_id FK, object_id FK) PK`, `role text`. 한 release에서 사용한 XML·JSON·PDF·ZIP을 빠짐없이 연결한다.
+   - `common_ingest_checkpoint`: `(dataset, scope_key, partition_key) PK`, `cursor jsonb`, `completed_run_id FK`, `completed_at timestamptz`. 예: FR의 날짜 구간과 next_page_url. 실패한 페이지를 성공한 위치로 기록하지 않는다.
+   - `common_ingest_error`: `error_id uuid PK`, `run_id FK`, `object_id FK NULL`, `record_locator text`, `stage/error_code/message text`, `retryable boolean`, `resolved_at timestamptz NULL`. 예: `ICIS-AIR_FACILITIES.csv:2`와 잘못된 날짜.
+   - `common_change_log`: `change_id uuid PK`, `event_key text UNIQUE NOT NULL`, `run_id FK`, `dataset/source_key/change_type text`, `old_release_id FK NULL`, `new_release_id FK`, `old_hash/new_hash text NULL`, `detected_at timestamptz`, `delivery_status text`. dataset·source_key·이전/다음 release·변경 종류를 일정한 형식으로 묶은 해시를 event_key로 사용한다. 이전 값이 없는 초기 수집도 해시 입력에 `baseline`을 넣어 동일 이벤트가 반복 생성되지 않게 한다.
 
 6) 3-5. 테이블 스키마 — eCFR 전용
    - `ecfr_node`: `(release_id FK, node_key text) PK`, `parent_key text NULL`(같은 release의 node를 가리키는 복합 FK), `node_type text`, `identifier text`, `heading text`, `reserved boolean`, `sort_order integer`, `source_object_id FK`, `source_locator text`, `xml_fragment text`, `content_hash text`.
    - `node_key` 설계 예: `40/63/subpart-A/section-63.1`. 부록·중간 제목은 전체 부모 경로를 포함해 같은 제목의 충돌을 막는다. 실제 원본 값은 `identifier=63.1`, `node_type=section`이다.
    - `ecfr_block`: `(release_id, node_key, block_no integer) PK`, `(release_id, node_key) FK → ecfr_node`, `kind text`, `label_path text[] NULL`, `text_content text`, `markup text`, `source_locator text`, `parse_status text`. 예: `(a)` 문단, 표, 수식 블록. `label_path`는 추출값임을 표시한다.
    - `ecfr_reference`: `reference_id uuid PK`, `(release_id, node_key, block_no) FK → ecfr_block`, `raw_citation text`, `target_title integer NULL`, `target_part/target_subpart/target_section/target_paragraph text NULL`, `target_node_key text NULL`, `resolution_status text`, `evidence_locator text`. 예: 첫 문단의 `§ 63.2`.
-   - `ecfr_asset`: `(release_id, node_key, block_no, asset_no) PK`, `(release_id, node_key, block_no) FK → ecfr_block`, `source_url text`, `object_id FK → raw_object NULL`, `fetch_status text`. 다운로드가 안 된 이미지도 연결 자체는 남긴다.
+   - `ecfr_asset`: `(release_id, node_key, block_no, asset_no) PK`, `(release_id, node_key, block_no) FK → ecfr_block`, `source_url text`, `object_id FK → common_raw_object NULL`, `fetch_status text`. 다운로드가 안 된 이미지도 연결 자체는 남긴다.
    - `ecfr_history`: `history_key text PK`(정규화한 원본 이력의 해시), `source_object_id FK`, `identifier/type/title/part/subpart text`, `date/amendment_date/issue_date date`, `substantive/removed boolean`, `raw_metadata jsonb`. 단순히 조문번호와 날짜 하나만으로 중복 제거하지 않는다.
    - `ecfr_correction`: `correction_id text PK`(원본 id), `source_object_id FK`, `cfr_references jsonb`, `corrective_action text`, `error_occurred/error_corrected/last_modified date NULL`, `fr_citation text NULL`, `raw_metadata jsonb`. Part 63 연결만 서비스 범위에 넣는다.
    - 법적 시행 기간을 원본 근거 없이 만들어 저장하지 않는다. release의 관찰 시점과 FR에서 검토한 시행일은 별개다.
@@ -145,7 +145,7 @@
    - 제안 일정: 매일 03:17 UTC, 한국 12:17. 매주 같은 시간에 전체 대조를 추가한다. 정부의 공식 갱신 시각이 아닌 우리 운영 시간이다.
    - `titles → versions/corrections → Part 63 목차·원문 → 해시 비교 → 파싱·검사 → 적재·공개` 순서다.
    - 최신 실질 개정일만 비교하지 않는다. 비실질 변경·과거 정정과 전체 원문 해시를 함께 본다.
-   - 변경 없으면 `no_change`와 마지막 확인 시각을 기록한다. 새 근거가 생기면 `change_log`를 남겨 후속 검색 색인을 갱신할 수 있게 한다.
+   - 변경 없으면 `no_change`와 마지막 확인 시각을 기록한다. 새 근거가 생기면 `common_change_log`를 남겨 후속 검색 색인을 갱신할 수 있게 한다.
    - 실행 환경은 하나의 스케줄러로 통일한다. 저장소에서 운영한다면 `.github/workflows/db-refresh.yml`을 구현 단계에 추가하고 수동 재실행 입력도 제공한다.
 
 2) 4-2. DB 적재 관련 유의점
