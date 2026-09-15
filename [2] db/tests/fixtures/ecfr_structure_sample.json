@@ -1,0 +1,535 @@
+{
+ "identifier": "40",
+ "label": "Title 40—Protection of Environment",
+ "label_level": "Title 40",
+ "label_description": "Protection of Environment",
+ "reserved": false,
+ "type": "title",
+ "size": 160086307,
+ "children": [
+  {
+   "identifier": "I",
+   "label": " Chapter I—Environmental Protection Agency",
+   "label_level": " Chapter I",
+   "label_description": "Environmental Protection Agency",
+   "reserved": false,
+   "type": "chapter",
+   "size": 159647744,
+   "descendant_range": "1 – 1099",
+   "children": [
+    {
+     "identifier": "C",
+     "label": "Subchapter C—Air Programs",
+     "label_level": "Subchapter C",
+     "label_description": "Air Programs",
+     "reserved": false,
+     "type": "subchapter",
+     "size": 95633809,
+     "descendant_range": "50 – 99",
+     "children": [
+      {
+       "identifier": "62",
+       "label": "Part 62—Approval and Promulgation of State Plans for Designated Facilities and Pollutants",
+       "label_level": "Part 62",
+       "label_description": "Approval and Promulgation of State Plans for Designated Facilities and Pollutants",
+       "reserved": false,
+       "type": "part",
+       "volumes": [
+        "10"
+       ],
+       "size": 1527547,
+       "descendant_range": "62.01 – 62.16730",
+       "children": [
+        {
+         "identifier": "A",
+         "label": "Subpart A—General Provisions",
+         "label_level": "Subpart A",
+         "label_description": "General Provisions",
+         "reserved": false,
+         "type": "subpart",
+         "volumes": [
+          "10"
+         ],
+         "size": 15813,
+         "descendant_range": "62.01 – 62.13",
+         "children": [
+          {
+           "identifier": "62.01",
+           "label": "§ 62.01 Definitions.",
+           "label_level": "§ 62.01",
+           "label_description": "Definitions.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "10"
+           ],
+           "received_on": "2017-01-07T00:00:00-0500",
+           "size": 366
+          },
+          {
+           "identifier": "62.02",
+           "label": "§ 62.02 Introduction.",
+           "label_level": "§ 62.02",
+           "label_description": "Introduction.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "10"
+           ],
+           "received_on": "2019-10-30T22:30:21-0400",
+           "size": 3205
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "identifier": "63",
+       "label": "Part 63—National Emission Standards for Hazardous Air Pollutants for Source Categories",
+       "label_level": "Part 63",
+       "label_description": "National Emission Standards for Hazardous Air Pollutants for Source Categories",
+       "reserved": false,
+       "type": "part",
+       "volumes": [
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16"
+       ],
+       "size": 25902378,
+       "descendant_range": "63.1 – 63.12099",
+       "children": [
+        {
+         "identifier": "A",
+         "label": "Subpart A—General Provisions",
+         "label_level": "Subpart A",
+         "label_description": "General Provisions",
+         "reserved": false,
+         "type": "subpart",
+         "volumes": [
+          "11"
+         ],
+         "size": 332556,
+         "descendant_range": "63.1 – 63.16",
+         "children": [
+          {
+           "identifier": "63.1",
+           "label": "§ 63.1 Applicability.",
+           "label_level": "§ 63.1",
+           "label_description": "Applicability.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2026-01-07T18:40:06-0500",
+           "size": 11346
+          },
+          {
+           "identifier": "63.2",
+           "label": "§ 63.2 Definitions.",
+           "label_level": "§ 63.2",
+           "label_description": "Definitions.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2023-03-30T22:20:25-0400",
+           "size": 29760
+          },
+          {
+           "identifier": "63.3",
+           "label": "§ 63.3 Units and abbreviations.",
+           "label_level": "§ 63.3",
+           "label_description": "Units and abbreviations.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2017-01-07T00:00:00-0500",
+           "size": 3684
+          },
+          {
+           "identifier": "Table 1 to Subpart A of Part 63",
+           "label": "Table 1 to Subpart A of Part 63—Detection Sensitivity Levels (grams per hour)\n",
+           "label_level": "Table 1 to Subpart A of Part 63",
+           "label_description": "Detection Sensitivity Levels (grams per hour)\n",
+           "reserved": false,
+           "type": "appendix",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2024-06-04T19:10:31-0400",
+           "size": 1562
+          }
+         ]
+        },
+        {
+         "identifier": "G",
+         "label": "Subpart G—National Emission Standards for Hazardous Air Pollutants From the Synthetic Organic Chemical Manufacturing Industry for Process Vents, Storage Vessels, Transfer Operations, and Wastewater",
+         "label_level": "Subpart G",
+         "label_description": "National Emission Standards for Hazardous Air Pollutants From the Synthetic Organic Chemical Manufacturing Industry for Process Vents, Storage Vessels, Transfer Operations, and Wastewater",
+         "reserved": false,
+         "type": "subpart",
+         "volumes": [
+          "11"
+         ],
+         "size": 888880,
+         "descendant_range": "63.110 – 63.153",
+         "children": [
+          {
+           "identifier": "63.110",
+           "label": "§ 63.110 Applicability.",
+           "label_level": "§ 63.110",
+           "label_description": "Applicability.",
+           "reserved": false,
+           "type": "section",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2024-07-16T19:40:37-0400",
+           "size": 26402
+          },
+          {
+           "identifier": "Tables 14-14b to Subpart G of Part 63",
+           "label": "Tables 14-14b to Subpart G of Part 63 [Reserved]\n",
+           "label_level": "Tables 14-14b to Subpart G of Part 63",
+           "label_description": "Tables 14-14b to Subpart G of Part 63 [Reserved]\n",
+           "reserved": true,
+           "type": "appendix",
+           "volumes": [
+            "11"
+           ],
+           "received_on": "2017-01-07T00:00:00-0500",
+           "size": 355
+          }
+         ]
+        },
+        {
+         "identifier": "J",
+         "label": "Subpart J—National Emission Standards for Hazardous Air Pollutants for Polyvinyl Chloride and Copolymers Production",
+         "label_level": "Subpart J",
+         "label_description": "National Emission Standards for Hazardous Air Pollutants for Polyvinyl Chloride and Copolymers Production",
+         "reserved": false,
+         "type": "subpart",
+         "volumes": [
+          "11"
+         ],
+         "size": 8229,
+         "descendant_range": "63.210 – 63.217",
+         "children": [
+          {
+           "generated_id": true,
+           "identifier": "ECFRad8028a5975965e",
+           "label": "What This Subpart Covers",
+           "label_level": "What This Subpart Covers",
+           "label_description": "What This Subpart Covers",
+           "reserved": false,
+           "type": "subject_group",
+           "size": 3637,
+           "descendant_range": "63.210 – 63.213",
+           "children": [
+            {
+             "identifier": "63.210",
+             "label": "§ 63.210 What is the purpose of this subpart?",
+             "label_level": "§ 63.210",
+             "label_description": "What is the purpose of this subpart?",
+             "reserved": false,
+             "type": "section",
+             "volumes": [
+              "11"
+             ],
+             "received_on": "2017-01-07T00:00:00-0500",
+             "size": 400
+            },
+            {
+             "identifier": "63.211",
+             "label": "§ 63.211 Am I subject to this subpart?",
+             "label_level": "§ 63.211",
+             "label_description": "Am I subject to this subpart?",
+             "reserved": false,
+             "type": "section",
+             "volumes": [
+              "11"
+             ],
+             "received_on": "2017-01-07T00:00:00-0500",
+             "size": 781
+            }
+           ]
+          },
+          {
+           "generated_id": true,
+           "identifier": "ECFR8862b584dde6982",
+           "label": "Standards and Compliance Requirements",
+           "label_level": "Standards and Compliance Requirements",
+           "label_description": "Standards and Compliance Requirements",
+           "reserved": false,
+           "type": "subject_group",
+           "size": 1230,
+           "descendant_range": "63.214",
+           "children": [
+            {
+             "identifier": "63.214",
+             "label": "§ 63.214 What are the requirements I must comply with?",
+             "label_level": "§ 63.214",
+             "label_description": "What are the requirements I must comply with?",
+             "reserved": false,
+             "type": "section",
+             "volumes": [
+              "11"
+             ],
+             "received_on": "2017-01-07T00:00:00-0500",
+             "size": 1230
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "identifier": "K",
+         "label": "Subpart K [Reserved]",
+         "label_level": "Subpart K",
+         "label_description": "Subpart K [Reserved]",
+         "reserved": true,
+         "type": "subpart",
+         "volumes": [],
+         "size": 0,
+         "children": []
+        },
+        {
+         "identifier": "63.569-63.599",
+         "label": "§§ 63.569-63.599 [Reserved]",
+         "label_level": "§§ 63.569-63.599",
+         "label_description": "§§ 63.569-63.599 [Reserved]",
+         "reserved": true,
+         "type": "section",
+         "volumes": [
+          "11"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 250
+        },
+        {
+         "identifier": "XX",
+         "label": "Subpart XX—National Emission Standards for Ethylene Manufacturing Process Units: Heat Exchange Systems and Waste Operations",
+         "label_level": "Subpart XX",
+         "label_description": "National Emission Standards for Ethylene Manufacturing Process Units: Heat Exchange Systems and Waste Operations",
+         "reserved": false,
+         "type": "subpart",
+         "volumes": [
+          "12"
+         ],
+         "size": 69091,
+         "descendant_range": "63.1080 – 63.1097",
+         "children": [
+          {
+           "generated_id": true,
+           "identifier": "ECFR3a9b3e27cd7a862",
+           "label": "Implementation and Enforcement",
+           "label_level": "Implementation and Enforcement",
+           "label_description": "Implementation and Enforcement",
+           "reserved": false,
+           "type": "subject_group",
+           "size": 8385,
+           "descendant_range": "63.1097",
+           "children": [
+            {
+             "identifier": "63.1097",
+             "label": "§ 63.1097 Who implements and enforces this subpart?",
+             "label_level": "§ 63.1097",
+             "label_description": "Who implements and enforces this subpart?",
+             "reserved": false,
+             "type": "section",
+             "volumes": [
+              "12"
+             ],
+             "received_on": "2017-01-07T00:00:00-0500",
+             "size": 1643
+            },
+            {
+             "identifier": "Table 1 to Subpart XX of Part 63",
+             "label": "Table 1 to Subpart XX of Part 63—Hazardous Air Pollutants\n",
+             "label_level": "Table 1 to Subpart XX of Part 63",
+             "label_description": "Hazardous Air Pollutants\n",
+             "reserved": false,
+             "type": "appendix",
+             "volumes": [
+              "12"
+             ],
+             "received_on": "2024-06-04T19:10:31-0400",
+             "size": 1790
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "identifier": "Appendix A to Part 63",
+         "label": "Appendix A to Part 63—Test Methods\n",
+         "label_level": "Appendix A to Part 63",
+         "label_description": "Test Methods\n",
+         "reserved": false,
+         "type": "appendix",
+         "volumes": [
+          "16"
+         ],
+         "received_on": "2025-01-22T19:00:33-0500",
+         "size": 1346073
+        }
+       ]
+      },
+      {
+       "identifier": "64",
+       "label": "Part 64—Compliance Assurance Monitoring",
+       "label_level": "Part 64",
+       "label_description": "Compliance Assurance Monitoring",
+       "reserved": false,
+       "type": "part",
+       "volumes": [
+        "17"
+       ],
+       "size": 49511,
+       "descendant_range": "64.1 – 64.10",
+       "children": [
+        {
+         "identifier": "64.1",
+         "label": "§ 64.1 Definitions.",
+         "label_level": "§ 64.1",
+         "label_description": "Definitions.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 9627
+        },
+        {
+         "identifier": "64.2",
+         "label": "§ 64.2 Applicability.",
+         "label_level": "§ 64.2",
+         "label_description": "Applicability.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2023-03-30T22:20:25-0400",
+         "size": 4348
+        },
+        {
+         "identifier": "64.3",
+         "label": "§ 64.3 Monitoring design criteria.",
+         "label_level": "§ 64.3",
+         "label_description": "Monitoring design criteria.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 9999
+        },
+        {
+         "identifier": "64.4",
+         "label": "§ 64.4 Submittal requirements.",
+         "label_level": "§ 64.4",
+         "label_description": "Submittal requirements.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2025-08-20T18:50:19-0400",
+         "size": 7018
+        },
+        {
+         "identifier": "64.5",
+         "label": "§ 64.5 Deadlines for submittals.",
+         "label_level": "§ 64.5",
+         "label_description": "Deadlines for submittals.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 2703
+        },
+        {
+         "identifier": "64.6",
+         "label": "§ 64.6 Approval of monitoring.",
+         "label_level": "§ 64.6",
+         "label_description": "Approval of monitoring.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 4291
+        },
+        {
+         "identifier": "64.7",
+         "label": "§ 64.7 Operation of approved monitoring.",
+         "label_level": "§ 64.7",
+         "label_description": "Operation of approved monitoring.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 4195
+        },
+        {
+         "identifier": "64.8",
+         "label": "§ 64.8 Quality improvement plan (QIP) requirements.",
+         "label_level": "§ 64.8",
+         "label_description": "Quality improvement plan (QIP) requirements.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 2997
+        },
+        {
+         "identifier": "64.9",
+         "label": "§ 64.9 Reporting and recordkeeping requirements.",
+         "label_level": "§ 64.9",
+         "label_description": "Reporting and recordkeeping requirements.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 2522
+        },
+        {
+         "identifier": "64.10",
+         "label": "§ 64.10 Savings provisions.",
+         "label_level": "§ 64.10",
+         "label_description": "Savings provisions.",
+         "reserved": false,
+         "type": "section",
+         "volumes": [
+          "17"
+         ],
+         "received_on": "2017-01-07T00:00:00-0500",
+         "size": 1811
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
