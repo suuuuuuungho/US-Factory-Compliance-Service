@@ -1,0 +1,450 @@
+<?xml version='1.0' encoding='utf-8'?>
+<DIV5 N="63" TYPE="PART" VOLUME="11,12,13,14,15,16" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63&amp;quot;}">
+<HEAD>PART 63—NATIONAL EMISSION STANDARDS FOR HAZARDOUS AIR POLLUTANTS FOR SOURCE CATEGORIES
+</HEAD>
+<AUTH>
+<HED>Authority:</HED><PSPACE>42 U.S.C. 7401 <I>et seq.</I>
+</PSPACE></AUTH>
+<SOURCE>
+<HED>Source:</HED><PSPACE>57 FR 61992, Dec. 29, 1992, unless otherwise noted.
+</PSPACE></SOURCE>
+<DIV6 N="A" TYPE="SUBPART" VOLUME="11" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subpart-A&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart A&amp;quot;}">
+<HEAD>Subpart A—General Provisions</HEAD>
+<SOURCE>
+<HED>Source:</HED><PSPACE>59 FR 12430, Mar. 16, 1994, unless otherwise noted.
+</PSPACE></SOURCE>
+<DIV8 N="63.1" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.1&quot;,&quot;citation&quot;:&quot;40 CFR 63.1&quot;}">
+<HEAD>§ 63.1 Applicability.</HEAD>
+<P>(a) <I>General.</I> (1) Terms used throughout this part are defined in § 63.2 or in the Clean Air Act (Act) as amended in 1990, except that individual subparts of this part may include specific definitions in addition to or that supersede definitions in § 63.2.</P>
+<P>(2) This part contains national emission standards for hazardous air pollutants (NESHAP) established pursuant to section 112 of the Act as amended November 15, 1990. These standards regulate specific categories of stationary sources that emit (or have the potential to emit) one or more hazardous air pollutants listed in this part pursuant to section 112(b) of the Act. This section explains the applicability of such standards to sources affected by them. The standards in this part are independent of NESHAP contained in 40 CFR part 61. The NESHAP in part 61 promulgated by signature of the Administrator before November 15, 1990 (i.e., the date of enactment of the Clean Air Act Amendments of 1990) remain in effect until they are amended, if appropriate, and added to this part.</P>
+<P>(3) No emission standard or other requirement established under this part shall be interpreted, construed, or applied to diminish or replace the requirements of a more stringent emission limitation or other applicable requirement established by the Administrator pursuant to other authority of the Act (section 111, part C or D or any other authority of this Act), or a standard issued under State authority. The Administrator may specify in a specific standard under this part that facilities subject to other provisions under the Act need only comply with the provisions of that standard.</P>
+<P>(4)(i) Each relevant standard in this part 63 must identify explicitly whether each provision in this subpart A is or is not included in such relevant standard.</P>
+<P>(ii) If a relevant part 63 standard incorporates the requirements of 40 CFR part 60, part 61 or other part 63 standards, the relevant part 63 standard must identify explicitly the applicability of each corresponding part 60, part 61, or other part 63 subpart A (General) provision.</P>
+<P>(iii) The General Provisions in this subpart A do not apply to regulations developed pursuant to section 112(r) of the amended Act, unless otherwise specified in those regulations.</P>
+<P>(5) [Reserved]</P>
+<P>(6) To obtain the most current list of categories of sources to be regulated under section 112 of the Act, or to obtain the most recent regulation promulgation schedule established pursuant to section 112(e) of the Act, contact the Office of the Director, Emission Standards Division, Office of Air Quality Planning and Standards, U.S. EPA (MD-13), Research Triangle Park, North Carolina 27711.</P>
+<CITA TYPE="N">[59 FR 12430, Mar. 16, 1994, as amended at 67 FR 16595, Apr. 5, 2002; 85 FR 73885, Nov. 19, 2020; 89 FR 73307, Sept. 10, 2024; 90 FR 1041, Jan. 7, 2025; 91 FR 60, Jan. 2, 2026]
+</CITA>
+</DIV8>
+<DIV8 N="63.2" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.2&quot;,&quot;citation&quot;:&quot;40 CFR 63.2&quot;}">
+<HEAD>§ 63.2 Definitions.</HEAD>
+<P>The terms used in this part are defined in the Act or in this section as follows:</P>
+<P><I>Act</I> means the Clean Air Act (42 U.S.C. 7401 <I>et seq.,</I> as amended by Pub. L. 101-549, 104 Stat. 2399).</P>
+<P><I>Actual emissions</I> is defined in subpart D of this part for the purpose of granting a compliance extension for an early reduction of hazardous air pollutants.</P>
+<P><I>Administrator</I> means the Administrator of the United States Environmental Protection Agency or his or her authorized representative (e.g., a State that has been delegated the authority to implement the provisions of this part).</P>
+<CITA TYPE="N">[59 FR 12430, Mar. 16, 1994, as amended at 67 FR 16596, Apr. 5, 2002; 68 FR 32600, May 30, 2003; 69 FR 21752, Apr. 22, 2004; 72 FR 27443, May 16, 2007; 85 FR 63418, Oct. 7, 2020; 85 FR 73885, Nov. 19, 2020]
+</CITA>
+</DIV8>
+<DIV8 N="63.3" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.3&quot;,&quot;citation&quot;:&quot;40 CFR 63.3&quot;}">
+<HEAD>§ 63.3 Units and abbreviations.</HEAD>
+<P>Used in this part are abbreviations and symbols of units of measure. These are defined as follows:</P>
+<P>(a) <I>System International (SI) units of measure:</I></P>
+<EXTRACT>
+<FP-1>A = ampere
+</FP-1>
+<FP-1>g = gram
+</FP-1>
+<FP-1>Hz = hertz
+</FP-1>
+<FP-1>J = joule
+</FP-1>
+<FP-1>°K = degree Kelvin
+</FP-1>
+<FP-1>kg = kilogram
+</FP-1>
+<FP-1>l = liter
+</FP-1>
+<FP-1>m = meter
+</FP-1>
+<FP-1>m
+<SU>3</SU> = cubic meter
+</FP-1>
+<FP-1>mg = milligram = 10<E T="51">−3</E> gram
+</FP-1>
+<FP-1>ml = milliliter = 10<E T="51">−3</E> liter
+</FP-1>
+<FP-1>mm = millimeter = 10<E T="51">−3</E> meter
+</FP-1>
+<FP-1>Mg = megagram = 10
+<SU>6</SU> gram = metric ton
+</FP-1>
+<FP-1>MJ = megajoule
+</FP-1>
+<FP-1>mol = mole
+</FP-1>
+<FP-1>N = newton
+</FP-1>
+<FP-1>ng = nanogram = 10<E T="51">−9</E> gram
+</FP-1>
+<FP-1>nm = nanometer = 10<E T="51">−9</E> meter
+</FP-1>
+<FP-1>Pa = pascal
+</FP-1>
+<FP-1>s = second
+</FP-1>
+<FP-1>V = volt
+</FP-1>
+<FP-1>W = watt
+</FP-1>
+<FP-1>Ω = ohm
+</FP-1>
+<FP-1>µg = microgram = 10<E T="51">−6</E> gram
+</FP-1>
+<FP-1>µl = microliter = 10<E T="51">−6</E> liter</FP-1></EXTRACT>
+<P>(b) <I>Other units of measure:</I></P>
+<EXTRACT>
+<FP-1>Btu = British thermal unit
+</FP-1>
+<FP-1> °C = degree Celsius (centigrade)
+</FP-1>
+<FP-1>cal = calorie
+</FP-1>
+<FP-1>cfm = cubic feet per minute
+</FP-1>
+<FP-1>cc = cubic centimeter
+</FP-1>
+<FP-1>cu ft = cubic feet
+</FP-1>
+<FP-1>d = day
+</FP-1>
+<FP-1>dcf = dry cubic feet
+</FP-1>
+<FP-1>dcm = dry cubic meter
+</FP-1>
+<FP-1>dscf = dry cubic feet at standard conditions
+</FP-1>
+<FP-1>dscm = dry cubic meter at standard conditions
+</FP-1>
+<FP-1>eq = equivalent
+</FP-1>
+<FP-1> °F degree Fahrenheit
+</FP-1>
+<FP-1>ft = feet
+</FP-1>
+<FP-1>ft
+<SU>2</SU> = square feet
+</FP-1>
+<FP-1>ft
+<SU>3</SU> = cubic feet
+</FP-1>
+<FP-1>gal = gallon
+</FP-1>
+<FP-1>gr = grain
+</FP-1>
+<FP-1>g-eq = gram equivalent
+</FP-1>
+<FP-1>g-mole = gram mole
+</FP-1>
+<FP-1>hr = hour
+</FP-1>
+<FP-1>in. = inch
+</FP-1>
+<FP-1>in. H<E T="52">2</E> O = inches of water
+</FP-1>
+<FP-1>K = 1,000
+</FP-1>
+<FP-1>kcal = kilocalorie
+</FP-1>
+<FP-1>lb = pound
+</FP-1>
+<FP-1>lpm = liter per minute
+</FP-1>
+<FP-1>meq = milliequivalent
+</FP-1>
+<FP-1>min = minute
+</FP-1>
+<FP-1>MW = molecular weight
+</FP-1>
+<FP-1>oz = ounces
+</FP-1>
+<FP-1>ppb = parts per billion
+</FP-1>
+<FP-1>ppbw = parts per billion by weight
+</FP-1>
+<FP-1>ppbv = parts per billion by volume
+</FP-1>
+<FP-1>ppm = parts per million
+</FP-1>
+<FP-1>ppmw = parts per million by weight
+</FP-1>
+<FP-1>ppmv = parts per million by volume
+</FP-1>
+<FP-1>psia = pounds per square inch absolute
+</FP-1>
+<FP-1>psig = pounds per square inch gage
+</FP-1>
+<FP-1>°R = degree Rankine
+</FP-1>
+<FP-1>scf = cubic feet at standard conditions
+</FP-1>
+<FP-1>scfh = cubic feet at standard conditions per hour
+</FP-1>
+<FP-1>scm = cubic meter at standard conditions
+</FP-1>
+<FP-1>scmm = cubic meter at standard conditions per minute
+</FP-1>
+<FP-1>sec = second
+</FP-1>
+<FP-1>sq ft = square feet
+</FP-1>
+<FP-1>std = at standard conditions
+</FP-1>
+<FP-1>v/v = volume per volume
+</FP-1>
+<FP-1>yd
+<SU>2</SU> = square yards
+</FP-1>
+<FP-1>yr = year</FP-1></EXTRACT>
+<P>(c) <I>Miscellaneous:</I></P>
+<EXTRACT>
+<FP-1>act = actual
+</FP-1>
+<FP-1>avg = average
+</FP-1>
+<FP-1>I.D. = inside diameter
+</FP-1>
+<FP-1>M = molar
+</FP-1>
+<FP-1>N = normal
+</FP-1>
+<FP-1>O.D. = outside diameter
+</FP-1>
+<FP-1>% = percent</FP-1></EXTRACT>
+<CITA TYPE="N">[59 FR 12430, Mar. 16, 1994, as amended at 67 FR 16598, Apr. 5, 2002]
+</CITA>
+</DIV8>
+<DIV9 N="Table 1 to Subpart A of Part 63" TYPE="APPENDIX" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/appendix-Table 1 to Subpart A of Part 63&quot;,&quot;citation&quot;:&quot;Table 1 to Subpart A of Part 63, Title 40&quot;}">
+<HEAD>Table 1 to Subpart A of Part 63—Detection Sensitivity Levels (grams per hour)
+</HEAD>
+<DIV width="100%"><DIV class="gpotbl_div">
+<TABLE border="1" cellpadding="1" cellspacing="1" class="gpo_table" frame="void" width="100%">
+<THEAD>
+<TR>
+<TH class="center border-top-single border-bottom-single border-right-single">Monitoring frequency per subpart <sup>a</sup> </TH>
+<TH class="center border-top-single border-bottom-single">Detection sensitivity level</TH>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD class="left border-right-single">Bi-Monthly</TD>
+<TD class="right">60</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Semi-Quarterly</TD>
+<TD class="right">85</TD>
+</TR>
+<TR>
+<TD class="left border-bottom-single border-right-single">Monthly</TD>
+<TD class="right border-bottom-single">100
+</TD>
+</TR>
+</TBODY>
+<TFOOT><TR><TD colspan="2"><sup>a</sup> When this alternative work practice is used to identify leaking equipment, the owner or operator must choose one of the monitoring frequencies listed in this table, in lieu of the monitoring frequency specified in the applicable subpart. Bi-monthly means every other month. Semi-quarterly means twice per quarter. Monthly means once per month.</TD></TR></TFOOT></TABLE>
+</DIV></DIV>
+<CITA TYPE="N">[73 FR 78213, Dec. 22, 2008]
+</CITA>
+</DIV9>
+</DIV6>
+<DIV6 N="G" TYPE="SUBPART" VOLUME="11" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subpart-G&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart G&amp;quot;}">
+<HEAD>Subpart G—National Emission Standards for Hazardous Air Pollutants From the Synthetic Organic Chemical Manufacturing Industry for Process Vents, Storage Vessels, Transfer Operations, and Wastewater</HEAD>
+<SOURCE>
+<HED>Source:</HED><PSPACE>59 FR 19468, Apr. 22, 1994, unless otherwise noted.
+</PSPACE></SOURCE>
+<DIV8 N="63.110" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.110&quot;,&quot;citation&quot;:&quot;40 CFR 63.110&quot;}">
+<HEAD>§ 63.110 Applicability.</HEAD>
+<P>(a) This subpart applies to all process vents, storage vessels, transfer racks, wastewater streams, and in-process equipment subject to § 63.149 within a source subject to subpart F of this part.</P>
+<P>(b) <I>Overlap with other regulations for storage vessels.</I> (1) After the compliance dates specified in § 63.100 of subpart F of this part, a Group 1 or Group 2 storage vessel that is also subject to the provisions of 40 CFR part 60, subpart Kb is required to comply only with the provisions of this subpart.</P>
+<P>(2) After the compliance dates specified in § 63.100 of subpart F of this part, a Group 1 storage vessel that is also subject to the provisions of 40 CFR part 61, subpart Y is required to comply only with the provisions of this subpart.</P>
+<HD3>Category I Authorities
+</HD3>
+<DIV width="100%"><DIV class="gpotbl_div">
+<TABLE border="1" cellpadding="1" cellspacing="1" class="gpo_table" frame="void" width="100%">
+<CAPTION><P class="title">Table 5—Three-Stage Arrestor; Solid Phase Challenge for New Sources</P></CAPTION>
+<THEAD>
+<TR>
+<TH class="center border-top-single border-bottom-single border-right-single">Filtration efficiency<br/>requirement, %</TH>
+<TH class="center border-top-single border-bottom-single">Aerodynamic particle size range, µm</TH>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD class="left border-right-single">&gt;95</TD>
+<TD class="right">&gt;2.5</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">&gt;85</TD>
+<TD class="right">&gt;1.1</TD>
+</TR>
+<TR>
+<TD class="left border-bottom-single border-right-single">&gt;75</TD>
+<TD class="right border-bottom-single">&gt;0.70</TD>
+</TR>
+</TBODY>
+</TABLE>
+</DIV></DIV>
+<img src="/graphics/er04my98.004.gif"/>
+<MATH BORDER="NODRAW" DEEP="63" HTYPE="CENTER" POSITION="NOFLOAT" ROTATION="P" SPAN="1" STRIP="YES">
+<img src="/graphics/er14my01.003.gif"/></MATH>
+<EXTRACT>
+<FP-1>Where:</FP-1></EXTRACT>
+<NOTE>
+<HED>Note:</HED>
+<P>This provision applies to sewers located inside and outside of buildings.</P></NOTE>
+<FTNT>
+<P><SU>1</SU> When using ASTM D6348-03, the following conditions must be met:</P>
+<P>(1) The test plan preparation and implementation in the Annexes to ASTM D6348-03, Sections A1 through A8 are mandatory; (2) For ASTM D6348-03 Annex A5 (Analyte Spiking Technique), the percent R must be determined for each target analyte (see Equation A5.5); (3) For the ASTM D6348-03 test data to be acceptable for a target analyte percent R must be 70 percent ≥R ≤130 percent; and (4) The percent R value for each compound must be reported in the test report and all field measurements corrected with the calculated percent R value for that compound using the following equation: Reported Result = The measured concentration in the stack divided by the calculated percent R value and then the whole term multiplied by 100.</P></FTNT>
+<EDNOTE>
+<HED>Editorial Note:</HED><PSPACE>At 85 FR 44992, July 24, 2020, the amendment to § 63.7831(f)(4) could not be incorporated due to an inaccurate instruction.</PSPACE></EDNOTE>
+<STARS/>
+<CITA TYPE="N">[59 FR 19468, Apr. 22, 1994, as amended at 59 FR 53360, Oct. 24, 1994; 60 FR 5321, Jan. 27, 1995; 61 FR 64575, Dec. 5, 1996; 62 FR 2742, Jan. 17, 1997; 65 FR 78284, Dec. 14, 2000; 66 FR 6929, Jan. 22, 2001; 89 FR 43175, May 16, 2024]
+</CITA>
+</DIV8>
+<DIV9 N="Tables 14-14b to Subpart G of Part 63" TYPE="APPENDIX" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/appendix-Tables 14-14b to Subpart G of Part 63&quot;,&quot;citation&quot;:&quot;Tables 14-14b to Subpart G of Part 63, Title 40&quot;}">
+<HEAD>Tables 14-14b to Subpart G of Part 63 [Reserved]
+</HEAD>
+</DIV9>
+</DIV6>
+<DIV6 N="J" TYPE="SUBPART" VOLUME="11" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subpart-J&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart J&amp;quot;}">
+<HEAD>Subpart J—National Emission Standards for Hazardous Air Pollutants for Polyvinyl Chloride and Copolymers Production</HEAD>
+<SOURCE>
+<HED>Source:</HED><PSPACE>67 FR 45891, July 10, 2002, unless otherwise noted.
+</PSPACE></SOURCE>
+<DIV7 N="ECFRad8028a5975965e" TYPE="SUBJGRP" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subject-group-ECFRad8028a5975965e&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart J - What This Subpart Covers&amp;quot;}">
+<HEAD>What This Subpart Covers</HEAD>
+<DIV8 N="63.210" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.210&quot;,&quot;citation&quot;:&quot;40 CFR 63.210&quot;}">
+<HEAD>§ 63.210 What is the purpose of this subpart?</HEAD>
+<P>This subpart establishes national emission standards for hazardous air pollutants (NESHAP) for polyvinyl chloride (PVC) and copolymers production.</P>
+</DIV8>
+<DIV8 N="63.211" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.211&quot;,&quot;citation&quot;:&quot;40 CFR 63.211&quot;}">
+<HEAD>§ 63.211 Am I subject to this subpart?</HEAD>
+<P>(a) You are subject to this subpart if you own or operate a PVC plant, as defined in 40 CFR 61.61(c) of this chapter, that is a major source of hazardous air pollutants (HAP) emissions or that is located at, or is part of, a major source of HAP emissions.</P>
+<P>(b) You are a major source of HAP emissions if you own or operate a plant site that emits or has the potential to emit any single HAP at a rate of 10 tons (9.07 megagrams) or more per year or any combination of HAP at a rate of 25 tons (22.68 megagrams) or more per year.</P>
+</DIV8>
+</DIV7>
+<DIV7 N="ECFR8862b584dde6982" TYPE="SUBJGRP" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subject-group-ECFR8862b584dde6982&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart J - Standards and Compliance Requirements&amp;quot;}">
+<HEAD>Standards and Compliance Requirements</HEAD>
+<DIV8 N="63.214" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.214&quot;,&quot;citation&quot;:&quot;40 CFR 63.214&quot;}">
+<HEAD>§ 63.214 What are the requirements I must comply with?</HEAD>
+<P>(a) You must meet all the requirements in 40 CFR part 61, subpart F of this chapter, as they pertain to processes that manufacture polymerized vinyl chloride, except as specified in paragraphs (a)(1) and (2) of this section. These requirements include the emission standards and compliance, testing, monitoring, notification, recordkeeping, and reporting requirements.</P>
+<P>(1) Where 40 CFR part 61, subpart F, references 40 CFR part 61, subpart V, a new source must comply with the provisions of 40 CFR part 63, subpart UU, instead of the provisions of 40 CFR part 61, subpart V.</P>
+<P>(2) Where 40 CFR part 61, subpart F, references 40 CFR part 61, subpart V, an existing source must comply with either the provisions of 40 CFR part 63, subpart UU, or the provisions of 40 CFR part 61, subpart V.</P>
+<P>(b) Sources that comply with all of the provisions of 40 CFR part 63, subpart UU, are not required to meet any of the provisions of 40 CFR part 61, subpart V.</P>
+</DIV8>
+</DIV7>
+</DIV6>
+<DIV6 N="K" TYPE="SUBPART" VOLUME="11" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subpart-K&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart K&amp;quot;}">
+<HEAD>Subpart K [Reserved]</HEAD>
+</DIV6>
+<DIV8 N="63.569-63.599" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.569-63.599&quot;,&quot;citation&quot;:&quot;40 CFR 63.569-63.599&quot;}">
+<HEAD>§§ 63.569-63.599 [Reserved]</HEAD>
+</DIV8>
+<DIV6 N="XX" TYPE="SUBPART" VOLUME="12" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subpart-XX&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart XX&amp;quot;}">
+<HEAD>Subpart XX—National Emission Standards for Ethylene Manufacturing Process Units: Heat Exchange Systems and Waste Operations</HEAD>
+<SOURCE>
+<HED>Source:</HED><PSPACE>67 FR 46271, July 12, 2002, unless otherwise noted.
+</PSPACE></SOURCE>
+<DIV7 N="ECFR3a9b3e27cd7a862" TYPE="SUBJGRP" hierarchy_metadata="{&amp;quot;path&amp;quot;:&amp;quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/subject-group-ECFR3a9b3e27cd7a862&amp;quot;,&amp;quot;citation&amp;quot;:&amp;quot;40 CFR Part 63 Subpart XX - Implementation and Enforcement&amp;quot;}">
+<HEAD>Implementation and Enforcement</HEAD>
+<DIV8 N="63.1097" TYPE="SECTION" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/section-63.1097&quot;,&quot;citation&quot;:&quot;40 CFR 63.1097&quot;}">
+<HEAD>§ 63.1097 Who implements and enforces this subpart?</HEAD>
+<P>(a) This subpart can be implemented and enforced by the U.S. Environmental Protection Agency (EPA), or a delegated authority such as the applicable State, local, or tribal agency. If the EPA Administrator has delegated authority to a State, local, or tribal agency, then that agency has the authority to implement and enforce this subpart. Contact the applicable EPA Regional Office to find out if this subpart is delegated.</P>
+<P>(b) In delegating implementation and enforcement authority of this subpart to a State, local, or tribal agency under 40 CFR part 63, subpart E, the authorities contained in paragraphs (b)(1) through (5) of this section are retained by the EPA Administrator and are not transferred to the State, local, or tribal agency.</P>
+<P>(1) Approval of alternatives to the nonopacity emissions standards in §§ 63.1085, 63.1086 and 63.1095, under § 63.6(g). Where these standards reference another subpart, the cited provisions will be delegated according to the delegation provisions of the referenced subpart.</P>
+<P>(2) [Reserved]</P>
+<P>(3) Approval of major changes to test methods under § 63.7(e)(2)(ii) and (f) and as defined in § 63.90.</P>
+<P>(4) Approval of major changes to monitoring under § 63.8(f) and as defined in § 63.90.</P>
+<P>(5) Approval of major changes to recordkeeping and reporting under § 63.10(f) and as defined in § 63.90.</P>
+</DIV8>
+<DIV9 N="Table 1 to Subpart XX of Part 63" TYPE="APPENDIX" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/appendix-Table 1 to Subpart XX of Part 63&quot;,&quot;citation&quot;:&quot;Table 1 to Subpart XX of Part 63, Title 40&quot;}">
+<HEAD>Table 1 to Subpart XX of Part 63—Hazardous Air Pollutants
+</HEAD>
+<DIV width="100%"><DIV class="gpotbl_div">
+<TABLE border="1" cellpadding="1" cellspacing="1" class="gpo_table" frame="void" width="100%">
+<THEAD>
+<TR>
+<TH class="center border-top-single border-bottom-single border-right-single">Hazardous air pollutant</TH>
+<TH class="center border-top-single border-bottom-single">CAS No.</TH>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD class="left border-right-single">Benzene</TD>
+<TD class="right">71432</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">1,3-Butadiene</TD>
+<TD class="right">106990</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Cumene</TD>
+<TD class="right">98828</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Ethyl benzene</TD>
+<TD class="right">100414</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Hexane</TD>
+<TD class="right">110543</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Naphthalene</TD>
+<TD class="right">91203</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Styrene</TD>
+<TD class="right">100425</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">Toluene</TD>
+<TD class="right">108883</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">o-Xylene</TD>
+<TD class="right">95476</TD>
+</TR>
+<TR>
+<TD class="left border-right-single">m-Xylene</TD>
+<TD class="right">108383</TD>
+</TR>
+<TR>
+<TD class="left border-bottom-single border-right-single">p-Xylene</TD>
+<TD class="right border-bottom-single">106423</TD>
+</TR>
+</TBODY>
+</TABLE>
+</DIV></DIV>
+</DIV9>
+</DIV7>
+</DIV6>
+<DIV9 N="Appendix A to Part 63" TYPE="APPENDIX" hierarchy_metadata="{&quot;path&quot;:&quot;/on/_SUBSTITUTE_DATE_/title-40/part-63/appendix-Appendix A to Part 63&quot;,&quot;citation&quot;:&quot;Appendix A to Part 63, Title 40&quot;}">
+<HEAD>Appendix A to Part 63—Test Methods
+</HEAD>
+<HD1>Method 301—Field Validation of Pollutant Measurement Methods From Various Waste Media
+</HD1>
+<HD1>Using Method 301
+</HD1>
+<HD2>1.0 What is the purpose of Method 301?
+</HD2>
+<HD2>2.0 What approval must I have to use Method 301?
+</HD2>
+<HD2>3.0 What does Method 301 include?
+</HD2>
+<HD2>4.0 How do I perform Method 301?
+</HD2>
+<HD1>Reference Materials
+</HD1>
+<HD2>5.0 What reference materials must I use?
+</HD2>
+<HD1>Sampling Procedures
+</HD1>
+<HD2>6.0 What sampling procedures must I use?
+</HD2>
+<HD2>7.0 How do I ensure sample stability?
+</HD2>
+<HD1>Determination of Bias and Precision
+</HD1>
+<CITA TYPE="N">[57 FR 61992, Dec. 29, 1992]
+</CITA>
+</DIV9>
+</DIV5>
