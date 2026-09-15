@@ -1,6 +1,6 @@
 # ECHO DB 구축 계획
 
-[전수조사 결과](<3_db 전수조사 결과.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 실제 DB 적재는 미실행이다.
+[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 실제 DB 적재는 미실행이다.
 
 ## [1] Step.1 수집
 
@@ -136,7 +136,7 @@
 ## [3] Step.3 DB 적재
 
 1) 3-1. DB 적재 방법
-   - [eCFR 계획의 공통 운영 테이블](<4_eCFR 구축 계획.md>)을 사용한다. ECHO scope는 `icis_air_national`과 `caa_pipeline`의 구성 파일 명세를 포함한 하나의 공개 묶음으로 관리한다.
+   - [eCFR 계획의 공통 운영 테이블](<1_eCFR 구축 계획.md>)을 사용한다. ECHO scope는 `icis_air_national`과 `caa_pipeline`의 구성 파일 명세를 포함한 하나의 공개 묶음으로 관리한다.
    - ZIP 원본 보관 → 파일별 임시 적재 → 시설·활동·관계 정규화 → 건수·금액 검사 → 현재 release 전환 순서다.
    - 전국 원본은 보존하고 DB의 조회 뷰에서 Part 63·제조업 후보를 구분한다. 필요한 경우 서비스용 뷰만 별도 색인한다.
    - 대량 행은 `COPY FROM STDIN`으로 묶어 넣는다. 오류가 난 행의 파일명과 행 번호를 기록한다.
@@ -156,7 +156,7 @@
    - 같은 ZIP 재실행의 중복 증가 0, 벌금 중복 집계 0, 실패 시 기존 release 조회 가능을 확인해야 한다.
 
 5) 3-5. 테이블 스키마
-   - 모든 snapshot 테이블은 `release_id FK → dataset_release`를 가진다. 원본 근거는 `source_object_id FK → raw_object`, `source_file`, `source_row_no`로 되짚는다. UUID·정규화 키는 설계 필드다.
+   - 모든 snapshot 테이블은 `release_id FK → common_dataset_release`를 가진다. 원본 근거는 `source_object_id FK → common_raw_object`, `source_file`, `source_row_no`로 되짚는다. UUID·정규화 키는 설계 필드다.
    - `echo_source_row`: `(release_id, source_file, source_row_no bigint) PK`, `raw_payload jsonb`, `row_hash text`, `parse_status text`, `source_object_id FK`. 원본의 반복 행도 추적한다.
    - `echo_facility`: `(release_id, pgm_sys_id text) PK`, `registry_id text NULL`, `name/address/city/county/state/zip/epa_region text`, `facility_type/source_class/operating_status/current_hpv text NULL`, `source_row_no bigint`. 실제 시설 ID `0100000009003E0010`, ZIP `06078`.
    - `echo_facility_identifier`: `(release_id, program_system, pgm_sys_id, registry_id) PK`, `mapping_source text`, `review_status text`. 검증된 FRS 연결을 저장한다. registry_id가 없는 행은 시설 원본에 남기고 이 테이블에 가짜 값을 만들지 않는다.
@@ -181,7 +181,7 @@
    - ZIP URL·ETag/Last-Modified·실제 해시를 확인한다. 메타데이터가 없거나 신뢰할 수 없으면 파일 해시로 비교한다.
    - 새 ZIP은 전체 snapshot으로 처리한다. 사건 날짜가 오래됐어도 새로 고쳐질 수 있으므로 최근 사건만 조회하지 않는다.
    - 파일별 비교에서 새 행·내용 변경·미노출을 찾고, 모든 핵심 파일의 검사가 끝난 release만 공개한다.
-   - 변화가 없으면 확인 시각만 갱신한다. 자료 변화·삭제 후보는 `change_log`에 기록한다.
+   - 변화가 없으면 확인 시각만 갱신한다. 자료 변화·삭제 후보는 `common_change_log`에 기록한다.
 
 2) 4-2. DB 적재 관련 유의점
    - 정상 전체 파일에서 빠진 행은 `not_present_in_snapshot`으로 표시한다. 이를 법적 삭제·위반 해소로 해석하지 않는다.

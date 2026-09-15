@@ -4,7 +4,7 @@
 
 1) 조사 기준
    - 조사일: 2026-09-14. 수치는 아래에 적은 공식 응답을 읽은 시점의 값이다.
-   - 서비스 범위: [프로젝트 설명](<../1) project/1_project.md>)에 따라 미국 제조업 공장의 **40 CFR Part 63** 적용 후보와 근거를 찾는다.
+   - 서비스 범위: [프로젝트 설명](<../../1) project/1_project.md>)에 따라 미국 제조업 공장의 **40 CFR Part 63** 적용 후보와 근거를 찾는다.
    - 네 데이터셋의 공식 제공 종류를 조사했다. 실제 전수 확인 범위는 데이터셋마다 아래에 따로 적었다.
    - `직접 확인`은 실제 응답을 읽고 센 값, `공식 설명`은 제공기관의 안내, `설계 결정`은 구축에 적용할 방법이다.
    - 이번 작업은 조사와 계획 작성이다. 운영용 수집기·파서·DB·예약 작업을 구축하거나 실행한 결과가 아니다.
@@ -117,7 +117,7 @@
    - 서지·분류: `citation`, `volume`, `start_page`, `end_page`, `page_length`, `topics`, `toc_doc`, `toc_subject`.
    - 의견수렴: `comment_url`, `regulations_dot_gov_info`, `regulations_dot_gov_url`.
    - 기타: `executive_order_notes`, `executive_order_number`, `presidential_document_number`, `proclamation_number`, `page_views`.
-   - 상세 응답의 모든 원본 필드는 보존한다. 검색용 정규 필드의 선택과 설명은 [FR 구축 계획](<5_Federal Register 구축 계획.md>)에 적었다.
+   - 상세 응답의 모든 원본 필드는 보존한다. 검색용 정규 필드의 선택과 설명은 [FR 구축 계획](<../db 구축 계획/2_Federal Register 구축 계획.md>)에 적었다.
 
 5) 한계와 설계 결정
    - `cfr_references`는 대개 Part 수준이다. 본문에서 Subpart·section을 찾고, 원문 위치와 추출 신뢰도를 함께 저장해야 한다.
@@ -249,10 +249,10 @@
    - 스케줄러는 한 곳에서만 실행한다. 예약 작업 정의는 구현 단계에 만들며 이번에 외부 시스템을 변경하지 않았다.
 
 4) 후속 문서
-   - [eCFR 구축 계획](<4_eCFR 구축 계획.md>)
-   - [Federal Register 구축 계획](<5_Federal Register 구축 계획.md>)
-   - [ECHO 구축 계획](<6_ECHO 구축 계획.md>)
-   - [ADI + CAA 구축 계획](<7_ADI+CAA 구축 계획.md>)
+   - [eCFR 구축 계획](<../db 구축 계획/1_eCFR 구축 계획.md>)
+   - [Federal Register 구축 계획](<../db 구축 계획/2_Federal Register 구축 계획.md>)
+   - [ECHO 구축 계획](<../db 구축 계획/3_ECHO 구축 계획.md>)
+   - [ADI + CAA 구축 계획](<../db 구축 계획/4_ADI+CAA 구축 계획.md>)
 
 ## [7] 출처와 재확인 방법
 

@@ -1,6 +1,6 @@
 # Federal Register DB 구축 계획
 
-[전수조사 결과](<3_db 전수조사 결과.md>)에 따라 40 CFR Part 63의 변경 근거를 모은다. `★`는 검색·연결용으로 채택한 원본 필드다. 원본 JSON과 문서는 별도로 보존한다. 운영 수집·적재·자동화는 아직 실행하지 않았다.
+[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)에 따라 40 CFR Part 63의 변경 근거를 모은다. `★`는 검색·연결용으로 채택한 원본 필드다. 원본 JSON과 문서는 별도로 보존한다. 운영 수집·적재·자동화는 아직 실행하지 않았다.
 
 ## [1] Step.1 수집
 
@@ -96,7 +96,7 @@
 ## [3] Step.3 DB 적재
 
 1) 3-1. DB 적재 방법
-   - [eCFR 계획의 공통 테이블](<4_eCFR 구축 계획.md>) `ingest_run/raw_object/dataset_release/dataset_current/release_object/ingest_checkpoint/ingest_error/change_log`를 공유한다.
+   - [eCFR 계획의 공통 테이블](<1_eCFR 구축 계획.md>) `common_ingest_run/common_raw_object/common_dataset_release/common_dataset_current/common_release_object/common_ingest_checkpoint/common_ingest_error/common_change_log`를 공유한다.
    - 원본 저장 → 임시 테이블 적재 → 중복·참조·본문 검사 → 새 FR release 공개 순서다.
    - 새 문서와 수정된 문서는 내용 해시로 찾는다. 새 release의 목록에는 변경 없는 기존 문서도 포함하고 원본 파일은 재사용한다.
    - 원문 근거로 쓰인 과거 release는 유지한다. 전체 최초 수집과 보완 후보 수집은 scope를 구분해 공개 범위를 알 수 있게 한다.
@@ -132,7 +132,7 @@
    - 제안 일정: 매일 04:17 UTC, 한국 13:17. Public Inspection 확인은 같은 실행에서 별도 단계로 둔다.
    - 마지막 성공 이후 구간에 30일을 겹쳐 다시 조회한다. 30일은 우리 초기 운영값이며 완전성 보장은 아니다.
    - 매월 전체 Part 63 목록·기존 문서 메타데이터·docket/RIN 연결을 다시 대조해 오래된 문서의 늦은 정정을 찾는다.
-   - 변경을 발견하면 원문 재확보 → 파싱 → 검증 → 새 release → change_log 순으로 처리한다.
+   - 변경을 발견하면 원문 재확보 → 파싱 → 검증 → 새 release → common_change_log 순으로 처리한다.
    - 검토된 시행 예정일은 매일 상태를 다시 확인한다. 날짜 도달만으로 eCFR 본문을 직접 변경하지 않는다.
 
 2) 4-2. DB 적재 관련 유의점
