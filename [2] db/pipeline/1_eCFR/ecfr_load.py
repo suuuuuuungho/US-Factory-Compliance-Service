@@ -31,6 +31,7 @@ BLOCK_COLUMNS = (
     "source_locator",
     "parse_status",
 )
+BATCH_SIZE = 500
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -80,14 +81,16 @@ def load_release(
         for block in blocks
     ]
 
-    client.table("ecfr_node").upsert(
-        node_rows,
-        on_conflict="release_id,node_key",
-    ).execute()
-    client.table("ecfr_block").upsert(
-        block_rows,
-        on_conflict="release_id,node_key,block_no",
-    ).execute()
+    for start in range(0, len(node_rows), BATCH_SIZE):
+        client.table("ecfr_node").upsert(
+            node_rows[start : start + BATCH_SIZE],
+            on_conflict="release_id,node_key",
+        ).execute()
+    for start in range(0, len(block_rows), BATCH_SIZE):
+        client.table("ecfr_block").upsert(
+            block_rows[start : start + BATCH_SIZE],
+            on_conflict="release_id,node_key,block_no",
+        ).execute()
 
 
 __all__ = ["load_release"]
