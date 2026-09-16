@@ -87,7 +87,7 @@ class _Table:
             key = tuple(row.get(c) for c in columns)
             existing[:] = [r for r in existing if tuple(r.get(c) for c in columns) != key]
             existing.append(dict(row))
-        return _Result(list(rows_list))
+        return _SelectQuery(list(rows_list))
 
 
 def make_client_with_staging_release(release_id, source_as_of="2026-09-10"):
