@@ -32,7 +32,7 @@ def select_subpart_chunks(
             block_texts[block_no] for block_no in chunk["block_nos"]
         )
 
-    return chunks
+    return [chunk for chunk in chunks if chunk["chunk_text"].strip()]
 
 
 def rank_chunks_by_similarity(
