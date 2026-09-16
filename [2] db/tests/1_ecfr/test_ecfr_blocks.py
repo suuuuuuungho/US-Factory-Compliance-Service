@@ -54,7 +54,9 @@ def test_no_text_is_lost_and_reserved_has_no_blocks():
         ("DIV9", "Table 1 to Subpart A of Part 63", 2),
     ):
         node = find_node(root, tag, n)
-        body_text = normalize(" ".join("".join(c.itertext()) for c in node if c.tag != "HEAD"))
+        # SUU-83: <br/>처럼 텍스트 사이에 공백 없이 끼는 태그도 경계로 친다
+        # (안 그러면 "efficiency<br/>requirement"가 "efficiencyrequirement"로 붙어버림).
+        body_text = normalize(" ".join(" ".join(c.itertext()) for c in node if c.tag != "HEAD"))
         blocks = parse_blocks(node)
 
         assert len(blocks) == expected_count
