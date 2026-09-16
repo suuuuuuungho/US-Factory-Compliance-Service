@@ -86,6 +86,20 @@ def test_select_subpart_chunks_fills_chunk_text_from_block_text_content(tmp_path
     assert body_chunk["chunk_text"] == expected_text
 
 
+def test_select_subpart_chunks_drops_chunks_with_empty_chunk_text(tmp_path):
+    nodes, blocks = parsed_nodes_and_blocks(tmp_path)
+
+    chunks = select_subpart_chunks(nodes, blocks, "40/63/subpart-XX")
+
+    assert all(c["chunk_text"].strip() for c in chunks)
+    table_only_node = (
+        "40/63/subpart-XX/subject-group-ECFR3a9b3e27cd7a862"
+        "/appendix-Table-1-to-Subpart-XX-of-Part-63"
+    )
+    base_chunk_key = f"ecfr/{table_only_node}/0"
+    assert base_chunk_key not in {c["chunk_key"] for c in chunks}
+
+
 def test_ranks_chunks_by_cosine_similarity_descending():
     query = [1.0, 0.0]
     chunks = [
