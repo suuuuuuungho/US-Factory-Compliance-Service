@@ -11,6 +11,7 @@ def build_context_request(
     instruction = f"""Write a concise 2-3 sentence English context for the eCFR chunk below.
 State which Subpart it belongs to and the industry or emission source that Subpart regulates. Explain whether the chunk covers applicability, definitions, emission limits, test methods, monitoring, recordkeeping and reporting, exceptions, or deadlines, and identify any equipment, materials, or numeric conditions it mentions.
 Do not decide whether the regulation applies, invent numbers absent from the source, or compare this text with another Subpart.
+Use every Subpart name exactly as it appears in the source; never invent or substitute a different name.
 
 <chunk>
 {chunk_text}
