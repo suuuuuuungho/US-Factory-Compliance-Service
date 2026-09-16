@@ -72,14 +72,17 @@ class FakeClient:
 
     def __init__(self):
         self.store: dict[str, list[dict]] = {}
+        # SUU-77: upsert() 호출마다 몇 개의 행을 보냈는지 기록한다 (배치 크기 확인용)
+        self.upsert_call_sizes: dict[str, list[int]] = {}
 
     def table(self, name):
-        return _Table(self.store, name)
+        return _Table(self.store, self.upsert_call_sizes, name)
 
 
 class _Table:
-    def __init__(self, store, name):
+    def __init__(self, store, upsert_call_sizes, name):
         self._store = store
+        self._upsert_call_sizes = upsert_call_sizes
         self._name = name
 
     def _rows(self):
@@ -93,6 +96,7 @@ class _Table:
     def upsert(self, rows, on_conflict=None):
         columns = [c.strip() for c in (on_conflict or "").split(",") if c.strip()]
         rows_list = rows if isinstance(rows, list) else [rows]
+        self._upsert_call_sizes.setdefault(self._name, []).append(len(rows_list))
         existing = self._rows()
         for row in rows_list:
             key = tuple(row.get(c) for c in columns)
@@ -165,3 +169,67 @@ def test_loading_the_same_release_twice_does_not_duplicate_rows(tmp_path):
 
     assert len(client.store["ecfr_node"]) == len(nodes)
     assert len(client.store["ecfr_block"]) == len(blocks)
+
+
+def make_synthetic_node(i):
+    return {
+        "node_key": f"40/63/subpart-A/section-63.{i}",
+        "parent_key": "40/63/subpart-A",
+        "node_type": "section",
+        "identifier": f"63.{i}",
+        "heading": f"Section {i}",
+        "reserved": False,
+        "sort_order": i,
+        "source_locator": f"//section[{i}]",
+        "xml_fragment": f"<section>{i}</section>",
+        "content_hash": f"hash-{i}",
+    }
+
+
+def make_synthetic_block(i):
+    return {
+        "node_key": f"40/63/subpart-A/section-63.{i}",
+        "block_no": 1,
+        "kind": "paragraph",
+        "label_path": ["(a)"],
+        "text_content": f"Block text {i}",
+        "markup": f"<p>{i}</p>",
+        "source_locator": f"//section[{i}]/p",
+        "parse_status": "ok",
+    }
+
+
+def write_synthetic_parsed_files(root, count):
+    parsed_dir = out_dir(root)
+    parsed_dir.mkdir(parents=True, exist_ok=True)
+    nodes = [make_synthetic_node(i) for i in range(count)]
+    blocks = [make_synthetic_block(i) for i in range(count)]
+    (parsed_dir / "nodes.jsonl").write_text(
+        "\n".join(json.dumps(n) for n in nodes), encoding="utf-8"
+    )
+    (parsed_dir / "blocks.jsonl").write_text(
+        "\n".join(json.dumps(b) for b in blocks), encoding="utf-8"
+    )
+    return nodes, blocks
+
+
+def test_batches_large_upserts_to_avoid_statement_timeout(tmp_path):
+    """SUU-77: 실제 Part 63 데이터는 block이 71,700개라 한 번에 upsert하면
+    Postgres statement timeout이 난다(실측). 여러 번 나눠 보내야 한다."""
+    count = 1200
+    nodes, blocks = write_synthetic_parsed_files(tmp_path, count)
+    client = make_client_with_xml_object()
+
+    load_release(tmp_path, AS_OF, RELEASE_ID, client=client)
+
+    node_calls = client.upsert_call_sizes["ecfr_node"]
+    block_calls = client.upsert_call_sizes["ecfr_block"]
+
+    assert len(node_calls) > 1, "node upsert가 한 번에 다 보내지고 있다"
+    assert len(block_calls) > 1, "block upsert가 한 번에 다 보내지고 있다"
+    assert max(node_calls) <= 1000
+    assert max(block_calls) <= 1000
+    assert sum(node_calls) == count
+    assert sum(block_calls) == count
+    assert len(client.store["ecfr_node"]) == count
+    assert len(client.store["ecfr_block"]) == count
