@@ -37,3 +37,11 @@ def test_prompt_version_can_be_overridden():
     result = build_context_request(DOC_TEXT, CHUNK_TEXT, prompt_version="ctx_prompt_v2")
 
     assert result["prompt_version"] == "ctx_prompt_v2"
+
+
+def test_instruction_tells_claude_not_to_invent_names():
+    request = build_context_request(DOC_TEXT, CHUNK_TEXT)
+
+    instruction = request["messages"][0]["content"]
+    assert "invent" in instruction.lower()
+    assert "name" in instruction.lower()
