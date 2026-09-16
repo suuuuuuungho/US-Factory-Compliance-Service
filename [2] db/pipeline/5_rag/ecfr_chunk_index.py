@@ -49,7 +49,9 @@ def index_chunk(
 ) -> None:
     """Contextualize, embed, and upsert one chunk into ``rag_chunk``."""
     chunk_text = chunk["chunk_text"]
-    context_text = call_claude(build_context_request(doc_text, chunk_text))
+    context_text = call_claude(
+        build_context_request(doc_text, chunk_text, subpart_name=node["heading"])
+    )
     embedding = call_kanon2(build_embedding_request(context_text, chunk_text))
     content_hash = hashlib.sha256(
         f"{chunk_text}\n\n{context_text}".encode("utf-8")

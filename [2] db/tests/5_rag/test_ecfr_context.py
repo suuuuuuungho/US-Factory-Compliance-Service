@@ -45,3 +45,17 @@ def test_instruction_tells_claude_not_to_invent_names():
     instruction = request["messages"][0]["content"]
     assert "invent" in instruction.lower()
     assert "name" in instruction.lower()
+
+
+def test_instruction_states_the_real_subpart_name():
+    request = build_context_request(DOC_TEXT, CHUNK_TEXT, subpart_name="Subpart XXXXXX")
+
+    instruction = request["messages"][0]["content"]
+    assert "Subpart XXXXXX" in instruction
+
+
+def test_works_without_a_subpart_name():
+    request = build_context_request(DOC_TEXT, CHUNK_TEXT)
+
+    assert request["messages"][0]["role"] == "user"
+    assert CHUNK_TEXT in request["messages"][0]["content"]
