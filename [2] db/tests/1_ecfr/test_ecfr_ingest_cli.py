@@ -3,6 +3,8 @@
 실제 Supabase 연동이 들어간 ``if __name__ == "__main__":`` 블록은 자동 테스트 대상이
 아니다(티켓의 완료 기준 3번 — 코드 리뷰로만 확인).
 """
+import re
+
 import pytest
 
 from ecfr_ingest import _latest_as_of
@@ -20,5 +22,5 @@ def test_raises_a_clear_error_when_raw_has_no_as_of_folders(tmp_path):
     raw_root = tmp_path / "raw"
     raw_root.mkdir()
 
-    with pytest.raises(FileNotFoundError, match=str(raw_root)):
+    with pytest.raises(FileNotFoundError, match=re.escape(str(raw_root))):
         _latest_as_of(raw_root)
