@@ -43,6 +43,7 @@ def index_chunk(
     chunk: dict[str, Any],
     doc_text: str,
     *,
+    subpart_name: str | None,
     client: Any,
     call_claude: Callable[[dict[str, Any]], str] = call_claude_api,
     call_kanon2: Callable[[dict[str, Any]], list[float]] = call_kanon2_api,
@@ -50,7 +51,7 @@ def index_chunk(
     """Contextualize, embed, and upsert one chunk into ``rag_chunk``."""
     chunk_text = chunk["chunk_text"]
     context_text = call_claude(
-        build_context_request(doc_text, chunk_text, subpart_name=node["heading"])
+        build_context_request(doc_text, chunk_text, subpart_name=subpart_name)
     )
     embedding = call_kanon2(build_embedding_request(context_text, chunk_text))
     content_hash = hashlib.sha256(

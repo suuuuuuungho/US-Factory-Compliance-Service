@@ -8,6 +8,17 @@ from typing import Any
 from ecfr_chunks import build_chunks
 
 
+def subpart_heading_for(nodes: list[dict[str, Any]], node_key: str) -> str:
+    """Return the heading of the subpart containing ``node_key``."""
+    subpart_key = "/".join(node_key.split("/")[:3])
+    headings_by_key = {
+        node["node_key"]: node["heading"]
+        for node in nodes
+        if node["node_type"] == "subpart"
+    }
+    return headings_by_key[subpart_key]
+
+
 def select_subpart_chunks(
     nodes: list[dict[str, Any]],
     blocks: list[dict[str, Any]],
@@ -68,4 +79,8 @@ def rank_chunks_by_similarity(
     return ranked if top_k is None else ranked[:top_k]
 
 
-__all__ = ["rank_chunks_by_similarity", "select_subpart_chunks"]
+__all__ = [
+    "rank_chunks_by_similarity",
+    "select_subpart_chunks",
+    "subpart_heading_for",
+]
