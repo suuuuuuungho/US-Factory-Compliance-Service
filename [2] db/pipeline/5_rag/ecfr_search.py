@@ -8,16 +8,29 @@ from ecfr_eval import build_query_embedding_request, rank_sections
 from ecfr_index_run import rank_chunks_by_similarity
 
 
-def rrf_merge(ranked_lists: list[list[dict[str, Any]]], *, k: int = 60) -> list[dict[str, Any]]:
-    """Merge ranked result lists with reciprocal-rank fusion."""
+def rrf_merge(
+    ranked_lists: list[list[dict[str, Any]]],
+    *,
+    k: int = 60,
+    weights: list[float] | None = None,
+) -> list[dict[str, Any]]:
+    """Merge ranked result lists with reciprocal-rank fusion.
+
+    ``weights`` scales each list's contribution (default 1.0 each); a list
+    weighted 0 is skipped entirely.
+    """
+    if weights is None:
+        weights = [1.0] * len(ranked_lists)
     merged: dict[str, dict[str, Any]] = {}
     scores: dict[str, float] = {}
-    for ranked in ranked_lists:
+    for ranked, weight in zip(ranked_lists, weights):
+        if weight == 0:
+            continue
         for rank, chunk in enumerate(ranked, start=1):
             key = chunk["chunk_key"]
             if key not in merged:
                 merged[key] = dict(chunk)
-            scores[key] = scores.get(key, 0.0) + 1 / (k + rank)
+            scores[key] = scores.get(key, 0.0) + weight / (k + rank)
     return [
         {**merged[key], "score": scores[key]}
         for key in sorted(scores, key=lambda item: (-scores[item], item))

@@ -261,6 +261,7 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-17_hybrid_v2 (SUU-129) | hybrid(BM25) | v2 102건 | 0.804 | 0.931 | 0.568 | 0.782 | 0.644 | $9.35 |
 
 - reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result.md`.
+- 후보 풀 스윕(SUU-130, `results/rrf_sweep.csv`): w 0.3~0.5·depth 300에서 recall@150 0.900, 기본 0.889. k 영향 없음. adi-M200005는 후보 안에 있음(SUU-119의 '후보 밖' 판단 정정).
 - v2 102건(SUU-129): reranker → hybrid 98건 동일, 3건 좋아짐, 1건 나빠짐. 공통 top-20 실패 7건 중 4건은 정답이 Subpart A 일반 규정(63.8·63.9·63.91). 세부: `results/rag_eval_result.md`.
 - 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
@@ -344,7 +345,7 @@ Claude(실행):
 | C-2' | 조합 이름 | `vector` / `reranker` / `hybrid`. 셋 다 contextual 색인을 쓴다. 키워드 쪽은 ts_rank → BM25 (SUU-116) |
 | C-3 | 평가셋 | **v2 102건** (SUU-120). 100% 근거 일치 초안 → Subpart당 2건 → 사람(Claude) 대조 |
 | C-4 | 세 조합 재측정 | 완료. v1 32건(SUU-119): reranker nDCG@10 0.658, hybrid 0.666. **v2 102건(SUU-129): vector 0.437, reranker 0.561, hybrid 0.568** — reranker→hybrid 98건 동일, +3/−1. 공통 실패 7건 |
-| C-7 | 후보 풀 진단 + RRF 가중치 스윕 | C-4 뒤. rerank 없이 $0. 실패를 pool-miss/rank-miss로 나누고 w·k·입력 깊이별 Recall@150 |
+| C-7 | 후보 풀 진단 + RRF 가중치 스윕 | 완료(SUU-130, $0). recall@150 기본 0.889 → 최고 0.900(동점) → **가중치 튜닝 안 함**. hybrid 실패 7건 중 5건 rank-miss → 병목은 리랭커. BM25 단독 풀(0.873) > vector 단독(0.842) |
 | C-8 | bge reranker 비교 | C-7 뒤. 로컬 GPU $0. Kanon과 같은 채점표로 reranker·hybrid |
 | C-5 | 합격선 + CI 검사 | C-7·C-8 뒤 |
 | C-6 | hybrid 채택 여부 | C-7·C-8 뒤 |
