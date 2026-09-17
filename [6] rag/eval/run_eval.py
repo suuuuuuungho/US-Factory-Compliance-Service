@@ -22,11 +22,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO / "[2] db/pipeline/5_rag")]
 
-from ecfr_chunk_index import call_kanon2_api  # noqa: E402
+from ecfr_chunk_index import call_isaacus_rerank_api, call_kanon2_api  # noqa: E402
 from ecfr_eval import (  # noqa: E402
     build_query_embedding_request, citation_section_key, gold_ranks, summarize,
 )
-from ecfr_search import search_sections  # noqa: E402
+from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
 CASES = HERE / "rag_eval_case.jsonl"
@@ -44,10 +44,13 @@ def load_env():
             os.environ.setdefault(k.strip(), v.strip())
 
 
-def fetch_chunks(client, release_id):
+def fetch_chunks(client, release_id, *, include_text=False):
     rows, start, page = [], 0, 500
+    columns = "chunk_key,node_key,embedding"
+    if include_text:
+        columns += ",context_text,chunk_text"
     while True:
-        r = (client.table("rag_chunk").select("chunk_key,node_key,embedding")
+        r = (client.table("rag_chunk").select(columns)
              .eq("release_id", release_id).eq("index_status", "embedded")
              .order("chunk_key").range(start, start + page - 1).execute())
         rows.extend(r.data)
@@ -84,6 +87,7 @@ def p(values, q):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-id")
+    ap.add_argument("--config", choices=("contextual", "rerank"), default="contextual")
     args = ap.parse_args()
     load_env()
     from supabase import create_client
@@ -91,12 +95,19 @@ def main():
     release_id = client.table("common_dataset_current").select("release_id").eq("dataset", "ecfr").execute().data[0]["release_id"]
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     run_at = datetime.now(timezone.utc)
-    run_id = args.run_id or f"{run_at:%Y-%m-%d}_contextual_v1"
+    run_id = args.run_id or f"{run_at:%Y-%m-%d}_{args.config}_v1"
 
     cases = [json.loads(l) for l in CASES.read_text(encoding="utf-8").splitlines() if l.strip()]
     print(f"release {release_id}, cases {len(cases)}, commit {commit}")
-    chunks = fetch_chunks(client, release_id)
+    chunks = fetch_chunks(client, release_id, include_text=args.config == "rerank")
     cache = query_embeddings(cases)
+    rerank_input_tokens = 0
+
+    def rerank(question, ranked):
+        nonlocal rerank_input_tokens
+        response = call_isaacus_rerank_api(build_rerank_request(question, ranked))
+        rerank_input_tokens += response["input_tokens"]
+        return response["scores"]
 
     lines = []
     for c in cases:
@@ -105,7 +116,9 @@ def main():
             c["question"],
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
+            rerank=rerank if args.config == "rerank" else None,
             top_k=K_MAX,
+            chunk_top_k=150 if args.config == "rerank" else CHUNK_TOP_K,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         ranks = gold_ranks(c["gold_citations"], sections)
@@ -136,7 +149,7 @@ def main():
     run = {
         "run_id": run_id,
         "run_at": run_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "config": "contextual",
+        "config": args.config,
         "eval_set_version": "v1",
         "n_cases": len(lines),
         "release_id": release_id,
@@ -148,9 +161,15 @@ def main():
         "metrics": metrics,
         "latency_ms": {"embed_p50": p(embed_ms, 0.5), "embed_p95": p(embed_ms, 0.95),
                        "search_p50": p(search_ms, 0.5), "search_p95": p(search_ms, 0.95)},
-        "cost_usd": {"per_query": None, "total": None},
+        "cost_usd": (
+            {"per_query": rerank_input_tokens * 0.35 / 1e6 / 32,
+             "total": rerank_input_tokens * 0.35 / 1e6}
+            if args.config == "rerank"
+            else {"per_query": None, "total": None}
+        ),
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
-        "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine, not HNSW)",
+        "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine"
+                 f"{' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")

@@ -42,6 +42,22 @@ def call_kanon2_api(request: dict[str, Any]) -> list[float]:
     return response.json()["embeddings"][0]["embedding"]
 
 
+def call_isaacus_rerank_api(request: dict[str, Any]) -> dict:
+    """Rerank texts with Kanon 2 and restore the input order of scores."""
+    response = requests.post(
+        "https://api.isaacus.com/v1/rerankings",
+        headers={"Authorization": f"Bearer {os.environ['ISAACUS_API_KEY']}"},
+        json={"model": "kanon-2-reranker", **request},
+        timeout=120,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    scores = [0.0] * len(request["texts"])
+    for result in payload["results"]:
+        scores[result["index"]] = result["score"]
+    return {"scores": scores, "input_tokens": payload["usage"]["input_tokens"]}
+
+
 def index_chunk(
     node: dict[str, Any],
     chunk: dict[str, Any],
@@ -77,4 +93,9 @@ def index_chunk(
     )
 
 
-__all__ = ["call_openai_api", "call_kanon2_api", "index_chunk"]
+__all__ = [
+    "call_isaacus_rerank_api",
+    "call_openai_api",
+    "call_kanon2_api",
+    "index_chunk",
+]
