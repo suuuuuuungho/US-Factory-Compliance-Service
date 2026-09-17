@@ -87,7 +87,7 @@ def p(values, q):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-id")
-    ap.add_argument("--config", choices=("contextual", "rerank"), default="contextual")
+    ap.add_argument("--config", choices=("contextual", "hybrid", "rerank"), default="contextual")
     args = ap.parse_args()
     load_env()
     from supabase import create_client
@@ -99,7 +99,7 @@ def main():
 
     cases = [json.loads(l) for l in CASES.read_text(encoding="utf-8").splitlines() if l.strip()]
     print(f"release {release_id}, cases {len(cases)}, commit {commit}")
-    chunks = fetch_chunks(client, release_id, include_text=args.config == "rerank")
+    chunks = fetch_chunks(client, release_id, include_text=args.config in ("hybrid", "rerank"))
     cache = query_embeddings(cases)
     rerank_input_tokens = 0
 
@@ -109,6 +109,12 @@ def main():
         rerank_input_tokens += response["input_tokens"]
         return response["scores"]
 
+    def keyword(question, k):
+        return client.rpc(
+            "rag_keyword_search",
+            {"p_release_id": release_id, "p_query": question, "p_k": k},
+        ).execute().data
+
     lines = []
     for c in cases:
         t0 = time.perf_counter()
@@ -116,9 +122,10 @@ def main():
             c["question"],
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
-            rerank=rerank if args.config == "rerank" else None,
+            keyword=keyword if args.config == "hybrid" else None,
+            rerank=rerank if args.config in ("hybrid", "rerank") else None,
             top_k=K_MAX,
-            chunk_top_k=150 if args.config == "rerank" else CHUNK_TOP_K,
+            chunk_top_k=150 if args.config in ("hybrid", "rerank") else CHUNK_TOP_K,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         ranks = gold_ranks(c["gold_citations"], sections)
@@ -164,12 +171,12 @@ def main():
         "cost_usd": (
             {"per_query": rerank_input_tokens * 0.35 / 1e6 / 32,
              "total": rerank_input_tokens * 0.35 / 1e6}
-            if args.config == "rerank"
+            if args.config in ("hybrid", "rerank")
             else {"per_query": None, "total": None}
         ),
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
         "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine"
-                 f"{' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
+                 f"{' + keyword RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")
