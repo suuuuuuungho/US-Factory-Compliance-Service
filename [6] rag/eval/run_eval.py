@@ -2,9 +2,10 @@
 
 사용법 (레포 루트에서):
   python "[6] rag/eval/run_eval.py" --config vector   # 조합: vector / reranker / hybrid → results/<run_id>.jsonl + runs.jsonl 한 줄
+  python "[6] rag/eval/run_eval.py" --eval-set v2   # 평가셋: v1 32건(기본) / v2 102건(SUU-120)
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
-규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings.json에 캐시한다.
+규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings[_v2].json에 캐시한다.
 failure_code/failure_note는 실행 후 Claude가 손으로 채운다.
 """
 from __future__ import annotations
@@ -30,8 +31,10 @@ from ecfr_keyword import build_keyword_search  # noqa: E402
 from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
-CASES = HERE / "rag_eval_case.jsonl"
-CACHE = HERE / "rag_eval_query_embeddings.json"
+EVAL_SETS = {
+    "v1": (HERE / "rag_eval_case.jsonl", HERE / "rag_eval_query_embeddings.json"),
+    "v2": (HERE / "rag_eval_case_v2.jsonl", HERE / "rag_eval_query_embeddings_v2.json"),
+}
 RUNS = HERE / "runs.jsonl"
 RESULTS = HERE / "results"
 K_MAX = 20
@@ -65,8 +68,8 @@ def fetch_chunks(client, release_id, *, include_text=False):
     return rows
 
 
-def query_embeddings(cases):
-    cache = json.loads(CACHE.read_text(encoding="utf-8")) if CACHE.exists() else {}
+def query_embeddings(cases, cache_path):
+    cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
     latency = {}
     for c in cases:
         if c["case_id"] in cache and cache[c["case_id"]]["question"] == c["question"]:
@@ -76,7 +79,7 @@ def query_embeddings(cases):
         latency[c["case_id"]] = (time.perf_counter() - t0) * 1000
         cache[c["case_id"]] = {"question": c["question"], "embedding": emb, "embed_ms": latency[c["case_id"]]}
         print(f"  embedded {c['case_id']}", flush=True)
-    CACHE.write_text(json.dumps(cache), encoding="utf-8")
+    cache_path.write_text(json.dumps(cache), encoding="utf-8")
     return cache
 
 
@@ -89,6 +92,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-id")
     ap.add_argument("--config", choices=("vector", "reranker", "hybrid"), default="vector")
+    ap.add_argument("--eval-set", choices=tuple(EVAL_SETS), default="v1")
     args = ap.parse_args()
     load_env()
     from supabase import create_client
@@ -96,12 +100,13 @@ def main():
     release_id = client.table("common_dataset_current").select("release_id").eq("dataset", "ecfr").execute().data[0]["release_id"]
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     run_at = datetime.now(timezone.utc)
-    run_id = args.run_id or f"{run_at:%Y-%m-%d}_{args.config}_v1"
+    run_id = args.run_id or f"{run_at:%Y-%m-%d}_{args.config}_{args.eval_set}"
+    cases_path, cache_path = EVAL_SETS[args.eval_set]
 
-    cases = [json.loads(l) for l in CASES.read_text(encoding="utf-8").splitlines() if l.strip()]
+    cases = [json.loads(l) for l in cases_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     print(f"release {release_id}, cases {len(cases)}, commit {commit}")
     chunks = fetch_chunks(client, release_id, include_text=args.config in ("hybrid", "reranker"))
-    cache = query_embeddings(cases)
+    cache = query_embeddings(cases, cache_path)
     rerank_input_tokens = 0
 
     def rerank(question, ranked):
@@ -154,7 +159,7 @@ def main():
         "run_id": run_id,
         "run_at": run_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "config": args.config,
-        "eval_set_version": "v1",
+        "eval_set_version": args.eval_set,
         "n_cases": len(lines),
         "release_id": release_id,
         "embed_model": "kanon-2-embedder",
@@ -166,7 +171,7 @@ def main():
         "latency_ms": {"embed_p50": p(embed_ms, 0.5), "embed_p95": p(embed_ms, 0.95),
                        "search_p50": p(search_ms, 0.5), "search_p95": p(search_ms, 0.95)},
         "cost_usd": (
-            {"per_query": rerank_input_tokens * 0.35 / 1e6 / 32,
+            {"per_query": rerank_input_tokens * 0.35 / 1e6 / len(cases),
              "total": rerank_input_tokens * 0.35 / 1e6}
             if args.config in ("hybrid", "reranker")
             else {"per_query": None, "total": None}
