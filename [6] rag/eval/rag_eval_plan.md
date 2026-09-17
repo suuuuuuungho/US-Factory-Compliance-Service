@@ -256,8 +256,12 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-17_vector_v1 (SUU-117) | vector | v1 | 0.844 | 0.969 | 0.573 | 0.812 | 0.618 | $0 |
 | 2026-09-17_reranker_v1 (SUU-119) | reranker | v1 | 0.906 | 0.969 | 0.658 | 0.885 | 0.725 | $1.99 |
 | 2026-09-17_hybrid_v1 (SUU-119) | hybrid(BM25) | v1 | 0.906 | 0.969 | 0.666 | 0.909 | 0.725 | $2.79 |
+| 2026-09-17_vector_v2 (SUU-129) | vector | v2 102건 | 0.686 | 0.843 | 0.437 | 0.672 | 0.474 | $0 |
+| 2026-09-17_reranker_v2 (SUU-129) | reranker | v2 102건 | 0.804 | 0.922 | 0.561 | 0.752 | 0.639 | $7.10 |
+| 2026-09-17_hybrid_v2 (SUU-129) | hybrid(BM25) | v2 102건 | 0.804 | 0.931 | 0.568 | 0.782 | 0.644 | $9.35 |
 
 - reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result.md`.
+- v2 102건(SUU-129): reranker → hybrid 98건 동일, 3건 좋아짐, 1건 나빠짐. 공통 top-20 실패 7건 중 4건은 정답이 Subpart A 일반 규정(63.8·63.9·63.91). 세부: `results/rag_eval_result.md`.
 - 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
 비교 표(설정 A vs B): 불일치 쌍(A만/B만), McNemar p, MRR 차이 부트스트랩 CI.
@@ -339,9 +343,11 @@ Claude(실행):
 | C-2 | 채점표 | **Hit@5, Hit@20, nDCG@10(주), Recall@20**. 정답 등급 없이 전부 1점. MRR은 v1 비교용 (SUU-117) |
 | C-2' | 조합 이름 | `vector` / `reranker` / `hybrid`. 셋 다 contextual 색인을 쓴다. 키워드 쪽은 ts_rank → BM25 (SUU-116) |
 | C-3 | 평가셋 | **v2 102건** (SUU-120). 100% 근거 일치 초안 → Subpart당 2건 → 사람(Claude) 대조 |
-| C-4 | 세 조합 재측정 | 완료(SUU-119, [9]). reranker nDCG@10 0.658, hybrid 0.666 — 1건 차이 |
-| C-5 | 합격선 + CI 검사 | C-4 뒤 |
-| C-6 | hybrid 채택 여부 | C-4 뒤 |
+| C-4 | 세 조합 재측정 | 완료. v1 32건(SUU-119): reranker nDCG@10 0.658, hybrid 0.666. **v2 102건(SUU-129): vector 0.437, reranker 0.561, hybrid 0.568** — reranker→hybrid 98건 동일, +3/−1. 공통 실패 7건 |
+| C-7 | 후보 풀 진단 + RRF 가중치 스윕 | C-4 뒤. rerank 없이 $0. 실패를 pool-miss/rank-miss로 나누고 w·k·입력 깊이별 Recall@150 |
+| C-8 | bge reranker 비교 | C-7 뒤. 로컬 GPU $0. Kanon과 같은 채점표로 reranker·hybrid |
+| C-5 | 합격선 + CI 검사 | C-7·C-8 뒤 |
+| C-6 | hybrid 채택 여부 | C-7·C-8 뒤 |
 
 그 뒤: 답변 생성(아직 없음), 대시보드(SUU-113), ADI 회신 `adi_` 테이블 적재.
 
