@@ -95,7 +95,7 @@
 
 ### 3-6. 동점·결정성
 - 코사인 점수 동점이면 `chunk_key` 오름차순으로 고정한다. 같은 입력이면 같은 결과가 나와야 한다.
-- 질문 임베딩은 실행마다 API를 부른다. 임베딩이 미세하게 달라질 수 있으므로 **질문 임베딩을 파일로 저장**(`query_embeddings/<eval_set_version>_<embed_model>.jsonl`)하고 재사용한다. 결과 재현 시 API를 다시 부르지 않는다.
+- 질문 임베딩은 실행마다 API를 부른다. 임베딩이 미세하게 달라질 수 있으므로 **질문 임베딩을 파일로 저장**(`rag_eval_query_embeddings.json`)하고 재사용한다. 결과 재현 시 API를 다시 부르지 않는다.
 
 ---
 
@@ -246,7 +246,7 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-17_contextual_v1 (SUU-81) | contextual | v1 | 0.844 [0.682, 0.931] | 0.969 [0.843, 0.994] | 0.625 | 0.969 | 0.618 | 2 | F3 1 |
 | 2026-09-17_rerank_v1 (SUU-101) | rerank | v1 | 0.906 [0.758, 0.968] | 0.969 [0.843, 0.994] | 0.750 | 0.938 | 0.725 | 1 | F3 1 (같은 케이스) |
 
-- 색인 5,625/5,625(100%). 세부: `results/rag_eval_result_v1.md`.
+- 색인 5,625/5,625(100%). 세부: `results/rag_eval_result.md`.
 
 새 채점표(SUU-117부터). 지난 run과 같은 결과 파일에서 다시 계산할 수 있으므로 옛 run도 이 표에 옮겨 적는다.
 
@@ -256,14 +256,14 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-17_reranker_v1 (SUU-119) | reranker | v1 | 0.906 | 0.969 | 0.658 | 0.885 | 0.725 | $1.99 |
 | 2026-09-17_hybrid_v1 (SUU-119) | hybrid(BM25) | v1 | 0.906 | 0.969 | 0.666 | 0.909 | 0.725 | $2.79 |
 
-- reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result_v3.md`.
+- reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result.md`.
 - 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
 비교 표(설정 A vs B): 불일치 쌍(A만/B만), McNemar p, MRR 차이 부트스트랩 CI.
 
 | A vs B | 지표 | A만 | B만 | McNemar p | MRR 차이 (부트스트랩 95% CI) | 판정 |
 |---|---|---|---|---|---|---|
-| contextual vs rerank | Hit loose@5 | 1 | 3 | 0.625 | +0.107 [-0.006, 0.220] | **rerank 채택** (13 좋아짐/4 나빠짐, 나빠진 건 1~4칸). 세부: `results/rag_eval_result_v2.md` |
+| contextual vs rerank | Hit loose@5 | 1 | 3 | 0.625 | +0.107 [-0.006, 0.220] | **rerank 채택** (13 좋아짐/4 나빠짐, 나빠진 건 1~4칸). 세부: `results/rag_eval_result.md` |
 | contextual vs rerank | Hit strict@5 | 2 | 5 | 0.453 | | 비용 질문당 $0.062, 검색 지연 p50 4.4초 |
 
 ---
