@@ -4,7 +4,7 @@
   python "[6] rag/eval/run_eval.py" --config vector   # 조합: vector / reranker / hybrid → results/<run_id>.jsonl + runs.jsonl 한 줄
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
-규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 query_embeddings.json에 캐시한다.
+규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings.json에 캐시한다.
 failure_code/failure_note는 실행 후 Claude가 손으로 채운다.
 """
 from __future__ import annotations
@@ -31,7 +31,7 @@ from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
 CASES = HERE / "rag_eval_case.jsonl"
-CACHE = HERE / "query_embeddings.json"
+CACHE = HERE / "rag_eval_query_embeddings.json"
 RUNS = HERE / "runs.jsonl"
 RESULTS = HERE / "results"
 K_MAX = 20
