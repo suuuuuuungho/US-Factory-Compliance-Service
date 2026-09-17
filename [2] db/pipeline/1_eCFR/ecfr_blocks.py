@@ -24,6 +24,17 @@ _KIND_BY_TAG = {
     "FTNT": "footnote",
     "EDNOTE": "editorial_note",
 }
+GLUE_TAGS = {"E", "SU", "I", "sub", "sup", "FTREF"}
+
+
+def flat_text(element: etree._Element) -> str:
+    parts = [element.text or ""]
+    for child in element:
+        if isinstance(child.tag, str):
+            inner = flat_text(child)
+            parts.append(inner if child.tag in GLUE_TAGS else f" {inner} ")
+        parts.append(child.tail or "")
+    return "".join(parts)
 
 
 def _text_content(element: etree._Element) -> str:
@@ -36,7 +47,7 @@ def _text_content(element: etree._Element) -> str:
             cells = [cell for cell in row if cell.tag in ("TD", "TH")]
             lines.append(" | ".join(_text_content(cell) for cell in cells))
         return "\n".join(lines)
-    return " ".join(" ".join(element.itertext()).split())
+    return " ".join(flat_text(element).split())
 
 
 def _is_table(element: etree._Element) -> bool:
@@ -93,4 +104,4 @@ def parse_blocks(element: etree._Element) -> list[dict[str, Any]]:
     return blocks
 
 
-__all__ = ["parse_blocks"]
+__all__ = ["flat_text", "parse_blocks"]

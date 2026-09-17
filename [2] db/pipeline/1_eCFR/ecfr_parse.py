@@ -11,7 +11,7 @@ from typing import Any
 
 from lxml import etree
 
-from ecfr_blocks import parse_blocks
+from ecfr_blocks import flat_text, parse_blocks
 from ecfr_labels import assign_label_paths
 from ecfr_nodes import _STRUCTURAL_TAGS, _TYPE_NAMES, parse_nodes
 from ecfr_structure import count_by_type, find_part
@@ -41,7 +41,7 @@ def _node_text(element: etree._Element) -> str:
     parts = [element.text or ""]
     for child in element:
         if child.tag != "HEAD":
-            parts.append(" ".join(child.itertext()))
+            parts.append(flat_text(child))
         parts.append(child.tail or "")
     return " ".join(" ".join(parts).split())
 
