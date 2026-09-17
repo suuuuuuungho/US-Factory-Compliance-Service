@@ -5,6 +5,10 @@ __pycache__/
 *.pyc
 /[[]2] db/*/raw/
 /[[]2] db/*/parsed/
+# ADI+CAA 수집 결과 (상세·회신 PDF는 하위 폴더에 raw/가 있다)
+/[[]2] db/*/*/raw/
+/[[]2] db/*/*/*/raw/
+/[[]2] db/4) ADI+CAA/adi_letters/part63_candidates.json
 # Codex 테스트 임시 폴더
 .codex-*/
 /tmp/
