@@ -6,9 +6,7 @@
 
 임베딩은 법률 특화 모델 [Kanon 2 Embedder](https://isaacus.com/blog/introducing-kanon-2-embedder)를 쓴다. 
 
-지금은 **v1(설계)**이다. 데이터가 아직 적재되지 않았으므로 실측이 필요한 숫자는 `실측 후 기입`으로 표시했고, 
-
-eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미실행이다.
+지금은 **v1.5(eCFR 적재·시범 색인 완료, 전체 색인 진행 중)**이다. 2026-09-17 기준: eCFR Part 63 적재 완료(SUU-72), Subpart XXXXXX 시범 색인 완료(SUU-76), Part 63 전체 색인(SUU-80)과 32건 평가(SUU-81)는 진행 중이다. 실측이 남은 숫자는 `실측 후 기입`으로 남겨 두었다. 각 절의 "구현 상태" 줄이 티켓과 코드의 현재 모습이다.
 
 ## [0] 이 문서를 지금 쓰는 이유와 두 번에 나눠 쓰는 방법
 
@@ -43,7 +41,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 
 4) 왜 RAG를 건너뛸 수 없나
    - Anthropic 기준으로 코퍼스가 20만 토큰(약 500쪽) 이하면 RAG 없이 프롬프트에 통째로 넣고 캐싱하라고 한다.
-   - Part 63은 XML만 26,332,596바이트, 조문 2,473개, 표 784개다. 20만 토큰을 훨씬 넘는다. 본문 토큰 수는 `실측 후 기입`.
+   - Part 63은 XML만 26,332,596바이트, 조문 2,473개, 표 784개다. 20만 토큰을 훨씬 넘는다. 본문 토큰 수는 약 510만 토큰(블록 71,700개, 2,034만 자, 4자=1토큰 추정. 2026-09-17 로컬 파싱 기준).
 
 ## [2] 설계 원칙 — Contextual Retrieval
 
@@ -71,13 +69,15 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - "청크": 실제로 임베딩되고 검색 결과로 돌아오는 조각.
 
 2) eCFR
-   - 문서 = Subpart 하나. Part 63은 업종별로 Subpart가 나뉘므로 "이 조각이 어느 업종 규정인지"를 알려면 Subpart 전체가 문맥이다.
-   - 예외 규칙: gpt-4o-mini의 문맥 한도는 128k 토큰이다. 100k 토큰을 넘는 9개 Subpart는 SUU-80에서 `doc_text`를 줄여 한도 안에 맞춘다.
-   - 청크 = section 하나가 기본. 예: `§ 63.1 Applicability`.
-   - section이 상한(가칭 1,500토큰, `실측 후 확정`)을 넘으면 최상위 문단 `(a)`, `(b)` 경계로 나눈다. 나눈 조각마다 section 번호·제목을 반복해 붙인다. 문단 중간에서 자르지 않는다.
-   - 표(`TABLE`)·부록(`appendix`)은 별도 청크로 만들고 부모 section·Subpart에 연결한다. 표를 글로 요약해 대체하지 않는다. 표 원문(markup)은 [DB 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>)의 `ecfr_block.markup`에 있다.
+   - 문서 = **Subpart 제목 + 그 청크가 속한 조문(section/appendix) 전체**(SUU-80). 처음 설계는 "Subpart 전체"였지만, 그러면 캐시 입력만 약 2억 토큰(약 $17)이라 조문 단위(약 3,500만 토큰, $3~6)로 줄였다. "어느 업종 규정인지"는 Subpart 이름을 프롬프트에 따로 넣어 알려준다([4]-2, SUU-82/86).
+   - 예외 규칙: gpt-4o-mini의 문맥 한도는 128k 토큰이다. 조문이 400,000자를 넘으면(Appendix A to Part 63 등) 그 조문의 청크는 문서 = Subpart 제목 + 청크 자신의 텍스트로 한다.
+   - 청크 = section 하나가 기본. 예: `§ 63.1 Applicability`. 부록(`appendix`)도 section과 같이 자체 청크를 만든다.
+   - 청크 상한은 **30,000자**(`MAX_CHUNK_CHARS`, SUU-84. 약 7,500토큰, Kanon 2 한도 16,384토큰의 절반). 넘으면 `label_path` 경계로 나눈다: 최상위 문단 `(a)`, `(b)`로 나누고, 한 문단이 여전히 크면 `(1)`, `(2)`… 더 깊은 라벨로 다시 나눈다. 라벨로 더 못 나누면(부록처럼 라벨이 없는 경우) 블록을 순서대로 한도까지 채워 자른다(SUU-90). 블록 하나는 자르지 않는다. 조각 키는 `/0`, `/0-1`, `/0-2`….
+   - 본문 청크와 표 청크 모두 `chunk_text` 맨 앞에 그 조문 제목(`heading`)을 붙인다(SUU-85). 나눈 조각마다 제목이 반복된다.
+   - 표(`TABLE`)는 별도 청크(`/1`, `/2`…)로 만들고 `parent_chunk_key`로 그 조문의 첫 본문 청크(`/0`)에 연결한다(SUU-70). 표를 글로 요약해 대체하지 않는다. 표는 행을 줄바꿈, 셀을 `" | "`로 구분한 글로 저장한다(SUU-83). 표 원문(markup)은 [DB 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>)의 `ecfr_block.markup`에 있다.
    - 수식·이미지는 그 자체로 청크를 만들지 않는다. 같은 문단 청크에 "수식/그림 있음" 표시와 `ecfr_asset` 연결만 남긴다.
-   - 예약(`reserved`) 항목은 색인하지 않는다. 검색 실패가 아니라 정상 제외다.
+   - 예약(`reserved`) 항목은 색인하지 않는다. 검색 실패가 아니라 정상 제외다. 본문 블록이 하나도 없는 청크(표만 있는 노드의 `/0`)도 색인하지 않는다(SUU-78).
+   - 구현 상태: `ecfr_chunks.build_chunks`(SUU-70/84/90), `ecfr_index_run.select_subpart_chunks`(SUU-76/78/85).
    - 청크 하나가 Kanon 2 한도 16,384토큰을 넘는 일은 없어야 한다. 넘으면 [5]의 오류 처리로 잡는다.
 
 3) Federal Register
@@ -98,7 +98,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - `node_key` 또는 `document_key`: 원문 항목. 예: `40/63/subpart-A/section-63.1`.
    - `block_from`, `block_to`: 어느 블록 범위를 잘라 만든 청크인지.
    - `hierarchy_path`: Part → Subpart → 중간 제목 → section 제목의 배열. 예: `["Part 63", "Subpart A—General Provisions", "§ 63.1 Applicability"]`.
-   - `citation`: 사람이 읽는 인용. 예: `40 CFR 63.1(a)(1)`. 문단 경로는 `ecfr_block.label_path`에서 만든다. 추출값이므로 확신 없는 경우 section까지만 쓴다.
+   - `citation`: 사람이 읽는 인용. 예: `40 CFR 63.1(a)(1)`. 문단 경로는 `ecfr_block.label_path`에서 만든다. 추출값이므로 확신 없는 경우 section까지만 쓴다. v1 색인(SUU-80)은 section까지만 쓴다(`40 CFR 63.NNNN`, 부록은 비움).
    - `source_locator`: 원문 XML 위치. 링크를 만들 때 쓴다.
    - 따라서 eCFR 파서는 `label_path`를 빈 값으로 두면 안 된다. 최소한 최상위 문단 `(a)`, `(b)`까지는 채워야 한다. 이 요구는 [eCFR 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>) 2-1의 문단 경로 규칙과 같다.
 
@@ -106,28 +106,31 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 
 1) 모델과 호출 방법
    - 모델: OpenAI `gpt-4o-mini`. 입력 $0.15, 캐시 입력 $0.075, 출력 $0.60 (백만 토큰당).
-   - 문서 전체(Subpart)를 시스템 메시지에 넣는다. 1,024토큰 이상이면 시스템 메시지를 prefix로 삼는 OpenAI 자동 prefix 캐시가 적용되며, 별도 `cache_control`은 보내지 않는다.
-   - Batch API는 쓰지 않는다. 청크 단위 upsert·재실행 구조와 맞지 않으므로 청크마다 일반 호출한다.
-   - 1,024토큰보다 짧은 Subpart는 캐시가 안 걸릴 수 있는데, 짧으면 비용도 작으므로 그대로 둔다.
+   - 문서([3]-2: Subpart 제목 + 조문 전체)를 시스템 메시지에 넣는다. 1,024토큰 이상이면 시스템 메시지를 prefix로 삼는 OpenAI 자동 prefix 캐시가 적용되며, 별도 `cache_control`은 보내지 않는다. 같은 조문의 청크들이 같은 prefix를 공유한다.
+   - Batch API는 쓰지 않는다. 청크 단위 upsert·재실행 구조와 맞지 않으므로 청크마다 일반 호출한다. 출력 상한 `max_tokens=256`.
+   - 1,024토큰보다 짧은 조문은 캐시가 안 걸릴 수 있는데, 짧으면 비용도 작으므로 그대로 둔다.
+   - 구현 상태: `ecfr_chunk_index.call_openai_api`(SUU-89). 처음엔 Claude Haiku였으나 비용 때문에 gpt-4o-mini로 바꿨다.
 
 2) 프롬프트 — 법령용으로 바꾼 것
    - Anthropic 원문: "이 청크를 문서 전체 안에서 자리매김하는 짧은 설명을 써라."
    - 우리 추가 지시: 다음을 2~3문장 영어로 쓴다. (1) 어느 Subpart이고 어떤 업종·배출원을 규제하는지 (2) 이 조각이 적용대상·정의·배출한도·시험방법·모니터링·기록보고·예외·기한 중 무엇을 다루는지 (3) 어떤 설비·물질·수치 조건이 나오는지.
    - 하지 말 것: 적용 여부를 판단하는 문장, 원문에 없는 숫자, 다른 Subpart와의 비교.
-   - 출력은 50~100토큰. 넘치면 잘라 쓰지 않고 다시 생성한다.
+   - 프롬프트 첫 줄에 `This chunk belongs to {Subpart 이름}.`을 넣어 Subpart 이름을 직접 알려주고(SUU-82), "Subpart 이름은 원문에 있는 그대로만 쓰고 지어내지 말라"는 지시를 넣는다(SUU-79). 시범 색인에서 모델이 `Subpart RRR` 같은 가짜 이름을 만든 적이 있어서다. 이 이름은 호출자가 `subpart_name`으로 반드시 넘긴다(SUU-86, `subpart_heading_for`).
+   - 출력은 2~3문장(50~100토큰 목표). v1은 `max_tokens=256`으로 상한만 두고 다시 생성하지는 않는다.
    - 프롬프트에는 버전 번호를 붙인다(`ctx_prompt_v1`). 바뀌면 [9]의 전체 재색인 규칙을 따른다.
 
 3) 저장
    - 생성한 컨텍스트는 `rag_chunk.context_text`에 원문(`chunk_text`)과 분리해 저장한다. 원문을 고치지 않는다.
    - 임베딩 입력 = `context_text + "\n\n" + chunk_text`. BM25 색인도 같은 문자열로 만든다.
-   - 사용한 모델·프롬프트 버전·생성 시각을 청크마다 남긴다.
+   - 사용한 모델·프롬프트 버전을 청크마다 남긴다(`contextualizer_model`, `context_prompt_version`). 생성 시각 컬럼은 v1 테이블에 없다.
+   - 구현 상태: `ecfr_context.build_context_request`(SUU-71/79/82), `ecfr_chunk_index.index_chunk`(SUU-75/86/89).
 
 4) 검증
-   - Subpart별로 청크 3개씩 뽑아 사람이 읽는다. 다른 Subpart·다른 업종을 말하거나 적용 판단을 넣은 컨텍스트가 있으면 불합격이다.
-   - 불합격이면 프롬프트를 고치고 그 Subpart만 다시 만든다.
+   - 전체 색인 전에 표본 10~20개(일반 조문 + 표 청크 + 쪼개진 조각을 섞어서)를 먼저 색인해 사람이 읽는다(SUU-80). 다른 Subpart·다른 업종을 말하거나 적용 판단을 넣은 컨텍스트가 있으면 불합격이다.
+   - 불합격이면 프롬프트를 고치고 다시 만든다. 시범 색인(SUU-76)에서 이 검수로 가짜 Subpart 이름 문제를 찾아 SUU-79/82/86으로 고쳤다.
 
 5) 비용
-   - gpt-4o-mini는 입력 $0.15, 캐시 입력 $0.075, 출력 $0.60 (백만 토큰당)이다. Part 63 전체 비용은 `실측 후 기입`.
+   - gpt-4o-mini는 입력 $0.15, 캐시 입력 $0.075, 출력 $0.60 (백만 토큰당)이다. Part 63 전체(청크 약 5,600개) 추정: 입력 약 3,500만 토큰, 캐시 없이 $5.6, 캐시 적용 시 $3~6, 상한 $10(SUU-80). 실제 비용은 `실측 후 기입`.
 
 ## [5] 임베딩 — Kanon 2 Embedder
 
@@ -140,7 +143,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 2) 호출 규격
    - `POST /embeddings`, `model=kanon-2-embedder`.
    - 색인할 때 `task=retrieval/document`, 질문을 임베딩할 때 `task=retrieval/query`. 둘을 바꾸면 검색 품질이 떨어진다.
-   - 한 요청에 최대 128개 텍스트. 응답의 `usage.input_tokens`를 기록해 비용을 센다.
+   - 한 요청에 최대 128개 텍스트. v1은 청크마다 1개씩 보낸다. 응답의 `usage.input_tokens` 기록은 v1 미구현.
    - `overflow_strategy=null`로 보낸다. 기본값 `drop_end`는 한도를 넘으면 뒤를 조용히 잘라낸다. 우리는 잘리는 대신 오류로 받아 [3]의 청크 규칙을 고친다.
 
 3) 차원
@@ -149,8 +152,9 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - 저장 공간·속도가 문제가 되면 1,024로 줄이는 것을 v2에서 실측으로 판단한다. 줄이면 전체 재임베딩이다.
 
 4) 운영
-   - 호출 제한 수치는 확인하지 못했다. 처음에는 동시 요청 1개로 시작하고 429의 `Retry-After`를 따른다.
-   - 같은 `content_hash + embed_model + 프롬프트 버전`이면 다시 임베딩하지 않고 재사용한다.
+   - 호출 제한 수치는 확인하지 못했다. SUU-80은 동시 요청 4개, 실패 청크 3회 재시도로 돌린다(동시 요청을 높이면 Windows에서 `WinError 10035`가 났다).
+   - 같은 `content_hash + embed_model + 프롬프트 버전`이면 다시 임베딩하지 않고 재사용한다. v1 실행 스크립트는 더 단순하게 `rag_chunk`에 이미 있는 `chunk_key`를 건너뛴다.
+   - 구현 상태: `ecfr_embed.build_embedding_request`(SUU-73), `ecfr_chunk_index.call_kanon2_api`(SUU-75).
    - 자체 호스팅 대안: AWS Marketplace 컨테이너로 제공된다(2025-10-29 기준). API가 막히거나 비용이 커지면 검토한다.
 
 5) 한계
@@ -169,6 +173,8 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - 조문 번호·Subpart 코드는 별도 "정확 일치" 경로를 둔다. 질문에 `63.\d+` 또는 `Subpart [A-Z]{1,7}` 패턴이 있으면 해당 node를 바로 가져와 결과 맨 위에 둔다.
 
 ## [7] 검색 흐름 — 질문에서 결과까지
+
+구현 상태: v1은 벡터 검색(코사인 유사도, `ecfr_index_run.rank_chunks_by_similarity`, SUU-76)만 있다. 키워드 검색·합치기·리랭킹·구조 확장·답변 생성은 미구현이며, SUU-81의 측정 결과를 보고 순서를 정한다.
 
 1) 질문 준비
    - 사용자 입력을 그대로 쓴다. 질문 재작성(LLM으로 검색용 문장 만들기)은 v1에서 하지 않는다. 평가에서 필요하면 v2에 추가한다.
@@ -210,16 +216,16 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 2) `rag_chunk` — 새로 만드는 테이블
    - `(release_id FK → common_dataset_release, chunk_key text) PK`. `chunk_key` 예: `ecfr/40/63/subpart-A/section-63.1/0`.
    - `dataset text`: `ecfr` / `fr` / `adi`.
-   - `doc_key text`: 컨텍스트 생성 문서 단위. eCFR은 Subpart의 `node_key`, FR은 `document_key`, ADI/Dashboard는 `version_id`.
+   - `doc_key text`: 청크가 속한 묶음. eCFR은 Subpart의 `node_key`(예: `40/63/subpart-CCCCC`. Part 단위 부록은 그 부록의 `node_key`), FR은 `document_key`, ADI/Dashboard는 `version_id`. 컨텍스트 생성 문서 단위([3]-2, 조문)와는 다르다.
    - `node_key text NULL`, `block_from integer`, `block_to integer`: 원문 블록 범위. 원본 테이블에 복합 FK를 둔다.
-   - `hierarchy_path text[]`, `heading text`, `citation text`, `source_locator text`.
+   - `hierarchy_path text`(실제 테이블은 배열이 아니라 `"Title 40 > Subpart … > § 63.… "` 한 줄), `heading text`, `citation text`, `source_locator text`.
    - `chunk_text text`, `context_text text`, `chunk_tokens integer`, `context_tokens integer`.
-   - `content_hash text`: `chunk_text`의 해시. 원문이 안 바뀌었는지 판단한다.
+   - `content_hash text`: `chunk_text + "\n\n" + context_text`의 SHA-256(SUU-75). 원문과 컨텍스트가 둘 다 안 바뀌었는지 판단한다.
    - `contextualizer_model text`, `context_prompt_version text`, `embed_model text`, `embed_dims integer`.
    - `embedding vector(1792)`, `tsv tsvector`.
    - `index_status text`: `pending` / `contextualized` / `embedded` / `failed`. 실패한 청크는 남기고 검색에서만 뺀다.
 
-3) `rag_eval_case`, `rag_eval_result` — 평가용
+3) `rag_eval_case`, `rag_eval_result` — 평가용 (v1은 테이블 대신 파일: 평가셋 `[6] rag/eval/rag_eval_case.jsonl` 32건, 결과는 SUU-81 티켓에 표로 기록)
    - `rag_eval_case`: `case_id text PK`, `question text`, `gold_citations text[]`, `gold_subparts text[]`, `source text`(adi/dashboard/manual), `source_ref text NULL`(ADI Control Number 또는 Dashboard 회신 URL), `notes text`.
    - `rag_eval_result`: `(eval_run_id, case_id) PK`, `config text`(baseline/contextual/hybrid/rerank), `release_id FK`, `first_gold_rank integer NULL`, `top20_hit boolean`, `subpart_hit boolean`, `returned_keys text[]`.
 
@@ -237,7 +243,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 1) 바뀐 조문만 다시 처리
    - eCFR 새 release가 공개되면 `common_change_log`에서 바뀐 `node_key`를 읽는다.
    - 바뀐 node의 청크만 다시 자르고, 컨텍스트를 다시 만들고, 다시 임베딩한다. 나머지는 [8]의 복사 규칙으로 옮긴다.
-   - Subpart 제목이나 section 구성이 바뀐 경우(section 추가·삭제·번호 변경)는 그 Subpart 전체의 컨텍스트를 다시 만든다. 컨텍스트가 "문서 전체" 기준이기 때문이다.
+   - 컨텍스트 문서 단위가 조문이므로([3]-2) 바뀐 조문만 다시 만들면 된다. 단, Subpart 제목이 바뀌면 그 Subpart의 모든 청크를 다시 만든다. 제목이 프롬프트와 문서 맨 앞에 들어가기 때문이다.
    - FR·ADI/Dashboard도 같은 방식이다. 새 문서는 추가, 바뀐 문서는 재처리, 안 바뀐 문서는 복사.
 
 2) 전체 재색인이 필요한 때
@@ -257,13 +263,14 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - ADI/Dashboard 회신이 자연스러운 정답 자료다. Dashboard의 Part 63 명시 132건과 ADI의 Part 63 관련 문서에서 만든다.
    - 질문 = 회신의 "요청 내용"(시설·공정 설명)만 뽑아 실무자 말투로 다시 쓴다. 답 부분은 질문에 넣지 않는다.
    - 정답 = 회신이 적용/비적용 판단의 근거로 인용한 Subpart와 section. `gold_subparts`와 `gold_citations`에 나눠 둔다.
-   - 회신 전체를 기계로 적재하는 것은 뒤의 일이다. 그 전에 ADI/Dashboard 회신 30건을 사람이 읽어 만든 `manual` 세트(SUU-46)로 시작한다. 파서 없이 ADI Abstract·Dashboard Affected Subpart·회신 PDF를 직접 읽는다. 적재 후 같은 방식으로 50개 이상으로 늘린다.
+   - 회신 전체를 기계로 적재하는 것은 뒤의 일이다. 그 전에 ADI/Dashboard 회신을 사람이 읽어 만든 `manual` 세트(SUU-46, 32건 완료, 정답 인용 83개, 31개 Subpart)로 시작한다. 파서 없이 ADI Abstract·Dashboard Affected Subpart·회신 PDF를 직접 읽는다. 적재 후 같은 방식으로 50개 이상으로 늘린다.
    - 목표 크기: 50개 이상. 업종(Subpart)이 한쪽으로 몰리지 않게 한다.
 
 2) 지표
    - top-20 검색 실패율: 정답 section이 상위 20개 안에 없는 비율. Anthropic과 같은 지표라 숫자를 비교할 수 있다.
    - Subpart 적중률: 정답 Subpart가 상위 20개 안에 하나라도 있는 비율. 서비스가 "후보 Subpart 제시"이므로 이 지표가 더 중요하다.
    - 정답 첫 등장 순위의 중앙값.
+   - 1차 측정(SUU-81)은 더 단순하게 잰다: **top-5 히트율**, 정답 인용의 문단 번호를 떼고 조문 단위로 비교, 한 조문이 여러 청크(`/0`, `/0-1`, 표)로 나뉘어 있어도 그중 하나만 있으면 히트, 정답이 여럿이면 하나만 맞아도 히트(엄격 기준은 참고 숫자). top-20 실패율과 Subpart 적중률은 그 다음에 잰다.
 
 3) 비교 순서 — 하나씩 켜면서 잰다
    - baseline: 컨텍스트 없이 벡터만.
@@ -271,6 +278,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - hybrid: contextual + BM25 합치기.
    - rerank: hybrid + Kanon 2 Reranker.
    - 각 단계의 실패율을 기록한다. 단계가 실패율을 낮추지 않으면 그 단계는 빼고 이유를 적는다.
+   - SUU-81은 contextual(컨텍스트 붙인 벡터)만 잰다. baseline·hybrid·rerank 비교는 그 뒤 티켓.
 
 4) 합격 기준
    - 가칭: top-20 실패율 5% 이하, Subpart 적중률 95% 이상. Anthropic의 일반 방식이 5.7%였으므로 우리 baseline을 잰 뒤 `실측 후 확정`한다.
@@ -324,10 +332,10 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
    - 완료 조건: DB 파서 티켓이 요구사항을 받았고, 이 문서에 `실측 후 기입` 항목 목록이 남아 있다.
 
 2) eCFR 적재 후 — v2
-   - section별 토큰 분포 측정 → 청크 상한 확정 → 20만 토큰 넘는 Subpart 목록 확정.
-   - `manual` 평가셋 30건(SUU-46)은 eCFR 적재를 기다리지 않고 병행해 만든다.
-   - Subpart 3개(작은 것·중간·큰 것)로 시범 색인 → 컨텍스트 표본 검수 → 비용 실측.
-   - Part 63 전체 색인 → baseline/contextual/hybrid/rerank 비교 → 합격 기준 확정.
+   - section별 토큰 분포 측정 → 청크 상한 확정(30,000자, SUU-84) — 완료.
+   - `manual` 평가셋 32건(SUU-46) — 완료.
+   - Subpart XXXXXX 하나로 시범 색인(SUU-76) → 컨텍스트 표본 검수 → 문제 수정(SUU-78/79/82/83/84/85/86/88/89/90) — 완료·진행 중.
+   - Part 63 재적재(SUU-87) → 전체 색인(SUU-80) → 32건 top-5 히트율(SUU-81) → baseline/hybrid/rerank 비교 → 합격 기준 확정.
    - 완료 조건: [10]-5의 기록이 있고, 이 문서의 `실측 후 기입`이 모두 숫자로 바뀌었다.
 
 3) ADI+CAA 적재 후
@@ -346,7 +354,7 @@ eCFR 적재 후 v2에서 채운다. 운영 색인·검색·평가는 모두 미�
 ## [14] 아직 못 정한 것
 
 1) 한국어 입력을 받을지, 받는다면 어디서 영어로 바꿀지. 서비스 타겟이 미국 공장 실무자라 v1은 영어만이다.
-2) 청크 상한 토큰 수(가칭 1,500)와 벡터 차원(1,792 유지 vs 1,024). eCFR 실측 후.
+2) 벡터 차원(1,792 유지 vs 1,024). 청크 상한은 30,000자로 확정(SUU-84).
 3) BM25를 PostgreSQL 전문검색으로 충분한지, 확장을 붙일지. 키워드 검색 실패율 실측 후.
 4) 합격 기준 숫자(가칭 5% / 95%). baseline 실측 후.
 5) 이전 release 색인 보존 기간. 용량 실측 후.
