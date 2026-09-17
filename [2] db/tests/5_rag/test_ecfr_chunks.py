@@ -97,3 +97,143 @@ def test_table_section_body_chunk_excludes_the_table_block_number(tmp_path):
     assert table_block_no not in body_chunk["block_nos"]
     assert body_chunk["block_nos"] == [n for n in all_block_nos if n != table_block_no]
     assert body_chunk["chunk_key"] == f"ecfr/{TABLE_SECTION_KEY}/0"
+
+
+# ---------------------------------------------------------------------------
+# SUU-84: 임계값(max_chars)을 넘는 본문 청크만 label_path 경계로 쪼갠다.
+# 글자 수 계산은 select_subpart_chunks(SUU-76)와 같은 "\n\n".join(text_content) 기준.
+# 가짜 nodes/blocks를 직접 만들어 크기를 통제한다(fixture XML엔 큰 조문이 없다).
+# ---------------------------------------------------------------------------
+BIG_KEY = "40/63/subpart-Z/section-63.9999"
+BIG_NODE = [{"node_key": BIG_KEY, "node_type": "section", "reserved": False}]
+
+
+def _block(block_no, label_path, kind="paragraph", text=None):
+    return {
+        "node_key": BIG_KEY,
+        "block_no": block_no,
+        "kind": kind,
+        "label_path": label_path,
+        "text_content": text if text is not None else f"[{block_no}]" + "x" * 47,  # 50자
+    }
+
+
+def _body_chunks(chunks):
+    return [c for c in chunks if c["node_key"] == BIG_KEY and c["parent_chunk_key"] is None]
+
+
+def _chunk_len(chunk, blocks):
+    text_by_no = {b["block_no"]: b["text_content"] for b in blocks}
+    return len("\n\n".join(text_by_no[n] for n in chunk["block_nos"]))
+
+
+def test_max_chunk_chars_constant_is_thirty_thousand():
+    from ecfr_chunks import MAX_CHUNK_CHARS
+
+    assert MAX_CHUNK_CHARS == 30_000
+
+
+def test_section_over_limit_is_split_at_top_level_label_boundaries():
+    blocks = [
+        _block(1, []),          # 앞머리(label 없음)
+        _block(2, ["a"]),
+        _block(3, ["a", "1"]),
+        _block(4, ["b"]),
+        _block(5, ["b", "1"]),
+        _block(6, ["c"]),
+    ]  # 전체 6*50 + 5*2 = 310자
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=200)
+
+    body = _body_chunks(chunks)
+    assert [c["block_nos"] for c in body] == [[1, 2, 3], [4, 5], [6]]
+    assert [c["chunk_key"] for c in body] == [
+        f"ecfr/{BIG_KEY}/0", f"ecfr/{BIG_KEY}/0-1", f"ecfr/{BIG_KEY}/0-2",
+    ]
+    assert all(_chunk_len(c, blocks) <= 200 for c in body)
+    assert all(c["parent_chunk_key"] is None for c in body)
+
+
+def test_recurses_to_deeper_label_level_when_top_level_group_is_still_too_large():
+    blocks = [
+        _block(1, ["a"]),
+        _block(2, ["a", "1"]),
+        _block(3, ["a", "2"]),
+        _block(4, ["b"]),
+    ]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=120)
+
+    body = _body_chunks(chunks)
+    # (a) 묶음 [1,2,3]=154자 > 120 → (a)(1),(a)(2)로 다시 나눔. (a) 본문(1)은 첫 조각에
+    assert [c["block_nos"] for c in body] == [[1, 2], [3], [4]]
+    assert all(_chunk_len(c, blocks) <= 120 for c in body)
+
+
+def test_leading_unlabeled_blocks_go_to_first_piece_and_block_order_is_kept():
+    blocks = [
+        _block(1, []),
+        _block(2, []),
+        _block(3, ["a"]),
+        _block(4, ["a"], kind="heading"),   # label_path는 상속(inherited)
+        _block(5, ["b"]),
+        _block(6, ["b"], kind="note"),
+    ]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=210)
+
+    body = _body_chunks(chunks)
+    assert body[0]["block_nos"][:2] == [1, 2]
+    flat = [n for c in body for n in c["block_nos"]]
+    assert flat == [1, 2, 3, 4, 5, 6]
+    assert [c["block_nos"] for c in body] == [[1, 2, 3, 4], [5, 6]]
+
+
+def test_single_block_over_limit_is_kept_whole_not_truncated():
+    blocks = [_block(1, ["a"], text="y" * 300), _block(2, ["b"])]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=100)
+
+    body = _body_chunks(chunks)
+    assert [c["block_nos"] for c in body] == [[1], [2]]
+
+
+def test_section_within_limit_is_unchanged_single_chunk():
+    blocks = [_block(1, []), _block(2, ["a"]), _block(3, ["b"])]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=1_000)
+
+    body = _body_chunks(chunks)
+    assert len(body) == 1
+    assert body[0]["chunk_key"] == f"ecfr/{BIG_KEY}/0"
+    assert body[0]["block_nos"] == [1, 2, 3]
+    assert build_chunks(BIG_NODE, blocks) == chunks  # 기본값(30,000자)도 같은 결과
+
+
+def test_table_chunks_of_split_section_still_point_to_first_piece():
+    blocks = [
+        _block(1, ["a"]),
+        _block(2, ["a"], kind="table"),
+        _block(3, ["b"]),
+        _block(4, ["c"]),
+    ]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=60)
+
+    body = _body_chunks(chunks)
+    assert [c["chunk_key"] for c in body] == [
+        f"ecfr/{BIG_KEY}/0", f"ecfr/{BIG_KEY}/0-1", f"ecfr/{BIG_KEY}/0-2",
+    ]
+    table = [c for c in chunks if c["parent_chunk_key"] is not None]
+    assert len(table) == 1
+    assert table[0]["chunk_key"] == f"ecfr/{BIG_KEY}/1"
+    assert table[0]["block_nos"] == [2]
+    assert table[0]["parent_chunk_key"] == f"ecfr/{BIG_KEY}/0"
+
+
+def test_fixture_sections_are_all_under_default_limit_so_output_is_unchanged(tmp_path):
+    nodes, blocks = parsed_nodes_and_blocks(tmp_path)
+
+    chunks = build_chunks(nodes, blocks)
+
+    assert all("-" not in c["chunk_key"].rsplit("/", 1)[1] for c in chunks)
