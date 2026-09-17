@@ -150,6 +150,21 @@ def summarize(
         and result["gold_subparts"][0] in result["returned_subparts"][:k]
     )
 
+    def ndcg_at(result: dict[str, Any], k: int) -> float:
+        """Binary gain: every gold section is worth 1."""
+        ranks = result["gold_ranks"]
+        if not ranks:
+            return 0.0
+        dcg = sum(
+            1 / math.log2(rank + 1)
+            for rank in ranks.values()
+            if rank is not None and rank <= k
+        )
+        ideal = sum(1 / math.log2(i + 1) for i in range(1, min(len(ranks), k) + 1))
+        return dcg / ideal
+
+    ndcg = rate(ndcg_at)
+
     first_ranks = [
         min((rank for rank in result["gold_ranks"].values() if rank is not None), default=None)
         for result in results
@@ -175,6 +190,7 @@ def summarize(
         "hit_strict": hit_strict,
         "recall": recall,
         "subpart_hit_primary": subpart_hit_primary,
+        "ndcg": ndcg,
         "mrr_20": mrr_20,
         "median_first_gold_rank": median_first_gold_rank,
         "ci95_hit_loose_5": _wilson_interval(

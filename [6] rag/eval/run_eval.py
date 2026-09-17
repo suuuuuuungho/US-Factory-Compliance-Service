@@ -1,10 +1,10 @@
-"""SUU-81: 평가셋 32건으로 검색 정확도를 잰다 (config=contextual, 파이썬 전수 코사인).
+"""SUU-81: 평가셋 32건으로 검색 정확도를 잰다 (파이썬 전수 코사인).
 
 사용법 (레포 루트에서):
-  python "[6] rag/eval/run_eval.py"                 # 실행 → results/<run_id>.jsonl + runs.jsonl 한 줄
+  python "[6] rag/eval/run_eval.py" --config vector   # 조합: vector / reranker / hybrid → results/<run_id>.jsonl + runs.jsonl 한 줄
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
-규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 질문 임베딩은 query_embeddings.json에 캐시한다.
+규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 query_embeddings.json에 캐시한다.
 failure_code/failure_note는 실행 후 Claude가 손으로 채운다.
 """
 from __future__ import annotations
@@ -88,7 +88,7 @@ def p(values, q):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-id")
-    ap.add_argument("--config", choices=("contextual", "hybrid", "rerank"), default="contextual")
+    ap.add_argument("--config", choices=("vector", "reranker", "hybrid"), default="vector")
     args = ap.parse_args()
     load_env()
     from supabase import create_client
@@ -100,7 +100,7 @@ def main():
 
     cases = [json.loads(l) for l in CASES.read_text(encoding="utf-8").splitlines() if l.strip()]
     print(f"release {release_id}, cases {len(cases)}, commit {commit}")
-    chunks = fetch_chunks(client, release_id, include_text=args.config in ("hybrid", "rerank"))
+    chunks = fetch_chunks(client, release_id, include_text=args.config in ("hybrid", "reranker"))
     cache = query_embeddings(cases)
     rerank_input_tokens = 0
 
@@ -120,9 +120,9 @@ def main():
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
             keyword=keyword,
-            rerank=rerank if args.config in ("hybrid", "rerank") else None,
+            rerank=rerank if args.config in ("hybrid", "reranker") else None,
             top_k=K_MAX,
-            chunk_top_k=150 if args.config in ("hybrid", "rerank") else CHUNK_TOP_K,
+            chunk_top_k=150 if args.config in ("hybrid", "reranker") else CHUNK_TOP_K,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         ranks = gold_ranks(c["gold_citations"], sections)
@@ -168,18 +168,20 @@ def main():
         "cost_usd": (
             {"per_query": rerank_input_tokens * 0.35 / 1e6 / 32,
              "total": rerank_input_tokens * 0.35 / 1e6}
-            if args.config in ("hybrid", "rerank")
+            if args.config in ("hybrid", "reranker")
             else {"per_query": None, "total": None}
         ),
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
         "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine"
-                 f"{' + BM25 RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
+                 f"{' + BM25 RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'reranker' else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")
     with RUNS.open("a", encoding="utf-8") as f:
         f.write(json.dumps(run, ensure_ascii=False) + "\n")
     print(json.dumps(metrics, indent=1))
+    print(f"scoreboard: Hit@5 {metrics['hit_loose']['5']:.3f}  Hit@20 {metrics['hit_loose']['20']:.3f}  "
+          f"nDCG@10 {metrics['ndcg']['10']:.3f}  Recall@20 {metrics['recall']['20']:.3f}  (MRR {metrics['mrr_20']:.3f})")
     print("misses@20:", [l["case_id"] for l in lines if not l["hit_loose_20"]])
 
 
