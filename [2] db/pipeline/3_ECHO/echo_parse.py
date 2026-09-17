@@ -138,6 +138,7 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
             identifier_columns = [column for column in ("PGM_SYS_ID", "ACTIVITY_ID", "SOURCE_ID") if column in REQUIRED[member] or column in _headers(zip_path, member)]
             values = {column: set() for column in identifier_columns}
             stats = {column: {"missing": 0, "duplicate": 0} for column in identifier_columns}
+            known = activities | violations if member in PIPELINE_MEMBERS else None  # SUU-118: 행마다 550만 개를 다시 합치지 않는다
             for number, row in iter_rows(zip_path, member):
                 report["files"][member]["read"] += 1
                 for column in identifier_columns:
@@ -158,7 +159,7 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
                         kind = "formal" if "FORMAL" in member and "INFORMAL" not in member else "informal"; activity, link, penalty = action_rows(kind, row, number); records = [("echo_activity", activity), ("echo_activity_facility", link)] + ([] if penalty is None else [("echo_penalty", penalty)])
                     elif member == "ICIS-AIR_VIOLATION_HISTORY.csv":
                         violation, link = violation_rows(row); records = [("echo_violation", violation), ("echo_violation_facility", link)]
-                    else: records = [("echo_pipeline_link", pipeline_row(row, number, activities | violations))]
+                    else: records = [("echo_pipeline_link", pipeline_row(row, number, known))]
                     for table, item in records:
                         added = write(table, item, member, number)
                         if added and table == "echo_facility": facilities.add(item["pgm_sys_id"])
