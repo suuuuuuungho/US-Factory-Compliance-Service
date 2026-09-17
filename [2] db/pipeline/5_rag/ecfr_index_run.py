@@ -18,6 +18,9 @@ def select_subpart_chunks(
     subpart_nodes = [
         node for node in nodes if node["node_key"].startswith(prefix)
     ]
+    node_heading_by_key = {
+        node["node_key"]: node["heading"] for node in subpart_nodes
+    }
     chunks = build_chunks(subpart_nodes, blocks)
 
     block_text_by_node: dict[str, dict[int, str]] = {}
@@ -32,7 +35,12 @@ def select_subpart_chunks(
             block_texts[block_no] for block_no in chunk["block_nos"]
         )
 
-    return [chunk for chunk in chunks if chunk["chunk_text"].strip()]
+    chunks = [chunk for chunk in chunks if chunk["chunk_text"].strip()]
+    for chunk in chunks:
+        heading = node_heading_by_key[chunk["node_key"]]
+        chunk["chunk_text"] = f"{heading}\n\n{chunk['chunk_text']}"
+
+    return chunks
 
 
 def rank_chunks_by_similarity(
