@@ -46,6 +46,7 @@
 - `suu-번호`가 꼭 들어가야 Linear 상태가 자동으로 바뀐다
 - `main`에 직접 push 금지. 항상 PR로만
 - **Codex가 일하는 동안 Claude는 git 명령을 쓰지 않는다.** 같은 폴더를 두 도구가 동시에 만지면 꼬인다. Codex가 PR 링크를 보여준 뒤에 이어서 한다
+- **작업 흐름이 둘 이상이면(예: rag와 echo/FR) worktree를 나눈다.** 같은 폴더에서 터미널 두 개로 git을 만지지 않는다. 새 터미널은 `claude --worktree <이름>`으로 연다 → `.claude/worktrees/<이름>/`에 자기 브랜치를 가진 폴더가 생기고, `.env`는 SessionStart hook(`.claude/hooks/copy_env.py`)이 복사한다. 끝나면 `git worktree remove .claude/worktrees/<이름>`
 
 ## 4. PR 제목
 
