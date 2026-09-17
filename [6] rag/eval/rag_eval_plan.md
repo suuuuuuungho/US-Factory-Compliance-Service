@@ -100,9 +100,11 @@
 |---|---|---|---|
 | `baseline` | 컨텍스트 **없이** `chunk_text`만 임베딩 → 벡터 | 청크 5,625개를 컨텍스트 없이 다시 임베딩(Kanon만, LLM 비용 없음). `rag_chunk`와 별도 컬럼/테이블(`embedding_nocontext`)에 저장 | 후속 |
 | `contextual` | `context_text + chunk_text` 임베딩 → 벡터 (지금 `rag_chunk.embedding`) | SUU-80 완료 | **SUU-81** |
-| `hybrid` | contextual 벡터 + BM25(`tsv`) → RRF(k=60) | `tsv` 채우기, 키워드 검색 함수 | 후속 |
-| `rerank` | hybrid 상위 150 → Kanon 2 Reranker → 20 | Isaacus rerank 호출 | 후속 |
+| `rerank` | contextual 벡터 상위 150 청크 → Kanon 2 Reranker → 20 | Isaacus rerank 호출 | **SUU-101** |
+| `hybrid` | contextual 벡터 + BM25(`tsv`) → RRF(k=60) → 리랭커 | `tsv` 채우기(SUU-99 완료), 키워드 검색 함수(SUU-99 완료) | SUU-100 (rerank 뒤) |
 | `expand` | rerank + 구조 확장(적용대상 조문·정의 조문·Subpart A 표) | `ecfr_reference` | 후속, 상위 문서 [7]-4 |
+
+순서 변경(2026-09-17): 원래 hybrid → rerank였으나 rerank → hybrid로 바꿈. SUU-81 실측에서 문제는 후보 부족(loose Hit@20 31/32)이 아니라 순서(strict Hit@5 0.281, MRR 0.618)였고, SUU-99에서 키워드가 벡터보다 나은 케이스는 5/32뿐이라 RRF 단독 효과가 불확실하다. 리랭커가 들어간 뒤 "리랭커 후보를 벡터만 vs 벡터+키워드"로 비교한다.
 
 규칙:
 - 한 번에 **하나만** 바꾼다. 앞 단계와 같은 질문 임베딩·같은 release·같은 평가셋 버전으로 잰다.
