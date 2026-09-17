@@ -41,9 +41,9 @@ def _node_text(element: etree._Element) -> str:
     parts = [element.text or ""]
     for child in element:
         if child.tag != "HEAD":
-            parts.append("".join(child.itertext()))
+            parts.append(" ".join(child.itertext()))
         parts.append(child.tail or "")
-    return " ".join("".join(parts).split())
+    return " ".join(" ".join(parts).split())
 
 
 def parse_release(root: Path, as_of: str) -> dict[str, Any]:
@@ -89,7 +89,7 @@ def parse_release(root: Path, as_of: str) -> dict[str, Any]:
 
         blocks = assign_label_paths(parse_blocks(element))
         block_text = " ".join(
-            " ".join(block["text_content"] for block in blocks).split()
+            " ".join(block["text_content"] for block in blocks).replace("|", " ").split()
         )
         if block_text != _node_text(element):
             lost_text += 1

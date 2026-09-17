@@ -27,7 +27,16 @@ _KIND_BY_TAG = {
 
 
 def _text_content(element: etree._Element) -> str:
-    return " ".join("".join(element.itertext()).split())
+    if _is_table(element):
+        lines: list[str] = []
+        caption = element.find(".//CAPTION")
+        if caption is not None:
+            lines.append(_text_content(caption))
+        for row in element.findall(".//TR"):
+            cells = [cell for cell in row if cell.tag in ("TD", "TH")]
+            lines.append(" | ".join(_text_content(cell) for cell in cells))
+        return "\n".join(lines)
+    return " ".join(" ".join(element.itertext()).split())
 
 
 def _is_table(element: etree._Element) -> bool:
