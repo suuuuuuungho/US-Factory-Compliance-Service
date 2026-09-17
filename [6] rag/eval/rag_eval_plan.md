@@ -237,11 +237,17 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | run_id | config | eval_set | Hit@5 loose (CI) | Hit@20 loose (CI) | strict@20 | Subpart Hit@5 | MRR@20 | 중앙값 순위 | 실패 F1~F7 |
 |---|---|---|---|---|---|---|---|---|---|
 | 2026-09-17_contextual_v1 (SUU-81) | contextual | v1 | 0.844 [0.682, 0.931] | 0.969 [0.843, 0.994] | 0.625 | 0.969 | 0.618 | 2 | F3 1 |
+| 2026-09-17_rerank_v1 (SUU-101) | rerank | v1 | 0.906 [0.758, 0.968] | 0.969 [0.843, 0.994] | 0.750 | 0.938 | 0.725 | 1 | F3 1 (같은 케이스) |
 
 - 색인 5,625/5,625(100%). 세부: `results/rag_eval_result_v1.md`.
 - 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
 비교 표(설정 A vs B): 불일치 쌍(A만/B만), McNemar p, MRR 차이 부트스트랩 CI.
+
+| A vs B | 지표 | A만 | B만 | McNemar p | MRR 차이 (부트스트랩 95% CI) | 판정 |
+|---|---|---|---|---|---|---|
+| contextual vs rerank | Hit loose@5 | 1 | 3 | 0.625 | +0.107 [-0.006, 0.220] | **rerank 채택** (13 좋아짐/4 나빠짐, 나빠진 건 1~4칸). 세부: `results/rag_eval_result_v2.md` |
+| contextual vs rerank | Hit strict@5 | 2 | 5 | 0.453 | | 비용 질문당 $0.062, 검색 지연 p50 4.4초 |
 
 ---
 
