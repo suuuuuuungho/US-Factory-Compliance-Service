@@ -26,6 +26,7 @@ from ecfr_chunk_index import call_isaacus_rerank_api, call_kanon2_api  # noqa: E
 from ecfr_eval import (  # noqa: E402
     build_query_embedding_request, citation_section_key, gold_ranks, summarize,
 )
+from ecfr_keyword import build_keyword_search  # noqa: E402
 from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
@@ -109,11 +110,7 @@ def main():
         rerank_input_tokens += response["input_tokens"]
         return response["scores"]
 
-    def keyword(question, k):
-        return client.rpc(
-            "rag_keyword_search",
-            {"p_release_id": release_id, "p_query": question, "p_k": k},
-        ).execute().data
+    keyword = build_keyword_search(chunks) if args.config == "hybrid" else None
 
     lines = []
     for c in cases:
@@ -122,7 +119,7 @@ def main():
             c["question"],
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
-            keyword=keyword if args.config == "hybrid" else None,
+            keyword=keyword,
             rerank=rerank if args.config in ("hybrid", "rerank") else None,
             top_k=K_MAX,
             chunk_top_k=150 if args.config in ("hybrid", "rerank") else CHUNK_TOP_K,
@@ -176,7 +173,7 @@ def main():
         ),
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
         "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine"
-                 f"{' + keyword RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
+                 f"{' + BM25 RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'rerank' else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")

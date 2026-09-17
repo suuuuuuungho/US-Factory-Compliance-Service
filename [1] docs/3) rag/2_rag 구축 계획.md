@@ -168,8 +168,8 @@
    - Anthropic 실험에서도 BM25를 더했을 때 실패율이 3.7%에서 2.9%로 줄었다.
 
 2) 방법
-   - PostgreSQL 내장 전문검색을 쓴다. `rag_chunk.tsv tsvector` 컬럼에 `context_text + chunk_text`를 색인하고 `ts_rank_cd`로 점수를 낸다. Supabase에서 추가 설치 없이 된다.
-   - 정확한 BM25 공식은 아니지만 v1에서는 충분하다. 실측에서 키워드 검색 실패가 두드러지면 BM25 확장 도입을 v2에서 검토한다.
+   - BM25를 쓴다(SUU-116). Supabase에 `pg_search` 확장이 없어 파이썬 `rank_bm25`로 `context_text + chunk_text`를 메모리에서 색인한다(`ecfr_keyword.build_keyword_search`). DB에는 키워드용 컬럼·인덱스를 두지 않는다.
+   - 질문이 길어 흔한 단어가 많으므로, 드문 단어에 가중을 주는 IDF가 있는 BM25가 맞다. 토큰은 소문자 영숫자이며 `63.7485` 같은 조문 번호는 한 토큰으로 남긴다.
    - 조문 번호·Subpart 코드는 별도 "정확 일치" 경로를 둔다. 질문에 `63.\d+` 또는 `Subpart [A-Z]{1,7}` 패턴이 있으면 해당 node를 바로 가져와 결과 맨 위에 둔다.
 
 ## [7] 검색 흐름 — 질문에서 결과까지
@@ -182,7 +182,7 @@
 
 2) 후보 모으기
    - 벡터 검색: `embedding <=> 질문벡터` 코사인 거리로 상위 150개.
-   - 키워드 검색: `tsv` 점수로 상위 150개.
+   - 키워드 검색: BM25 점수로 상위 150개.
    - 합치기: Reciprocal Rank Fusion(k=60). 두 결과에 모두 있으면 위로 올라간다.
    - 정확 일치 경로의 결과는 합치기와 별도로 맨 위에 붙인다.
 
@@ -222,7 +222,7 @@
    - `chunk_text text`, `context_text text`, `chunk_tokens integer`, `context_tokens integer`.
    - `content_hash text`: `chunk_text + "\n\n" + context_text`의 SHA-256(SUU-75). 원문과 컨텍스트가 둘 다 안 바뀌었는지 판단한다.
    - `contextualizer_model text`, `context_prompt_version text`, `embed_model text`, `embed_dims integer`.
-   - `embedding vector(1792)`, `tsv tsvector`.
+   - `embedding vector(1792)`.
    - `index_status text`: `pending` / `contextualized` / `embedded` / `failed`. 실패한 청크는 남기고 검색에서만 뺀다.
 
 3) `rag_eval_case`, `rag_eval_result` — 평가용 (v1은 테이블 대신 파일: 평가셋 `[6] rag/eval/rag_eval_case.jsonl` 32건, 결과는 SUU-81 티켓에 표로 기록)
@@ -231,7 +231,6 @@
 
 4) 인덱스
    - `embedding`: HNSW, 코사인(`vector_cosine_ops`). 처음에는 기본 매개변수로 만들고 검색 시간을 실측한 뒤 조정한다.
-   - `tsv`: GIN.
    - `(dataset, release_id, doc_key)`, `(release_id, node_key)`: 구조 확장과 갱신 조회용.
 
 5) 유의점
