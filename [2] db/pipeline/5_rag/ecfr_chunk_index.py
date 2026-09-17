@@ -8,22 +8,26 @@ from collections.abc import Callable
 from typing import Any
 
 import requests
-from anthropic import Anthropic
+from openai import OpenAI
 
 from ecfr_context import build_context_request
 from ecfr_embed import build_embedding_request
 
 
-def call_claude_api(request: dict[str, Any]) -> str:
-    """Generate one chunk context with Claude."""
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    response = client.messages.create(
-        model="claude-haiku-4-5",
+def call_openai_api(request: dict[str, Any], *, client: Any = None) -> str:
+    """Generate one chunk context with OpenAI."""
+    if client is None:
+        client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    messages = [
+        {"role": "system", "content": request["system"][0]["text"]},
+        *request["messages"],
+    ]
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
         max_tokens=256,
-        system=request["system"],
-        messages=request["messages"],
+        messages=messages,
     )
-    return response.content[0].text
+    return response.choices[0].message.content
 
 
 def call_kanon2_api(request: dict[str, Any]) -> list[float]:
@@ -45,12 +49,12 @@ def index_chunk(
     *,
     subpart_name: str | None,
     client: Any,
-    call_claude: Callable[[dict[str, Any]], str] = call_claude_api,
+    call_context: Callable[[dict[str, Any]], str] = call_openai_api,
     call_kanon2: Callable[[dict[str, Any]], list[float]] = call_kanon2_api,
 ) -> None:
     """Contextualize, embed, and upsert one chunk into ``rag_chunk``."""
     chunk_text = chunk["chunk_text"]
-    context_text = call_claude(
+    context_text = call_context(
         build_context_request(doc_text, chunk_text, subpart_name=subpart_name)
     )
     embedding = call_kanon2(build_embedding_request(context_text, chunk_text))
@@ -73,4 +77,4 @@ def index_chunk(
     )
 
 
-__all__ = ["call_claude_api", "call_kanon2_api", "index_chunk"]
+__all__ = ["call_openai_api", "call_kanon2_api", "index_chunk"]
