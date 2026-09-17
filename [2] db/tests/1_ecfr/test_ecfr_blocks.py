@@ -148,3 +148,17 @@ def test_table_cell_inline_tags_do_not_add_spaces():
 
     assert blocks[0]["kind"] == "table"
     assert blocks[0]["text_content"].splitlines()[1] == ">2.5 | (a) 95"
+
+
+def test_br_is_a_word_boundary_but_other_inline_tags_are_not():
+    # SUU-88: 원문에서 <br/>는 줄바꿈이라 단어 경계다(efficiency<br/>requirement).
+    # <E>, <sub>, <sup>는 글자 중간에 끼므로 붙인다(10−3, H2O).
+    blocks = parse_fragment(
+        '<DIV8><HEAD>§ 63.1 Test.</HEAD>'
+        '<P>Filtration efficiency<br/>requirement of H<sub>2</sub>O at 10<sup>3</sup> kPa</P>'
+        '<DIV><TABLE><TR><TH>Filtration efficiency<br/>requirement, %</TH><TH>Size</TH></TR>'
+        '</TABLE></DIV></DIV8>'
+    )
+
+    assert blocks[0]["text_content"] == "Filtration efficiency requirement of H2O at 103 kPa"
+    assert blocks[1]["text_content"] == "Filtration efficiency requirement, % | Size"
