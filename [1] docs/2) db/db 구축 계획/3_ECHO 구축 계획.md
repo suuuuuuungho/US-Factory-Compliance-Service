@@ -138,7 +138,12 @@
 
 3) 2-3. 파서시 마주한 문제와 해결
    - 조사에서 혼합 날짜, 빈 금액, 0 금액, 숫자가 아닌 CODE, `-9999` 연결 ID를 확인했다. 필드별 변환 규칙이 필요하다.
-   - 원본 모든 행의 연결키 중복률·결측률은 아직 측정하지 않았다. 운영 파서는 첫 적재에서 이 수치를 반드시 보고한다.
+   - 첫 실제 실행(2026-09-17 ZIP, SUU-112)에서 마주한 것:
+     - Pipeline 행마다 활동 키 집합(550만 개)을 다시 합쳐 초당 13행밖에 못 갔고 메모리 부족으로 중단됐다. 집합을 파일당 한 번만 만들도록 고쳤다(SUU-118). 이후 전체 6.5분.
+     - 같은 키인데 내용이 다른 행(충돌)은 첫 행만 쓰고 센다. 실제로 본 것: PROGRAMS 1건(`BEGIN_DATE`), POLLUTANTS 87,536건(같은 물질이 `MIN`/`MAJ` 두 번), FCES_PCES 633건(`ACTIVITY_PURPOSE_DESC`·`COMP_MONITOR_TYPE`), TITLEV_CERTS 49,650건(`FACILITY_RPT_DEVIATION_FLAG`), FORMAL 586건(`PENALTY_AMOUNT`·`ENF_TYPE_CODE`·날짜).
+     - `echo_pollutant` 충돌 113,062 중 25,526건은 원본 행이 완전히 같은데 `source_locator`(행 번호)가 달라 충돌로 잡혔다. 보고서 셈법 문제이며 데이터 문제가 아니다. 내용 해시에서 행 번호를 빼는 fix 티켓이 필요하다.
+     - 같은 처분 ID가 여러 `PGM_SYS_ID`에 붙는다(FORMAL 2,511행, INFORMAL 3,940행). 활동은 1행, 시설 연결은 여러 행으로 저장해 `echo_activity_facility`가 `echo_activity`보다 4,660행 많다.
+     - 연결키 중복률·결측률은 2-4에 있다. 식별자 결측은 11개 파일 모두 0이다.
 
 4) 2-4. 파서 합격 기준과 파서 실행 결과
    - 파일별 `읽은 행 = 정상 행 + 보류 행`이어야 한다. 설명 없이 사라진 행은 0개다.
@@ -146,10 +151,37 @@
    - 선행 0, 두 날짜 형식, 셀 안 줄바꿈, 다중 코드, 0/빈 금액, `-9999`, 9906/9913 연결 번호를 검증한다.
    - 부모 없는 사건은 연결 오류로 별도 보고한다. 같은 release 안의 확정 연결에는 고아 FK가 0개여야 한다.
    - 같은 처분이 여러 시설·위반에 연결되는 표본에서 벌금 사실값이 반복 합산되지 않아야 한다.
-   - 조사용 CSV 행 세기는 완료했다. 운영 정규화·관계·금액 검증 시험은 미실행이다.
+   - 실행 결과 (2026-09-17 ZIP, SUU-112, `parsed/2026-09-17/report.json`):
+     - 파일별 `읽은 행 = 정상 행 + 보류 행`. 11개 파일 모두 보류 0. 읽은 행 합계 ICIS-Air 7,513,497 + Pipeline 67,123 = manifest `row_count`와 파일마다 일치.
+     - 고아 FK 10개 관계 모두 0.
+     - 벌금 행 106,520 = FORMAL 정상 행 106,520 (행 단위 사실값, 합산 없음).
+     - 식별자 중복률(같은 파일 안에서 앞에 나온 값과 같은 행): `PGM_SYS_ID` FACILITIES 0 / PROGRAMS 41.6% / SUBPARTS 53.0% / POLLUTANTS 73.8% / FCES 91.7% / STACK 94.5% / TITLEV 99.1% / FORMAL 64.8% / INFORMAL 82.1% / VIOLATION 65.3%, `SOURCE_ID`(Pipeline) 69.8%. `ACTIVITY_ID` FCES 633(0.03%) / STACK 0 / TITLEV 2,092,370(81.0%) / FORMAL 2,864(2.7%) / INFORMAL 165,887(48.8%) / VIOLATION 0.
+     - 표별 중복(같은 키·같은 내용): `echo_activity` 2,210,885, `echo_activity_facility` 2,257,094, 나머지 0. 충돌(같은 키·다른 내용): `echo_activity` 50,869, `echo_pollutant` 113,062, `echo_program` 1, 나머지 0 (원인은 2-3).
+     - Subpart 매핑: mapped 155,395 / unresolved 35,831 / conflict 0. unresolved는 `CAAGACTM` 20,463, `CAAMACT` 5,746, `CAANSPS` 5,697, `CAANSPSM` 3,876, `CAASFP` 49 — 사전에 없는 코드.
+     - Pipeline 연결: resolved 58,676 / unresolved 8,447 / none 0. `-9999` 가짜 점검 42,480행. unresolved 원인: 위반만 못 찾음 4,459, 점검만 1,019, 점검+위반 1,947, 셋 다 831, 그 외 191.
+     - `registry_id` 없는 시설 76 (280,071 중). 소요 6.5분 (391.8초).
 
 5) 2-5. 파서 결과
-   - 예정 산출물: 시설·프로그램·Subpart·물질·활동·위반·처분·연결 파일과 파일별 품질 보고서.
+   - 산출물 (`[2] db/3) ECHO/parsed/2026-09-17/`, git 제외. 코드 사전 `code_map/2026-09-17/echo_code_map.jsonl` 306행(ok 299·conflict 7)은 커밋):
+
+     | 파일 | 행 | 크기 |
+     |---|---|---|
+     | echo_source_row.jsonl | 7,580,620 | 4.56 GB |
+     | echo_facility.jsonl | 280,071 | 142 MB |
+     | echo_facility_identifier.jsonl | 279,995 | 50 MB |
+     | echo_industry.jsonl | 536,235 | 59 MB |
+     | echo_program.jsonl | 458,109 | 151 MB |
+     | echo_program_subpart.jsonl | 191,226 | 54 MB |
+     | echo_pollutant.jsonl | 864,562 | 266 MB |
+     | echo_activity.jsonl | 3,242,036 | 1.10 GB |
+     | echo_activity_facility.jsonl | 3,246,696 | 313 MB |
+     | echo_violation.jsonl | 102,676 | 64 MB |
+     | echo_violation_facility.jsonl | 102,676 | 7 MB |
+     | echo_penalty.jsonl | 106,520 | 27 MB |
+     | echo_pipeline_link.jsonl | 67,123 | 89 MB |
+     | report.json | — | 13 KB |
+
+   - Part 63 후보: Subpart 행 64,955개가 Part 63으로 매핑됐고 시설은 49,618개(Subpart 131종). 그 외 Part 60 84,991행, Part 61 5,283행, Part 98 166행. CAAMACT 프로그램 시설은 55,006개이며 그중 사전에 없는 Subpart만 가진 시설이 후보에서 빠질 수 있다.
    - 포함 여부는 `national_raw`, `part63_candidate`, `manufacturing_candidate`, `unresolved` 같은 별도 분류로 기록한다. 이는 원본 필드가 아닌 설계값이다.
 
 6) 2-6. 파서 한계
