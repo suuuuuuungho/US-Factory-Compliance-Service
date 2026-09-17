@@ -1,6 +1,9 @@
 """SUU-75: 청크 하나를 Claude(컨텍스트)·Kanon 2(임베딩) API로 실제로 색인해
 rag_chunk 한 행에 저장한다.
 
+SUU-86: 컨텍스트 프롬프트에 넣는 Subpart 이름은 호출자가 subpart_name으로
+명시해서 넘긴다. 청크가 속한 조문(section) 노드의 heading을 대신 쓰면 안 된다.
+
 실제 네트워크 호출은 하지 않는다 — call_claude/call_kanon2를 가짜로 주입해서
 호출 순서·인자·저장된 행만 확인한다. 실제 호출 함수(기본값)는 이 티켓에서
 실행해보지 않는다(사람이 다음 POC 티켓에서 직접 실행).
@@ -29,6 +32,7 @@ CHUNK = {
 DOC_TEXT = "Subpart XXXXXX full document text used for Claude's cached system prompt."
 CONTEXT_TEXT = "This chunk is from Subpart XXXXXX, covering metal fabrication area sources."
 EMBEDDING = [0.1] * 1792
+SUBPART_NAME = "Subpart XXXXXX—National Emission Standards for Hazardous Air Pollutants for Nine Metal Fabrication and Finishing Source Categories"
 
 
 class _Result:
@@ -77,7 +81,10 @@ def test_calls_claude_then_kanon2_with_context_chained_into_embedding_request():
         calls.append(("kanon2", request))
         return EMBEDDING
 
-    index_chunk(NODE, CHUNK, DOC_TEXT, client=client, call_claude=call_claude, call_kanon2=call_kanon2)
+    index_chunk(
+        NODE, CHUNK, DOC_TEXT, subpart_name=SUBPART_NAME,
+        client=client, call_claude=call_claude, call_kanon2=call_kanon2,
+    )
 
     assert [name for name, _ in calls] == ["claude", "kanon2"]
     claude_request = calls[0][1]
@@ -91,7 +98,7 @@ def test_saved_row_has_context_embedding_hash_and_embedded_status():
     client = FakeClient()
 
     index_chunk(
-        NODE, CHUNK, DOC_TEXT,
+        NODE, CHUNK, DOC_TEXT, subpart_name=SUBPART_NAME,
         client=client,
         call_claude=lambda request: CONTEXT_TEXT,
         call_kanon2=lambda request: EMBEDDING,
@@ -106,6 +113,45 @@ def test_saved_row_has_context_embedding_hash_and_embedded_status():
     assert row["embedding"] == EMBEDDING
     assert row["content_hash"]
     assert row["index_status"] == "embedded"
+
+
+def _claude_prompt(**kwargs):
+    requests = []
+
+    def call_claude(request):
+        requests.append(request)
+        return CONTEXT_TEXT
+
+    index_chunk(
+        NODE, CHUNK, DOC_TEXT, **kwargs,
+        client=FakeClient(), call_claude=call_claude, call_kanon2=lambda request: EMBEDDING,
+    )
+    return requests[0]["messages"][0]["content"]
+
+
+def test_index_chunk_uses_given_subpart_name_not_section_heading():
+    prompt = _claude_prompt(subpart_name=SUBPART_NAME)
+
+    assert f"This chunk belongs to {SUBPART_NAME}." in prompt
+    assert f"This chunk belongs to {NODE['heading']}." not in prompt
+
+
+def test_index_chunk_with_none_subpart_name_omits_belongs_line():
+    prompt = _claude_prompt(subpart_name=None)
+
+    assert "This chunk belongs to" not in prompt
+
+
+def test_index_chunk_requires_subpart_name_keyword():
+    import pytest
+
+    with pytest.raises(TypeError):
+        index_chunk(
+            NODE, CHUNK, DOC_TEXT,
+            client=FakeClient(),
+            call_claude=lambda request: CONTEXT_TEXT,
+            call_kanon2=lambda request: EMBEDDING,
+        )
 
 
 def test_uses_the_real_api_callers_by_default():

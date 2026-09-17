@@ -13,7 +13,11 @@ from pathlib import Path
 import pytest
 
 from ecfr_chunks import build_chunks
-from ecfr_index_run import rank_chunks_by_similarity, select_subpart_chunks
+from ecfr_index_run import (
+    rank_chunks_by_similarity,
+    select_subpart_chunks,
+    subpart_heading_for,
+)
 from ecfr_parse import PARSER_VERSION, parse_release
 from ecfr_raw import save_raw
 
@@ -134,6 +138,20 @@ def test_select_subpart_chunks_drops_chunks_with_empty_chunk_text(tmp_path):
     )
     base_chunk_key = f"ecfr/{table_only_node}/0"
     assert base_chunk_key not in {c["chunk_key"] for c in chunks}
+
+
+def test_subpart_heading_for_returns_subpart_node_heading_not_section_heading(tmp_path):
+    nodes, _ = parsed_nodes_and_blocks(tmp_path)
+    heading_by_key = {n["node_key"]: n["heading"] for n in nodes}
+    section_g = "40/63/subpart-G/section-63.110"
+    section_xx = "40/63/subpart-XX/subject-group-ECFR3a9b3e27cd7a862/section-63.1097"
+
+    assert subpart_heading_for(nodes, section_g) == heading_by_key["40/63/subpart-G"]
+    assert subpart_heading_for(nodes, section_xx) == heading_by_key["40/63/subpart-XX"]
+    assert subpart_heading_for(nodes, section_g) != heading_by_key[section_g]
+    assert subpart_heading_for(nodes, section_g) != subpart_heading_for(nodes, section_xx)
+    assert subpart_heading_for(nodes, section_g).startswith("Subpart G")
+    assert subpart_heading_for(nodes, section_xx).startswith("Subpart XX")
 
 
 def test_ranks_chunks_by_cosine_similarity_descending():
