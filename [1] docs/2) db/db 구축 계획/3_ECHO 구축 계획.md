@@ -88,8 +88,31 @@
    - 다운로드 페이지의 표시 용량과 실제 응답 크기가 달랐다. 예상 용량을 고정하지 않고 응답·ZIP 무결성을 검사한다.
 
 10) 1-5. 수집 결과
-   - 조사용으로 ICIS-Air 10개 CSV와 Pipeline 1개 CSV의 전체 행을 읽었다. 운영 원본 보관·적재 파일 생성은 미실행이다.
-   - 구현 결과에는 ZIP 기준 시각·해시·파일별 행 수·열 수·실패 여부·필터 전후 모집단을 남긴다.
+   - 2026-09-17 첫 실제 수집 (SUU-98). `echo_collect.py` 한 번 실행, 26초, 실패 0. 보관 위치 `[2] db/3) ECHO/raw/2026-09-17/{sha256}/` + `manifest.json`.
+   - ZIP 2개. 둘 다 서버 `Last-Modified`가 2026-09-13이라 같은 갱신 회차다.
+
+   | ZIP | sha256 | 바이트 | Last-Modified (서버) | ETag |
+   |---|---|---|---|---|
+   | ICIS-AIR_downloads.zip | `253697f4…c111005` | 70,168,265 | Sun, 13 Sep 2026 02:10:24 GMT | `"42eaec9-65b53d20c3814"` |
+   | pipeline_caa_downloads.zip | `75e018ac…793f38fa` | 5,332,282 | Sun, 13 Sep 2026 06:12:06 GMT | `"515d3a-65b5732684b3e"` |
+
+   - 파일별 행 수(헤더 제외)·열 수. 전수조사 수치와 11개 모두 같다. 압축 푼 합계 838,495,852바이트도 1-3과 같다.
+
+   | CSV | 압축 푼 바이트 | 열 | 행 | 전수조사 대비 |
+   |---|---|---|---|---|
+   | ICIS-AIR_FACILITIES.csv | 63,229,350 | 19 | 280,071 | 같음 |
+   | ICIS-AIR_PROGRAMS.csv | 65,364,101 | 7 | 458,110 | 같음 |
+   | ICIS-AIR_PROGRAM_SUBPARTS.csv | 31,021,291 | 5 | 191,226 | 같음 |
+   | ICIS-AIR_POLLUTANTS.csv | 90,177,593 | 7 | 977,624 | 같음 |
+   | ICIS-AIR_FCES_PCES.csv | 223,487,115 | 10 | 1,819,117 | 같음 |
+   | ICIS-AIR_STACK_TESTS.csv | 64,177,662 | 10 | 655,094 | 같음 |
+   | ICIS-AIR_TITLEV_CERTS.csv | 213,635,262 | 7 | 2,583,180 | 같음 |
+   | ICIS-AIR_FORMAL_ACTIONS.csv | 15,537,946 | 10 | 106,520 | 같음 |
+   | ICIS-AIR_INFORMAL_ACTIONS.csv | 48,258,350 | 10 | 339,879 | 같음 |
+   | ICIS-AIR_VIOLATION_HISTORY.csv | 23,607,182 | 16 | 102,676 | 같음 |
+   | PIPELINE_CAA_00_COMPLETE.csv | 20,070,769 | 35 | 67,123 | 같음 |
+
+   - 필터 전후 모집단: 이 단계는 전국 원본 그대로다(필터 없음). Part 63·제조업 후보 구분은 Step 2 파서 결과에 남긴다.
 
 11) 1-6. 수집 한계
    - EPA에 신고되지 않은 자료까지 확보할 수 없다. 자료 없음은 위반 없음도, 적용 제외도 아니다.
