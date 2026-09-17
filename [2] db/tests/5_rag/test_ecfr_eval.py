@@ -1,6 +1,8 @@
 """SUU-81: 평가셋으로 검색 정확도를 재는 순수 함수들.
 규칙은 `[6] rag/eval/rag_eval_plan.md` [3]·[8]을 따른다. 네트워크·DB는 쓰지 않는다.
 """
+import math
+
 import pytest
 
 from ecfr_eval import (
@@ -213,3 +215,13 @@ def test_summarize_wilson_ci_at_boundaries():
 
 def test_summarize_reports_n_cases():
     assert summarize(RESULTS)["n_cases"] == 4
+
+
+def test_summarize_ndcg_binary_gain():
+    # 정답은 전부 1점. DCG = Σ 1/log2(rank+1), IDCG = 정답 수만큼 1등부터 채운 값
+    metrics = summarize(RESULTS, ks=(5, 10))
+    case1 = (1 + 1 / math.log2(4)) / (1 + 1 / math.log2(3))     # 1등, 3등 / 정답 2개
+    case2 = (1 / math.log2(3)) / 1                              # 2등 / 정답 1개
+    case3 = (1 / math.log2(8)) / (1 + 1 / math.log2(3))         # 7등, 없음 / 정답 2개
+    assert metrics["ndcg"]["10"] == pytest.approx((case1 + case2 + case3 + 0) / 4)
+    assert metrics["ndcg"]["5"] == pytest.approx((case1 + case2 + 0 + 0) / 4)
