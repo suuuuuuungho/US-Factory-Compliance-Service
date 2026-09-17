@@ -284,3 +284,25 @@ def test_missing_required_column_raises_and_leaves_no_parsed_dir(tmp_path):
         parse_release(root, AS_OF, CODE_MAP_VERSION)
 
     assert not (root / "parsed" / AS_OF.isoformat()).exists()  # 반쪽짜리 결과를 남기지 않는다
+
+
+def test_pipeline_rows_share_one_known_set_built_once(tmp_path, monkeypatch):
+    # SUU-118: 실제 데이터에서 행마다 activities | violations(550만 개)를 새로 합치면 Pipeline 6.7만 행에 1시간 반이 걸린다
+    import echo_parse
+
+    real = echo_parse.pipeline_row
+    calls = []
+
+    def spy(row, source_row_no, known_activities):
+        calls.append(known_activities)  # 객체 자체를 붙잡아 둔다 (id()만 저장하면 주소가 재사용돼 못 잡는다)
+        return real(row, source_row_no, known_activities)
+
+    monkeypatch.setattr(echo_parse, "pipeline_row", spy)
+    root = _make_release(tmp_path / "echo")
+
+    parse_release(root, AS_OF, CODE_MAP_VERSION)
+
+    assert len(calls) == 2  # Pipeline 행 2개
+    assert all(known is calls[0] for known in calls)  # 같은 객체를 다시 쓴다
+    expected = {(a["activity_kind"], a["activity_id"]) for a in _jsonl(root, "echo_activity")} | {("violation", v["violation_id"]) for v in _jsonl(root, "echo_violation")}
+    assert set(calls[0]) == expected
