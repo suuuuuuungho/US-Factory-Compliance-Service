@@ -234,7 +234,10 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 
 | run_id | config | eval_set | Hit@5 loose (CI) | Hit@20 loose (CI) | strict@20 | Subpart Hit@5 | MRR@20 | 중앙값 순위 | 실패 F1~F7 |
 |---|---|---|---|---|---|---|---|---|---|
-| (SUU-81) | contextual | v1 | | | | | | | |
+| 2026-09-17_contextual_v1 (SUU-81) | contextual | v1 | 0.844 [0.682, 0.931] | 0.969 [0.843, 0.994] | 0.625 | 0.969 | 0.618 | 2 | F3 1 |
+
+- 색인 5,625/5,625(100%). 세부: `results/rag_eval_result_v1.md`.
+- 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
 비교 표(설정 A vs B): 불일치 쌍(A만/B만), McNemar p, MRR 차이 부트스트랩 CI.
 
