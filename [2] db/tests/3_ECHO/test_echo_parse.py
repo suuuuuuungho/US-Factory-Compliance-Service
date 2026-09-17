@@ -217,7 +217,7 @@ def test_fake_release_writes_13_jsonl_and_read_equals_ok_plus_held(tmp_path):
         "program_system": "ICIS-AIR", "pgm_sys_id": "F1", "registry_id": "110000000001",
         "mapping_source": "ICIS-AIR_FACILITIES.csv", "review_status": "source_stated",
     }]  # registry_id 가 빈 F2 는 안 만든다
-    assert len(_jsonl(root, "echo_industry")) == 3  # F1 충돌 행의 445110 은 같은 키·같은 내용이라 한 번만
+    assert len(_jsonl(root, "echo_industry")) == 4  # F1 445110 + F2 3541·3545·335311. F1 충돌 행의 445110 은 같은 키라 한 번만
     activities = _jsonl(root, "echo_activity")
     assert sorted((a["activity_kind"], a["activity_id"]) for a in activities) == [
         ("formal", "E1"), ("informal", "N1"), ("inspection", "A1"), ("stack_test", "A2"), ("titlev", "A3"),
