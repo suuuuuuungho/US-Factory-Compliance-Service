@@ -24,9 +24,9 @@ sys.path[:0] = [str(REPO / "[2] db/pipeline/5_rag")]
 
 from ecfr_chunk_index import call_kanon2_api  # noqa: E402
 from ecfr_eval import (  # noqa: E402
-    build_query_embedding_request, citation_section_key, gold_ranks, rank_sections, summarize,
+    build_query_embedding_request, citation_section_key, gold_ranks, summarize,
 )
-from ecfr_index_run import rank_chunks_by_similarity  # noqa: E402
+from ecfr_search import search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
 CASES = HERE / "rag_eval_case.jsonl"
@@ -101,8 +101,12 @@ def main():
     lines = []
     for c in cases:
         t0 = time.perf_counter()
-        ranked = rank_chunks_by_similarity(cache[c["case_id"]]["embedding"], chunks, top_k=CHUNK_TOP_K)
-        sections = rank_sections(ranked, k_max=K_MAX)
+        sections = search_sections(
+            c["question"],
+            embed=lambda request: cache[c["case_id"]]["embedding"],
+            chunks=chunks,
+            top_k=K_MAX,
+        )
         search_ms = (time.perf_counter() - t0) * 1000
         ranks = gold_ranks(c["gold_citations"], sections)
         within = lambda k: [r is not None and r <= k for r in ranks.values()]  # noqa: E731
