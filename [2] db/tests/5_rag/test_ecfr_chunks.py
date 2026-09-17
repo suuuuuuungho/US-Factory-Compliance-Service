@@ -237,3 +237,62 @@ def test_fixture_sections_are_all_under_default_limit_so_output_is_unchanged(tmp
     chunks = build_chunks(nodes, blocks)
 
     assert all("-" not in c["chunk_key"].rsplit("/", 1)[1] for c in chunks)
+
+
+# ---------------------------------------------------------------------------
+# SUU-90: label_path로 더 나눌 수 없는데도 max_chars를 넘는 묶음은
+# 블록을 block_no 순서대로 한도까지 채워서 조각낸다.
+# 실제 사례: Appendix A to Subpart UUUUU(블록 263개, 74k자, label_path 전부 []).
+# ---------------------------------------------------------------------------
+def test_unlabeled_blocks_over_limit_are_packed_in_order_within_limit():
+    blocks = [_block(n, []) for n in range(1, 6)]  # 50자 5개, 전체 258자
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=120)
+
+    body = _body_chunks(chunks)
+    # 2개=102자(≤120), 3개=154자(>120) → 2개씩 채우고 마지막 1개
+    assert [c["block_nos"] for c in body] == [[1, 2], [3, 4], [5]]
+    assert [c["chunk_key"] for c in body] == [
+        f"ecfr/{BIG_KEY}/0", f"ecfr/{BIG_KEY}/0-1", f"ecfr/{BIG_KEY}/0-2",
+    ]
+    assert all(_chunk_len(c, blocks) <= 120 for c in body)
+    assert all(c["parent_chunk_key"] is None for c in body)
+
+
+def test_packing_keeps_single_oversized_block_whole_and_continues_after_it():
+    blocks = [
+        _block(1, []),
+        _block(2, [], text="y" * 300),  # 혼자서도 한도 초과 → 통째로 한 조각
+        _block(3, []),
+        _block(4, []),
+    ]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=120)
+
+    body = _body_chunks(chunks)
+    assert [c["block_nos"] for c in body] == [[1], [2], [3, 4]]
+
+
+def test_single_top_label_group_is_split_at_deeper_label_before_packing():
+    blocks = [
+        _block(1, ["a"]),
+        _block(2, ["a", "1"]),
+        _block(3, ["a", "2"]),
+        _block(4, ["a", "2"]),
+    ]  # depth 0은 (a) 묶음 하나뿐(204자) → depth 1에서 (a)(1)/(a)(2)로 나뉜다
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=120)
+
+    body = _body_chunks(chunks)
+    assert [c["block_nos"] for c in body] == [[1, 2], [3, 4]]
+    assert all(_chunk_len(c, blocks) <= 120 for c in body)
+
+
+def test_unlabeled_section_within_limit_stays_one_chunk():
+    blocks = [_block(n, []) for n in range(1, 6)]
+
+    chunks = build_chunks(BIG_NODE, blocks, max_chars=1_000)
+
+    body = _body_chunks(chunks)
+    assert [c["block_nos"] for c in body] == [[1, 2, 3, 4, 5]]
+    assert body[0]["chunk_key"] == f"ecfr/{BIG_KEY}/0"
