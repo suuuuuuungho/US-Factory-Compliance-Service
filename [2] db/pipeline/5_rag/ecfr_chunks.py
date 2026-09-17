@@ -38,13 +38,31 @@ def _group_at_label_depth(blocks, depth):
     return groups
 
 
+def _pack_in_order(blocks, max_chars):
+    """Pack consecutive whole blocks into pieces up to ``max_chars``."""
+    pieces = []
+    current = []
+
+    for block in blocks:
+        if current and _chunk_length(current + [block]) > max_chars:
+            pieces.append(current)
+            current = []
+        current.append(block)
+
+    if current:
+        pieces.append(current)
+    return pieces
+
+
 def _split_body_blocks(blocks, max_chars, depth=0):
     if len(blocks) <= 1 or _chunk_length(blocks) <= max_chars:
         return [blocks]
 
     groups = _group_at_label_depth(blocks, depth)
     if len(groups) <= 1:
-        return [blocks]
+        if any(len(block.get("label_path") or []) > depth + 1 for block in blocks):
+            return _split_body_blocks(blocks, max_chars, depth + 1)
+        return _pack_in_order(blocks, max_chars)
 
     pieces = []
     for group in groups:
