@@ -5,3 +5,10 @@ __pycache__/
 *.pyc
 /[[]2] db/*/raw/
 /[[]2] db/*/parsed/
+# Codex 테스트 임시 폴더
+.codex-*/
+/tmp/
+/t/
+/u/
+/v/
+/w/
