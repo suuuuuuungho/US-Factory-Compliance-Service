@@ -12,3 +12,6 @@ __pycache__/
 /u/
 /v/
 /w/
+
+# Claude Code worktree (claude --worktree <이름>)
+.claude/worktrees/
