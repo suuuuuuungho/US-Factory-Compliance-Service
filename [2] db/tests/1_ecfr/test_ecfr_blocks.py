@@ -117,3 +117,34 @@ def test_table_text_content_keeps_row_and_column_boundaries():
     assert ">95 | >2.5" in lines
     assert ">85 | >1.1" in lines
     assert ">75 | >0.70" in lines
+
+
+def parse_fragment(xml):
+    return parse_blocks(etree.fromstring(xml))
+
+
+def test_paragraph_inline_tags_do_not_add_spaces():
+    # SUU-88: SUU-83이 " ".join(itertext())로 바꾸면서 인라인 태그 앞뒤에
+    # 공백이 끼었다. "(1) The date"가 "( 1 ) The date"가 되면 안 된다.
+    blocks = parse_fragment(
+        '<DIV8><HEAD>§ 63.1 Test.</HEAD>'
+        '<P>(<E T="03">1</E>) The date—<E T="03">(i)</E> Applicability.</P>'
+        '<FP-1>mg = milligram = 10<E T="51">−3</E> gram</FP-1>'
+        '</DIV8>'
+    )
+
+    assert blocks[0]["text_content"] == "(1) The date—(i) Applicability."
+    assert blocks[1]["text_content"] == "mg = milligram = 10−3 gram"
+
+
+def test_table_cell_inline_tags_do_not_add_spaces():
+    # SUU-88: 표 셀 안 인라인 태그도 마찬가지. 셀 구분 " | "은 그대로.
+    blocks = parse_fragment(
+        '<DIV8><HEAD>§ 63.1 Test.</HEAD>'
+        '<DIV><TABLE><TR><TH>Size, µm</TH><TH>Limit</TH></TR>'
+        '<TR><TD>&gt;2.<E T="51">5</E></TD><TD>(<E T="03">a</E>) 95</TD></TR>'
+        '</TABLE></DIV></DIV8>'
+    )
+
+    assert blocks[0]["kind"] == "table"
+    assert blocks[0]["text_content"].splitlines()[1] == ">2.5 | (a) 95"
