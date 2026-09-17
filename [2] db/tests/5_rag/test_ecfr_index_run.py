@@ -80,10 +80,46 @@ def test_select_subpart_chunks_fills_chunk_text_from_block_text_content(tmp_path
         c for c in chunks
         if c["node_key"] == TABLE_SECTION_KEY and c["parent_chunk_key"] is None
     )
-    expected_text = "\n\n".join(
+    body_text = "\n\n".join(
         blocks_by_key[TABLE_SECTION_KEY][no] for no in body_chunk["block_nos"]
     )
-    assert body_chunk["chunk_text"] == expected_text
+    heading = next(n["heading"] for n in nodes if n["node_key"] == TABLE_SECTION_KEY)
+    assert body_chunk["chunk_text"] == f"{heading}\n\n{body_text}"
+
+
+def test_select_subpart_chunks_prefixes_body_chunk_with_node_heading(tmp_path):
+    nodes, blocks = parsed_nodes_and_blocks(tmp_path)
+    heading_by_key = {n["node_key"]: n["heading"] for n in nodes}
+
+    chunks = select_subpart_chunks(nodes, blocks, "40/63/subpart-G")
+
+    body_chunks = [c for c in chunks if c["parent_chunk_key"] is None]
+    assert body_chunks
+    for chunk in body_chunks:
+        heading = heading_by_key[chunk["node_key"]]
+        assert heading
+        assert chunk["chunk_text"].startswith(f"{heading}\n\n")
+
+
+def test_select_subpart_chunks_prefixes_table_chunk_with_node_heading(tmp_path):
+    nodes, blocks = parsed_nodes_and_blocks(tmp_path)
+    table_only_node = (
+        "40/63/subpart-XX/subject-group-ECFR3a9b3e27cd7a862"
+        "/appendix-Table-1-to-Subpart-XX-of-Part-63"
+    )
+    heading = next(n["heading"] for n in nodes if n["node_key"] == table_only_node)
+    assert heading
+
+    chunks = select_subpart_chunks(nodes, blocks, "40/63/subpart-XX")
+
+    table_chunks = [
+        c for c in chunks
+        if c["node_key"] == table_only_node and c["parent_chunk_key"] is not None
+    ]
+    assert table_chunks
+    for chunk in table_chunks:
+        assert chunk["chunk_text"].startswith(f"{heading}\n\n")
+        assert chunk["chunk_text"][len(heading) + 2:].strip()
 
 
 def test_select_subpart_chunks_drops_chunks_with_empty_chunk_text(tmp_path):
