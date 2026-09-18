@@ -1,3 +1,50 @@
+# RAG 리랭커 비교 — Kanon 2 vs bge vs nemotron (SUU-131, C-8)
+
+- run_id: `2026-09-18_reranker_v2_bge`, `2026-09-18_hybrid_v2_bge`, `2026-09-18_reranker_v2_nemotron`, `2026-09-18_hybrid_v2_nemotron`. Kanon 값은 SUU-129(`2026-09-17_*_v2`) 그대로.
+- 실행: `python "[6] rag/eval/run_eval.py" --config reranker|hybrid --eval-set v2 --reranker bge|nemotron`. 로컬 GPU(RTX 4070 Laptop 8GB), $0. 후보 풀·채점표·release는 Kanon과 같다(같은 150 청크를 다른 모델이 줄 세움).
+- 모델: `BAAI/bge-reranker-v2-m3`(568M, fp16, 배치 64) / `nvidia/llama-nemotron-rerank-1b-v2`(1B, bf16, 배치 16, `question:… passage:…` 형식). 둘 다 512 토큰 잘림.
+- 주의: bge 줄과 nemotron 줄을 **동시에** 돌려서 검색 지연은 부풀려진 값이다. 단독 기준은 케이스당 bge ≈ 4초(벡터 전수 2.5 + 리랭크 1.8), nemotron ≈ 9초(벡터 2.5 + 리랭크 6~8).
+
+## 1. 한 줄 요약
+
+**둘 다 Kanon보다 확실히 못하다: nDCG@10 hybrid 기준 Kanon 0.568 > nemotron 0.512 > bge 0.485 (vector만 0.437).** 차이 0.056 / 0.083은 동점 범위(0.03)를 훌쩍 넘고, top-20 실패도 Kanon 7 → nemotron 12 → bge 17로 는다. bge는 vector가 맞히던 6건을 오히려 뒤로 밀었다. **무료 모델로 Kanon을 대체하지 않는다.** 다만 nemotron이 Kanon이 못 찾던 oxy-vinyls를 찾는 등 서로 다른 케이스를 맞히므로, 리랭커를 "바꾸는" 것보다 리랭크 단위·후보 구성을 바꾸는 쪽(개선 방향 ①②)이 다음이다.
+
+## 2. 채점표 (v2 102건)
+
+| 조합 | 리랭커 | Hit@5 | Hit@20 | nDCG@10 | Recall@20 | MRR(비교용) | strict@5 | Subpart@5 | miss@20 | 비용 | 검색 p50 / p95 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| vector | — | 0.686 | 0.843 | 0.437 | 0.672 | 0.474 | 26/102 | — | 16 | $0 | 2.5초 / 2.8초 |
+| reranker | **Kanon 2** | **0.804** | **0.922** | **0.561** | **0.752** | 0.639 | 36/102 | — | 8 | $7.10 | 9.9 / 13.3초 (동시) |
+| reranker | nemotron | 0.765 | 0.882 | 0.509 | 0.706 | 0.591 | 23/102 | — | 12 | $0 | 11.7 / 13.6초 (동시) |
+| reranker | bge | 0.725 | 0.814 | 0.485 | 0.657 | 0.564 | 23/102 | — | 19 | $0 | 6.8 / 7.2초 (동시) |
+| hybrid | **Kanon 2** | **0.804** | **0.931** | **0.568** | **0.782** | 0.644 | 37/102 | 0.882 | 7 | $9.35 | 10.5 / 16.6초 (동시) |
+| hybrid | nemotron | 0.745 | 0.882 | 0.512 | 0.723 | 0.595 | 24/102 | 0.882 | 12 | $0 | 8.9 / 12.3초 (동시) |
+| hybrid | bge | 0.735 | 0.833 | 0.485 | 0.662 | 0.568 | 23/102 | 0.863 | 17 | $0 | 6.8 / 7.5초 (동시) |
+
+- 순서는 reranker·hybrid 어느 조합에서나 같다: **Kanon > nemotron > bge > vector**. 두 로컬 모델 모두 vector보다는 낫다(+0.05~0.08).
+- bge는 Hit@20이 0.814~0.833으로 **vector(0.843)보다 낮다** — 후보 150 안에 있던 정답을 20등 밖으로 밀어낸 케이스가 6건. nemotron은 3건.
+- Kanon에서 hybrid가 reranker보다 +0.007이었듯, nemotron도 +0.003(9건 좋아짐 / 9건 나빠짐), bge는 0. **BM25 효과는 리랭커와 무관하게 작다**(SUU-130 결론과 일치).
+
+## 3. 쌍대 비교 (케이스별 nDCG@10 차이, hybrid 기준)
+
+| A → B | 좋아짐 | 나빠짐 | 그대로 | 메모 |
+|---|---|---|---|---|
+| Kanon → nemotron | 29 | 48 | 25 | 크게 나빠짐: dashboard-corteva-midland (−0.77), adi-M070012 (−0.63), adi-M160009 (−0.63), dashboard-dte-greenwood (−0.59). 좋아짐: dashboard-international-paper (+0.57), dashboard-united-taconite (+0.50) |
+| Kanon → bge | 27 | 50 | 25 | 나빠짐: adi-M070012 (−0.63), adi-M160009 (−0.63), dashboard-citation-oil-gas (−0.61). 좋아짐: dashboard-us-granules (+0.64) |
+| bge → nemotron | 37 | 31 | 34 | 둘이 서로 다른 케이스를 맞힌다 |
+
+- 세 리랭커가 **모두** 놓친 건 5건: adi-M100004, adi-M110005, adi-M180004, adi-M200005, adi-Z060002 — SUU-129 공통 실패 7건 중 5건. 그중 4건이 Subpart A 일반 규정(63.8·63.9) 정답 → 리랭커를 뭘 쓰든 못 잡는 문제라 **개선 방향 ①(Subpart A 항상 포함)** 대상.
+- Kanon이 놓쳤는데 nemotron이 맞힌 건 1건(dashboard-oxy-vinyls: 63.11935 13등, 63.11985 17등). 반대는 6건. 앙상블은 값어치가 작다.
+
+## 4. 결론
+
+1. **Kanon 2 유지.** 무료 모델은 Kanon 대비 nDCG@10 −0.056(nemotron) / −0.083(bge). 102건에 $9면 리랭커 교체로 아낄 돈보다 잃는 정확도가 크다.
+2. 로컬 모델이 필요해지면(비용·오프라인) nemotron > bge. 단 케이스당 리랭크 6~8초로 Kanon API보다 느리다.
+3. C-8로 얻은 것: 리랭커 병목(SUU-130)은 "모델이 약해서"가 아니라 **청크 150개를 그대로 줄 세우는 구조** 쪽일 가능성이 높다 — 세 모델이 같은 5건을 똑같이 놓친다. 다음은 ① Subpart 우선 + Subpart A 항상 포함, ② 조문 단위 리랭크.
+4. C-5 합격선·C-6 hybrid 채택은 이제 판단 가능: hybrid(Kanon)를 기준 조합으로 두고 ①②를 그 위에 얹는다.
+
+---
+
 # RAG 후보 풀 진단 + RRF 가중치 스윕 — rerank 없이 (SUU-130, C-7)
 
 - 실행: `python "[6] rag/eval/sweep_rrf.py"` → `results/rrf_sweep.csv`(132행). v2 102건, 같은 질문 임베딩 캐시, 같은 release, Kanon 호출 0회, $0.
