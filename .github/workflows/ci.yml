@@ -83,14 +83,14 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: "[4] frontend"
+        working-directory: "[4]frontend"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: "[[]4] frontend/package-lock.json"
+          cache-dependency-path: "[[]4]frontend/package-lock.json"
       - run: npm ci
       - run: npm test
       - run: npm run build
