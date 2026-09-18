@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-FRONT = ROOT / "[4] frontend"
+FRONT = ROOT / "[4]frontend"
 CI = ROOT / ".github" / "workflows" / "ci.yml"
 
 
@@ -45,7 +45,7 @@ def test_ci_has_frontend_job_running_test_and_build():
     assert "npm ci" in body
     assert "npm test" in body
     assert "npm run build" in body
-    assert "[4] frontend" in body, "working-directory가 [4] frontend 여야 함"
+    assert "[4]frontend" in body, "working-directory가 [4]frontend 여야 함"
 
 
 def test_engraving_readme_lists_all_image_files():
