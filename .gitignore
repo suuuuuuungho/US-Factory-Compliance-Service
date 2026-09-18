@@ -19,3 +19,6 @@ __pycache__/
 
 # Claude Code worktree (claude --worktree <이름>)
 .claude/worktrees/
+
+# 로컬 임베딩 캐시 (SUU-133)
+/[[]6] rag/eval/cache/
