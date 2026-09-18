@@ -7,6 +7,31 @@
   --color-line: #C9B99A;
   --font-serif: var(--font-lora), Georgia, serif;
   --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+  --animate-train: train-cross 28s linear infinite;
+  --animate-smoke: smoke-rise 6s ease-out infinite;
+}
+
+@keyframes train-cross {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(calc(100vw + 10%));
+  }
+}
+
+@keyframes smoke-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-45%) scale(1.15);
+  }
 }
 
 body {
@@ -19,4 +44,11 @@ h1,
 h2,
 h3 {
   font-family: var(--font-serif);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-train,
+  .animate-smoke {
+    animation: none;
+  }
 }
