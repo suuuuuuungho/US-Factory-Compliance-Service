@@ -3,6 +3,7 @@
 사용법 (레포 루트에서):
   python "[6] rag/eval/run_eval.py" --config vector   # 조합: vector / reranker / hybrid → results/<run_id>.jsonl + runs.jsonl 한 줄
   python "[6] rag/eval/run_eval.py" --eval-set v2   # 평가셋: v1 32건(기본) / v2 102건(SUU-120)
+  python "[6] rag/eval/run_eval.py" --reranker bge  # 리랭커: kanon(기본, API) / bge / nemotron(로컬 GPU, $0, SUU-131) → run_id 끝에 _bge 등
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
 규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings[_v2].json에 캐시한다.
@@ -28,6 +29,7 @@ from ecfr_eval import (  # noqa: E402
     build_query_embedding_request, citation_section_key, gold_ranks, summarize,
 )
 from ecfr_keyword import build_keyword_search  # noqa: E402
+from ecfr_rerank_local import MODELS as LOCAL_RERANKERS  # noqa: E402
 from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
 HERE = Path(__file__).parent
@@ -83,6 +85,17 @@ def query_embeddings(cases, cache_path):
     return cache
 
 
+def rerank_model(config, reranker):
+    if config == "vector":
+        return None
+    return "kanon-2-reranker" if reranker == "kanon" else LOCAL_RERANKERS[reranker]
+
+
+def run_id_for(day, config, eval_set, reranker):
+    suffix = f"_{reranker}" if config != "vector" and reranker != "kanon" else ""
+    return f"{day}_{config}_{eval_set}{suffix}"
+
+
 def p(values, q):
     values = sorted(values)
     return round(values[min(len(values) - 1, int(round(q * (len(values) - 1))))])
@@ -93,19 +106,21 @@ def main():
     ap.add_argument("--run-id")
     ap.add_argument("--config", choices=("vector", "reranker", "hybrid"), default="vector")
     ap.add_argument("--eval-set", choices=tuple(EVAL_SETS), default="v1")
+    ap.add_argument("--reranker", choices=("kanon", *LOCAL_RERANKERS), default="kanon")
     args = ap.parse_args()
+    uses_rerank = args.config in ("hybrid", "reranker")
     load_env()
     from supabase import create_client
     client = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
     release_id = client.table("common_dataset_current").select("release_id").eq("dataset", "ecfr").execute().data[0]["release_id"]
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     run_at = datetime.now(timezone.utc)
-    run_id = args.run_id or f"{run_at:%Y-%m-%d}_{args.config}_{args.eval_set}"
+    run_id = args.run_id or run_id_for(f"{run_at:%Y-%m-%d}", args.config, args.eval_set, args.reranker)
     cases_path, cache_path = EVAL_SETS[args.eval_set]
 
     cases = [json.loads(l) for l in cases_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     print(f"release {release_id}, cases {len(cases)}, commit {commit}")
-    chunks = fetch_chunks(client, release_id, include_text=args.config in ("hybrid", "reranker"))
+    chunks = fetch_chunks(client, release_id, include_text=uses_rerank)
     cache = query_embeddings(cases, cache_path)
     rerank_input_tokens = 0
 
@@ -114,6 +129,10 @@ def main():
         response = call_isaacus_rerank_api(build_rerank_request(question, ranked))
         rerank_input_tokens += response["input_tokens"]
         return response["scores"]
+
+    if uses_rerank and args.reranker != "kanon":
+        from ecfr_rerank_local import BATCH_SIZE, build_local_reranker, load_scorer
+        rerank = build_local_reranker(load_scorer(args.reranker), batch_size=BATCH_SIZE[args.reranker])
 
     keyword = build_keyword_search(chunks) if args.config == "hybrid" else None
 
@@ -125,9 +144,9 @@ def main():
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
             keyword=keyword,
-            rerank=rerank if args.config in ("hybrid", "reranker") else None,
+            rerank=rerank if uses_rerank else None,
             top_k=K_MAX,
-            chunk_top_k=150 if args.config in ("hybrid", "reranker") else CHUNK_TOP_K,
+            chunk_top_k=150 if uses_rerank else CHUNK_TOP_K,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         ranks = gold_ranks(c["gold_citations"], sections)
@@ -163,6 +182,7 @@ def main():
         "n_cases": len(lines),
         "release_id": release_id,
         "embed_model": "kanon-2-embedder",
+        "rerank_model": rerank_model(args.config, args.reranker),
         "contextualizer_model": "gpt-4o-mini",
         "context_prompt_version": "ctx_prompt_v1",
         "chunk_rule_commit": commit,
@@ -173,12 +193,14 @@ def main():
         "cost_usd": (
             {"per_query": rerank_input_tokens * 0.35 / 1e6 / len(cases),
              "total": rerank_input_tokens * 0.35 / 1e6}
-            if args.config in ("hybrid", "reranker")
+            if uses_rerank and args.reranker == "kanon"
+            else {"per_query": 0.0, "total": 0.0} if uses_rerank
             else {"per_query": None, "total": None}
         ),
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
         "notes": f"index coverage {len(chunks)} embedded chunks (python full-scan cosine"
-                 f"{' + BM25 RRF + Kanon 2 rerank' if args.config == 'hybrid' else ' + Kanon 2 rerank' if args.config == 'reranker' else ''}, not HNSW)",
+                 f"{' + BM25 RRF' if args.config == 'hybrid' else ''}"
+                 f"{' + ' + rerank_model(args.config, args.reranker) + ' rerank' if uses_rerank else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")
