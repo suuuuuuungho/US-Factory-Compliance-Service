@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from ecfr_eval import build_query_embedding_request, rank_sections
 from ecfr_index_run import rank_chunks_by_similarity
+from ecfr_llm_rerank import LLM_TOP_N, llm_rerank_sections, section_head
 
 # SUU-132에서 고른 리랭크 후처리 규칙: 조문 상위 ``window``개 안에서
 # 표(appendix-Table)를 뒤로, 1~5등에 나온 Subpart 상위 ``subpart_top``개 + A를 앞으로.
@@ -85,11 +86,13 @@ def search_sections(
     top_k: int = 5,
     chunk_top_k: int = 300,
     rules: bool = True,
+    llm: Callable[[str], str] | None = None,
 ) -> list[dict]:
     """Embed a question, rank its chunks, and collapse them to sections.
 
-    With a reranker, ``rules`` applies ``RULES`` to the reranked sections
-    before cutting to ``top_k``.
+    With a reranker, ``rules`` applies ``RULES`` to the reranked sections.
+    ``llm`` (prompt -> answer) then reorders the top ``LLM_TOP_N`` sections
+    (SUU-136) before cutting to ``top_k``.
     """
     query_embedding = embed(build_query_embedding_request(question))
     vector_chunks = rank_chunks_by_similarity(
@@ -111,10 +114,19 @@ def search_sections(
             {**chunk, "score": score}
             for chunk, score in zip(ranked_chunks, scores)
         ]
-    if rerank is None or not rules:
-        return rank_sections(ranked_chunks, k_max=top_k)
-    sections = rank_sections(ranked_chunks, k_max=max(top_k, RULES["window"]))
-    return apply_rank_rules(sections, **RULES)[:top_k]
+    ruled = rerank is not None and rules
+    k_max = max(top_k, RULES["window"] if ruled else 0, LLM_TOP_N if llm else 0)
+    sections = rank_sections(ranked_chunks, k_max=k_max)
+    if ruled:
+        sections = apply_rank_rules(sections, **RULES)
+    if llm is not None:
+        by_key = {chunk["chunk_key"]: chunk for chunk in chunks}
+        texts = {
+            s["section_key"]: section_head(by_key.get(s["chunk_key"].rsplit("/", 1)[0] + "/0"))
+            for s in sections[:LLM_TOP_N]
+        }
+        sections = llm_rerank_sections(question, sections, llm, texts=texts)
+    return sections[:top_k]
 
 
 __all__ = ["RULES", "apply_rank_rules", "build_rerank_request", "rrf_merge", "search_sections"]

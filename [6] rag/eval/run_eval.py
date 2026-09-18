@@ -6,6 +6,7 @@
   python "[6] rag/eval/run_eval.py" --reranker bge  # 리랭커: kanon(기본, API) / bge / nemotron(로컬 GPU, $0, SUU-131) → run_id 끝에 _bge 등
   python "[6] rag/eval/run_eval.py" --embedder bge --no-context   # 임베더: kanon(기본, rag_chunk 임베딩) / bge(로컬 bge-m3, $0, SUU-133). --no-context면 청크 본문만 → baseline
   python "[6] rag/eval/run_eval.py" --config hybrid --no-rules   # 리랭크 후처리 규칙(SUU-134, 기본 켜짐) 끄기
+  python "[6] rag/eval/run_eval.py" --config hybrid --llm gpt-5-mini   # 규칙 뒤 상위 20조문을 OpenAI로 다시 줄 세움(SUU-136) → run_id 끝에 _llm_<model>
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
 규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings[_v2].json에 캐시한다.
@@ -32,6 +33,7 @@ from ecfr_eval import (  # noqa: E402
 )
 from ecfr_embed_local import MODELS as LOCAL_EMBEDDERS, chunk_document_text  # noqa: E402
 from ecfr_keyword import build_keyword_search  # noqa: E402
+from ecfr_llm_rerank import call_openai_rerank_api  # noqa: E402
 from ecfr_rerank_local import MODELS as LOCAL_RERANKERS  # noqa: E402
 from ecfr_search import build_rerank_request, search_sections  # noqa: E402
 
@@ -143,6 +145,7 @@ def main():
     ap.add_argument("--embedder", choices=("kanon", *LOCAL_EMBEDDERS), default="kanon")
     ap.add_argument("--no-context", action="store_true", help="청크 본문만 임베딩(baseline). --embedder bge 전용")
     ap.add_argument("--no-rules", action="store_true", help="리랭크 후처리 규칙(SUU-134) 끄기")
+    ap.add_argument("--llm", help="규칙 뒤 상위 20조문을 이 OpenAI 모델로 다시 줄 세운다(SUU-136). 예: gpt-5-mini")
     args = ap.parse_args()
     if args.no_context and args.embedder == "kanon":
         ap.error("--no-context는 --embedder bge와 같이 쓴다 (rag_chunk 임베딩은 컨텍스트 포함)")
@@ -156,6 +159,8 @@ def main():
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     run_at = datetime.now(timezone.utc)
     run_id = args.run_id or run_id_for(f"{run_at:%Y-%m-%d}", args.config, args.eval_set, args.reranker, embedder=args.embedder, with_context=with_context)
+    if args.llm and not args.run_id:
+        run_id += f"_llm_{args.llm}"
     cases_path, cache_path = EVAL_SETS[args.eval_set]
     if args.embedder != "kanon":
         cache_path = cache_path.with_name(cache_path.stem + f"_{args.embedder}.json")
@@ -184,6 +189,13 @@ def main():
         rerank = build_local_reranker(load_scorer(args.reranker), batch_size=BATCH_SIZE[args.reranker])
 
     keyword = build_keyword_search(chunks) if args.config == "hybrid" else None
+    llm_tokens = {"prompt_tokens": 0, "completion_tokens": 0}
+
+    def llm(prompt):
+        response = call_openai_rerank_api(prompt, model=args.llm)
+        llm_tokens["prompt_tokens"] += response["prompt_tokens"]
+        llm_tokens["completion_tokens"] += response["completion_tokens"]
+        return response["text"]
 
     lines = []
     for c in cases:
@@ -197,6 +209,7 @@ def main():
             top_k=len(chunks),  # 조문 전부. 채점은 아래서 K_MAX로 자른다
             chunk_top_k=150 if uses_rerank else CHUNK_TOP_K,
             rules=rules,
+            llm=llm if args.llm else None,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         sections = sections_all[:K_MAX]
@@ -237,6 +250,8 @@ def main():
         "with_context": with_context,
         "rerank_model": rerank_model(args.config, args.reranker),
         "rules": rules,
+        "llm_model": args.llm,
+        "llm_tokens": llm_tokens if args.llm else None,
         "contextualizer_model": "gpt-4o-mini",
         "context_prompt_version": "ctx_prompt_v1",
         "chunk_rule_commit": commit,
@@ -254,7 +269,8 @@ def main():
         "failure_counts": {f"F{i}": 0 for i in range(1, 8)},
         "notes": f"index coverage {len(chunks)} embedded chunks ({'local ' + embed_model_of(args.embedder) + (' no-context' if not with_context else '') + ' embeddings, ' if args.embedder != 'kanon' else ''}python full-scan cosine"
                  f"{' + BM25 RRF' if args.config == 'hybrid' else ''}"
-                 f"{' + ' + rerank_model(args.config, args.reranker) + ' rerank' if uses_rerank else ''}, not HNSW)",
+                 f"{' + ' + rerank_model(args.config, args.reranker) + ' rerank' if uses_rerank else ''}"
+                 f"{' + ' + args.llm + ' llm rerank' if args.llm else ''}, not HNSW)",
     }
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{run_id}.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")

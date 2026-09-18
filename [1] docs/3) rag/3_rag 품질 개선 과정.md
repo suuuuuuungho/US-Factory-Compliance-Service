@@ -39,6 +39,7 @@
 | 9/18 | 규칙을 코드에 | 규칙 2개를 `search_sections`에 넣음(리랭커 쓸 때 기본 켜짐). 저장된 순위 리플레이로 확인 | 0.631 그대로, $0 | SUU-134 |
 | 9/18 | baseline 측정 | 로컬 bge-m3로 컨텍스트 없이/있이 임베딩해 벡터만 채점 | baseline 0.264 → 컨텍스트 +0.03 → Kanon 임베더 +0.14 | SUU-133 |
 | 9/18 | LLM 리랭크 시험 | hybrid+규칙 상위 20조문을 OpenAI로 다시 줄 세움(Kanon 재실행 없음) | gpt-4o-mini +0.014(동점), **gpt-5-mini 0.631 → 0.692**, Hit@5 0.931. $0.58 | SUU-135 |
+| 9/18 | LLM 리랭크를 코드에 | `ecfr_llm_rerank.py` + `search_sections(llm=…)`. 저장된 답 리플레이로 확인 | 0.692 그대로, $0. 기본 조합 = hybrid + 규칙 + LLM | SUU-136 |
 
 ## 4. 지금 점수판 (v2 102건, nDCG@10)
 
@@ -46,11 +47,11 @@
 |---|---|---|---|---|---|
 | baseline (bge-m3, 컨텍스트 없음) | 0.264 | 0.441 | 0.627 | 0.426 | $0 |
 | bge-m3 + 컨텍스트 | 0.297 | 0.490 | 0.676 | 0.467 | $0 |                  # contextual. 의미 있음 +0.03
-| vector (Kanon 2 + 컨텍스트) | 0.437 | 0.686 | 0.843 | 0.672 | $0 |        # 임베딩 모델 교체 의미 있음 +0.14 (bge > kanon)
+| vector (Kanon 2 + 컨텍스트) | 0.437 | 0.686 | 0.843 | 0.672 | $0 |        # 임베딩 모델 교체 의미 있음 +0.14 (bge -> kanon)
 | reranker | 0.561 | 0.804 | 0.922 | 0.752 | $7 |                          # reranker 도입 의미 있음 +0.13, reranker 모델은 kanon이 우수함을 증명(vs bge, nemotron)
 | hybrid | 0.568 | 0.804 | 0.931 | 0.782 | $9 |                            # hybrid로 교체 의미 거의 없음 +0.007
-| **hybrid + 규칙** (기본 조합) | **0.631** | 0.882 | 0.961 | 0.836 | $9 |   # 규칙 추가 의미 있음 +0.05 >> Appendix 표는 제외
-| hybrid + 규칙 + LLM 리랭크(gpt-5-mini) | **0.692** | 0.931 | 0.961 | 0.836 | $9 + $0.6 |   # 추론 LLM 리랭크 의미 있음 +0.06, gpt-4o-mini는 +0.014 동점
+| hybrid + 규칙 | **0.631** | 0.882 | 0.961 | 0.836 | $9 |   # 규칙 추가 의미 있음 +0.05 >> Appendix 표는 제외
+| **hybrid + 규칙 + LLM 리랭크(gpt-5-mini)** (기본 조합) | **0.692** | 0.931 | 0.961 | 0.836 | $9 + $0.6 |   # 추론 LLM 리랭크 의미 있음 +0.06, gpt-4o-mini는 +0.014 동점
  
 ## 5. 배운 것
 
@@ -62,8 +63,24 @@
 6. **임베더가 컨텍스트보다 중요하다**. baseline 0.264에서 컨텍스트는 +0.03, Kanon 2 임베더는 +0.14. 지금 최고(0.631)는 baseline의 2.4배.
 7. **LLM 리랭크는 추론 모델이어야 먹힌다**. gpt-4o-mini는 +0.014(순서만 흔듦), gpt-5-mini는 +0.061. 20개 안에서만 바꾸니 Hit@20·Recall@20은 그대로. 질문당 $0.006이지만 ≈ 20초 느림.
 
-## 6. 다음
+## 6. 흐름
 
-1. LLM 리랭크(gpt-5-mini)를 `search_sections`에 넣을지 정하기 — 지연 20초 vs +0.06
-2. Subpart A 청크를 리랭크 후보에 항상 넣기 (Kanon 1회 ≈ $11)
-3. 합격선 정하기(C-5), 기본 조합 확정(C-6)
+              query
+                |
+          Kanon 2 Embedder  
+                |
+Vector(코사인 유사도): Top 150 Chunks
+ BM25(키워드 검색): Top 150 Chunks
+                |
+        RRF: Top 150 Chunks               # Hybrid
+                |
+Kanon 2 Reranker: Top 150 Chunks reorder  # Rerank
+                |
+        apply rules: Top 20               # Apply rules: Exclude Appendix Table
+                |
+        LLM Reranker: reorder, Top 5 out               # LLM Rerank (gpt-5-mini, 상위 20 안에서만, SUU-136)
+
+## 7. 다음
+
+1. 합격선 정하기(C-5)
+2. 답변 생성 단계(상위 5조문 → 답)
