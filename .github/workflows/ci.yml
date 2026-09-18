@@ -76,3 +76,21 @@ jobs:
           [ ! -f requirements.txt ] || pip install -q -r requirements.txt
       - name: pytest (테스트가 0개면 통과)
         run: python -m pytest || [ $? -eq 5 ]
+
+  frontend:
+    name: 프론트 (vitest + build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: "[4] frontend"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "[4] frontend/package-lock.json"
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

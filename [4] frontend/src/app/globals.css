@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* 판화(engraving) 테마 — 크림 종이 위 세피아 잉크. SUU-140 */
+@theme {
+  --color-paper: #F5F0E6;
+  --color-ink: #4A2E1E;
+  --color-line: #C9B99A;
+  --font-serif: var(--font-lora), Georgia, serif;
+  --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+}
