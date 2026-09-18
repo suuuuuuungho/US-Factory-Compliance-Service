@@ -1,3 +1,9 @@
+# LLM 리랭크를 검색 코드에 넣음 (SUU-136)
+
+- 프롬프트·파싱·OpenAI 호출을 `[2] db/pipeline/5_rag/ecfr_llm_rerank.py`로 옮기고 `search_sections(llm=ask)`·`run_eval.py --llm gpt-5-mini`에 연결. 규칙 뒤 상위 20조문(첫 청크 앞 3,000자)만 다시 줄 세우고 21등부터는 그대로.
+- 저장된 gpt-5-mini 답(`2026-09-18_hybrid_v2_llm_gpt-5-mini.jsonl`)을 새 함수로 리플레이 → nDCG@10 **0.692**(SUU-135와 동일). $0, Kanon·OpenAI 재실행 없음(`test_search_llm_replay.py`).
+- 기본 조합 = hybrid(Kanon) + 규칙 + LLM(gpt-5-mini). 질문당 ≈ $0.10(Kanon $0.09 + LLM $0.006), ≈ 25초(LLM 20초). `llm=None`이면 0.631 조합으로 돌아간다.
+
 # LLM 리랭크 — hybrid+규칙 상위 20조문을 OpenAI로 다시 줄 세움 (SUU-135)
 
 - run_id: `2026-09-18_hybrid_v2_llm_gpt-4o-mini`, `2026-09-18_hybrid_v2_llm_gpt-5-mini`. 입력은 `2026-09-18_hybrid_v2.jsonl`의 `ranked_all` → 규칙(SUU-134) → 상위 20조문. 조문당 `context_text` + 본문 앞 3,000자(첫 body 청크)를 질문과 함께 보내고, 후보 번호를 관련 높은 순으로 받는다. LLM은 20개 안의 순서만 바꾼다(Hit@20·Recall@20 불변). Kanon 재실행 없음.

@@ -108,3 +108,37 @@ def test_search_sections_applies_rules_after_rerank():
 
     no_rerank = search_sections(QUESTION, embed=fake_embed, chunks=chunks, top_k=1)
     assert no_rerank[0]["section_key"] in ("section-63.4481", "appendix-Table-1")  # 리랭커 없으면 규칙 없음(동점)
+
+
+# SUU-136: 규칙 뒤 상위 LLM_TOP_N 조문을 LLM 답(후보 번호) 순서로 바꾼다. 그 뒤는 그대로
+from ecfr_llm_rerank import LLM_TOP_N, llm_rerank_sections, parse_ranking  # noqa: E402
+
+
+def test_search_sections_llm_reorders_top_n_only():
+    # 25개 조문, 유사도는 63.1 > 63.2 > ... 순. 첫 청크(/0)에 본문이 있고 최고 청크는 /1
+    chunks = []
+    for i in range(1, 26):
+        key = f"ecfr/40/63/subpart-A/section-63.{i}"
+        chunks.append({**chunk(f"{key}/0", [0.0, 1.0]), "context_text": f"ctx{i}", "chunk_text": f"body{i}"})
+        chunks.append({**chunk(f"{key}/1", [1.0, 0.01 * i]), "context_text": None, "chunk_text": "x"})
+    seen = []
+
+    def llm(prompt):
+        seen.append(prompt)
+        return "[" + ", ".join(str(n) for n in range(LLM_TOP_N, 0, -1)) + "]"  # 20등 → 1등으로 뒤집기
+
+    rerank = lambda q, ranked: [c["embedding"][0] - c["embedding"][1] for c in ranked]  # noqa: E731
+    hits = search_sections(QUESTION, embed=fake_embed, chunks=chunks, rerank=rerank, top_k=25, llm=llm)
+
+    assert [h["section_key"] for h in hits[:LLM_TOP_N]] == [f"section-63.{i}" for i in range(LLM_TOP_N, 0, -1)]
+    assert [h["section_key"] for h in hits[LLM_TOP_N:]] == [f"section-63.{i}" for i in range(21, 26)]
+    assert len(seen) == 1 and "ctx1\nbody1" in seen[0] and "body21" not in seen[0]
+    assert set(hits[0]) == {"section_key", "chunk_key", "subpart", "score"}
+
+
+def test_llm_rerank_sections_keeps_missing_numbers_in_order():
+    sections = [sec(f"section-63.{i}", "A") for i in range(1, 4)]
+    out = llm_rerank_sections("q", sections, lambda prompt: "[3]", texts={})
+    assert [s["section_key"] for s in out] == ["section-63.3", "section-63.1", "section-63.2"]
+    assert parse_ranking("garbage", ["a", "b"]) == ["a", "b"]
+    assert llm_rerank_sections("q", [], lambda prompt: "[1]", texts={}) == []
