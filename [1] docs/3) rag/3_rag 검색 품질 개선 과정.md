@@ -1,4 +1,4 @@
-# RAG 품질 개선 과정
+# RAG 검색 품질 개선 과정
 
 질문(공장 상황 설명)을 넣으면 40 CFR Part 63에서 **맞는 조문**을 위에 올려주는 검색을 만들고, 점수를 재면서 한 단계씩 고친 기록이다. 2026-09-16 ~ 09-18. 세부 수치는 `[6] rag/eval/results/rag_eval_result.md`, 계획은 `[6] rag/eval/rag_eval_plan.md`.
 
@@ -40,6 +40,7 @@
 | 9/18 | baseline 측정 | 로컬 bge-m3로 컨텍스트 없이/있이 임베딩해 벡터만 채점 | baseline 0.264 → 컨텍스트 +0.03 → Kanon 임베더 +0.14 | SUU-133 |
 | 9/18 | LLM 리랭크 시험 | hybrid+규칙 상위 20조문을 OpenAI로 다시 줄 세움(Kanon 재실행 없음) | gpt-4o-mini +0.014(동점), **gpt-5-mini 0.631 → 0.692**, Hit@5 0.931. $0.58 | SUU-135 |
 | 9/18 | LLM 리랭크를 코드에 | `ecfr_llm_rerank.py` + `search_sections(llm=…)`. 저장된 답 리플레이로 확인 | 0.692 그대로, $0. 기본 조합 = hybrid + 규칙 + LLM | SUU-136 |
+| 9/18 | 합격선 | 기본 조합 점수에서 동점 폭을 뺀 퇴보 방지선. `runs.jsonl` 최신 run을 CI가 검사 | nDCG@10 ≥ 0.66 · Hit@20 ≥ 0.95 · Subpart@20 ≥ 0.95 | SUU-137 |
 
 ## 4. 지금 점수판 (v2 102건, nDCG@10)
 
@@ -82,5 +83,5 @@ Kanon 2 Reranker: Top 150 Chunks reorder  # Rerank
 
 ## 7. 다음
 
-1. 합격선 정하기(C-5)
-2. 답변 생성 단계(상위 5조문 → 답)
+1. 답변 생성 단계(상위 5조문 → 답)
+2. Subpart A 후보 강제(남은 실패 4건 중 3건, Kanon 1회 ≈ $11)

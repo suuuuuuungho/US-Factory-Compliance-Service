@@ -340,7 +340,7 @@ Claude(실행):
 ---
 
 ## [13] 아직 정하지 않은 것
-1. 합격선. nDCG@10 기준으로, 세 조합을 새 채점표로 잰 뒤 정한다. 정하면 CI가 최신 run을 검사하는 티켓을 낸다.
+1. ~~합격선~~ → SUU-137에서 확정. **nDCG@10 ≥ 0.66, Hit@20 ≥ 0.95(top-20 실패율 ≤ 5%), Subpart 적중률@20 ≥ 0.95**(v2 102건, 기본 조합 점수 0.692/0.961/0.980에서 동점 폭 0.03을 뺀 퇴보 방지선). `pass_line.py`가 `runs.jsonl`의 기본 조합(hybrid v2 + 규칙 + gpt-5-mini) 최신 run을 검사하고 `test_pass_line.py`로 CI가 매 PR마다 돈다.
 2. `baseline` 임베딩을 어디에 저장할지(별도 테이블 vs 컬럼 추가). 재임베딩 티켓에서 정한다.
 3. ~~평가셋을 어떻게 만들지~~ → v2 102건으로 확정(SUU-120). 더 늘릴 때는 같은 방법(초안 → 100% 근거 일치 → 사람 대조).
 4. hybrid 채택 여부. BM25로 바뀐 뒤(SUU-116) 아직 안 쟀다.
@@ -364,8 +364,8 @@ Claude(실행):
 | C-9 | 창·규칙 시뮬(리랭크 후처리) | 완료(SUU-132, Kanon 1회 $9). 창 60 + 표 뒤로 + Subpart 우선 2 → nDCG@10 **0.631**(+0.065), Hit@20 0.961. **SUU-134에서 `search_sections`에 넣음**(리플레이 0.631 동일, 기본 켜짐) |
 | C-10 | baseline(컨텍스트 없음) | 완료(SUU-133, bge-m3 로컬 $0). baseline nDCG@10 **0.264**, +컨텍스트 0.297, Kanon 임베더 0.437. 임베더 > 컨텍스트 |
 | C-11 | LLM 리랭크(상위 20조문) | 완료(SUU-135, OpenAI). gpt-4o-mini +0.014(동점), **gpt-5-mini 0.631 → 0.692(+0.061)**, Hit@5 0.931. $0.58, ≈ 20초/건. **SUU-136에서 `search_sections(llm=…)`·`run_eval.py --llm`에 넣음**(리플레이 0.692 동일, 선택 인자라 뺄 수 있음) |
-| C-5 | 합격선 + CI 검사 | 기준 조합 = hybrid(Kanon) + 규칙(SUU-134, 0.631). LLM 리랭크(gpt-5-mini, 0.692)는 SUU-136에서 넣기로 결정 → 기본 조합 = hybrid + 규칙 + LLM(0.692). 다음은 합격선 |
-| C-6 | hybrid 채택 여부 | C-7·C-8 완료. hybrid(Kanon)를 기준 조합으로 두고 Subpart A 규칙·조문 단위 리랭크를 얹는다 |
+| C-5 | 합격선 + CI 검사 | 완료(SUU-137). 기본 조합 = hybrid(Kanon) + 규칙 + LLM(gpt-5-mini) 0.692. 합격선 nDCG@10 ≥ 0.66 · Hit@20 ≥ 0.95 · Subpart@20 ≥ 0.95. `pass_line.py` + `test_pass_line.py`가 `runs.jsonl` 최신 기본 조합 run을 검사 |
+| C-6 | hybrid 채택 여부 | 완료. 기본 조합 = hybrid(Kanon) + 규칙(SUU-134) + LLM 리랭크(SUU-136) |
 
 그 뒤: 답변 생성(아직 없음), 대시보드(SUU-113), ADI 회신 `adi_` 테이블 적재.
 
