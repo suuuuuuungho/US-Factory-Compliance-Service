@@ -7,6 +7,10 @@ from typing import Any, Callable
 from ecfr_eval import build_query_embedding_request, rank_sections
 from ecfr_index_run import rank_chunks_by_similarity
 
+# SUU-132에서 고른 리랭크 후처리 규칙: 조문 상위 ``window``개 안에서
+# 표(appendix-Table)를 뒤로, 1~5등에 나온 Subpart 상위 ``subpart_top``개 + A를 앞으로.
+RULES = {"window": 60, "demote_tables": True, "subpart_top": 2}
+
 
 def rrf_merge(
     ranked_lists: list[list[dict[str, Any]]],
@@ -50,6 +54,27 @@ def build_rerank_request(question: str, chunks: list[dict[str, Any]]) -> dict:
     }
 
 
+def apply_rank_rules(
+    sections: list[dict[str, Any]],
+    *,
+    window: int | None,
+    demote_tables: bool,
+    subpart_top: int,
+) -> list[dict[str, Any]]:
+    """Reorder the top ``window`` sections with the $0 rules; the rest stay put."""
+    head, tail = (sections[:window], sections[window:]) if window else (list(sections), [])
+    if subpart_top:
+        found: list[str] = []
+        for section in head[:5]:
+            if section["subpart"] not in found:
+                found.append(section["subpart"])
+        keep = set(found[:subpart_top]) | {"A"}
+        head = [s for s in head if s["subpart"] in keep] + [s for s in head if s["subpart"] not in keep]
+    if demote_tables:
+        head = [s for s in head if "Table" not in s["section_key"]] + [s for s in head if "Table" in s["section_key"]]
+    return head + tail
+
+
 def search_sections(
     question: str,
     *,
@@ -59,8 +84,13 @@ def search_sections(
     rerank: Callable[[str, list[dict[str, Any]]], list[float]] | None = None,
     top_k: int = 5,
     chunk_top_k: int = 300,
+    rules: bool = True,
 ) -> list[dict]:
-    """Embed a question, rank its chunks, and collapse them to sections."""
+    """Embed a question, rank its chunks, and collapse them to sections.
+
+    With a reranker, ``rules`` applies ``RULES`` to the reranked sections
+    before cutting to ``top_k``.
+    """
     query_embedding = embed(build_query_embedding_request(question))
     vector_chunks = rank_chunks_by_similarity(
         query_embedding, chunks, top_k=chunk_top_k
@@ -81,7 +111,10 @@ def search_sections(
             {**chunk, "score": score}
             for chunk, score in zip(ranked_chunks, scores)
         ]
-    return rank_sections(ranked_chunks, k_max=top_k)
+    if rerank is None or not rules:
+        return rank_sections(ranked_chunks, k_max=top_k)
+    sections = rank_sections(ranked_chunks, k_max=max(top_k, RULES["window"]))
+    return apply_rank_rules(sections, **RULES)[:top_k]
 
 
-__all__ = ["build_rerank_request", "rrf_merge", "search_sections"]
+__all__ = ["RULES", "apply_rank_rules", "build_rerank_request", "rrf_merge", "search_sections"]

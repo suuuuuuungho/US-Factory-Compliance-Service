@@ -5,6 +5,7 @@
   python "[6] rag/eval/run_eval.py" --eval-set v2   # 평가셋: v1 32건(기본) / v2 102건(SUU-120)
   python "[6] rag/eval/run_eval.py" --reranker bge  # 리랭커: kanon(기본, API) / bge / nemotron(로컬 GPU, $0, SUU-131) → run_id 끝에 _bge 등
   python "[6] rag/eval/run_eval.py" --embedder bge --no-context   # 임베더: kanon(기본, rag_chunk 임베딩) / bge(로컬 bge-m3, $0, SUU-133). --no-context면 청크 본문만 → baseline
+  python "[6] rag/eval/run_eval.py" --config hybrid --no-rules   # 리랭크 후처리 규칙(SUU-134, 기본 켜짐) 끄기
   python "[6] rag/eval/run_eval.py" --run-id X      # run_id 직접 지정
 
 규칙: rag_eval_plan.md [5] 절차, [8] 파일 형식. 채점표(SUU-117): Hit@5, Hit@20, nDCG@10, Recall@20 (+MRR 비교용). 질문 임베딩은 rag_eval_query_embeddings[_v2].json에 캐시한다.
@@ -141,11 +142,13 @@ def main():
     ap.add_argument("--reranker", choices=("kanon", *LOCAL_RERANKERS), default="kanon")
     ap.add_argument("--embedder", choices=("kanon", *LOCAL_EMBEDDERS), default="kanon")
     ap.add_argument("--no-context", action="store_true", help="청크 본문만 임베딩(baseline). --embedder bge 전용")
+    ap.add_argument("--no-rules", action="store_true", help="리랭크 후처리 규칙(SUU-134) 끄기")
     args = ap.parse_args()
     if args.no_context and args.embedder == "kanon":
         ap.error("--no-context는 --embedder bge와 같이 쓴다 (rag_chunk 임베딩은 컨텍스트 포함)")
     with_context = not args.no_context
     uses_rerank = args.config in ("hybrid", "reranker")
+    rules = uses_rerank and not args.no_rules
     load_env()
     from supabase import create_client
     client = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
@@ -193,6 +196,7 @@ def main():
             rerank=rerank if uses_rerank else None,
             top_k=len(chunks),  # 조문 전부. 채점은 아래서 K_MAX로 자른다
             chunk_top_k=150 if uses_rerank else CHUNK_TOP_K,
+            rules=rules,
         )
         search_ms = (time.perf_counter() - t0) * 1000
         sections = sections_all[:K_MAX]
@@ -232,6 +236,7 @@ def main():
         "embed_model": embed_model_of(args.embedder),
         "with_context": with_context,
         "rerank_model": rerank_model(args.config, args.reranker),
+        "rules": rules,
         "contextualizer_model": "gpt-4o-mini",
         "context_prompt_version": "ctx_prompt_v1",
         "chunk_rule_commit": commit,
