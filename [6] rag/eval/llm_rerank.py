@@ -3,7 +3,8 @@
 
 사용법 (레포 루트에서):
   python "[6] rag/eval/llm_rerank.py" --run-id 2026-09-18_hybrid_v2 [--model gpt-5-mini] [--limit 3] [--workers 8]
-  → results/<run-id>_llm_<model>.jsonl + 점수판·토큰·비용 출력
+  → results/<run-id>_llm_<model>.jsonl + runs.jsonl 한 줄 + 점수판·토큰·비용 출력
+  --replay: OpenAI를 안 부르고 저장된 results/<run-id>_llm_<model>.jsonl의 답을 다시 쓴다($0, SUU-137 runs.jsonl 기록용)
 
 - 입력: results/<run-id>.jsonl 의 ranked_all(Kanon 리랭크 전체 순위) → 규칙(SUU-134) → 상위 TOP_N 조문
 - 조문 본문: rag_chunk 첫 body 청크(chunk_key …/<section_key>/0)의 context_text + chunk_text 앞 HEAD_CHARS자.
@@ -18,14 +19,16 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE.parent.parent / "[2] db/pipeline/5_rag"))
 from ecfr_llm_rerank import HEAD_CHARS, LLM_TOP_N as TOP_N, call_openai_rerank_api, llm_rerank_sections, parse_ranking  # noqa: E402,F401
 from ecfr_llm_rerank import build_llm_rerank_prompt as build_rerank_prompt  # noqa: E402,F401
+from ecfr_eval import summarize  # noqa: E402
 from ecfr_search import RULES, apply_rank_rules  # noqa: E402
-from run_eval import load_env  # noqa: E402
+from run_eval import K_MAX, RUNS, load_env  # noqa: E402
 from sweep_rules import score  # noqa: E402
 
 RESULTS = HERE / "results"
@@ -84,14 +87,52 @@ def scoreboard(lines: list[dict]) -> dict:
     return board
 
 
+def run_record(run_id: str, model: str, lines: list[dict], outs: list[dict], base: dict, *, cost: float, replay: bool) -> dict:
+    """runs.jsonl 한 줄. 채점은 run_eval과 같은 summarize(상위 K_MAX)로 한다."""
+    results = []
+    for line, out in zip(lines, outs):
+        top = out["ranked_all"][:K_MAX]
+        keys = [k for k, _ in top]
+        results.append({
+            "gold_ranks": {g: keys.index(g) + 1 if g in keys else None for g in line["gold_sections"]},
+            "gold_subparts": line["gold_subparts"],
+            "returned_subparts": [sp for _, sp in top],
+        })
+    return {
+        "run_id": run_id,
+        "run_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "config": base["config"],
+        "eval_set_version": base["eval_set_version"],
+        "n_cases": len(results),
+        "release_id": base["release_id"],
+        "embed_model": base.get("embed_model", "kanon-2-embedder"),
+        "with_context": base.get("with_context", True),
+        "rerank_model": base["rerank_model"],
+        "rules": True,
+        "llm_model": model,
+        "contextualizer_model": base["contextualizer_model"],
+        "context_prompt_version": base["context_prompt_version"],
+        "chunk_rule_commit": base["chunk_rule_commit"],
+        "k_max": K_MAX,
+        "metrics": summarize(results, k_max=K_MAX),
+        "cost_usd": {"per_query": cost / len(results), "total": cost},
+        "notes": f"{base['run_id']} ranked_all → rules → top {TOP_N} reranked by {model}" + (" (replayed saved answers)" if replay else ""),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-id", required=True)
     ap.add_argument("--model", default="gpt-5-mini")
     ap.add_argument("--limit", type=int)
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--replay", action="store_true")
     args = ap.parse_args()
     load_env()
+    out_path = RESULTS / f"{args.run_id}_llm_{args.model}.jsonl"
+    saved = {}
+    if args.replay:
+        saved = {o["case_id"]: o["answer"] for o in map(json.loads, filter(None, out_path.read_text(encoding="utf-8").splitlines()))}
 
     lines = [json.loads(l) for l in (RESULTS / f"{args.run_id}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
     cases = [json.loads(l) for l in (HERE / "rag_eval_case_v2.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -99,7 +140,7 @@ def main():
     for line in lines:
         line["question"] = questions[line["case_id"]]
     lines = lines[: args.limit] if args.limit else lines
-    heads = fetch_heads(sorted({s["section_key"] for l in lines for s in top_sections(l)}))
+    heads = {} if args.replay else fetch_heads(sorted({s["section_key"] for l in lines for s in top_sections(l)}))
 
     usage = {"prompt_tokens": 0, "completion_tokens": 0}
 
@@ -109,11 +150,10 @@ def main():
         usage["completion_tokens"] += r["completion_tokens"]
         return r["text"]
 
-    out_path = RESULTS / f"{args.run_id}_llm_{args.model}.jsonl"
     t0 = time.perf_counter()
 
     def one(line):
-        out = rerank_line(line, ask, heads=heads)
+        out = rerank_line(line, (lambda prompt: saved[line["case_id"]]) if args.replay else ask, heads=heads)
         out["run_id"] = f"{args.run_id}_llm_{args.model}"
         out["model"] = args.model
         print(f"  {line['case_id']} ndcg {score(out['gold_sections'], out['ranked_all'])['ndcg@10']:.2f}", flush=True)
@@ -128,6 +168,11 @@ def main():
     before = [{"case_id": l["case_id"], "gold_sections": l["gold_sections"], "ranked_all": [[s["section_key"], s["subpart"]] for s in ruled_sections(l)]} for l in lines]
     print("before:", scoreboard(before))
     print("after: ", scoreboard(outs))
+    if not args.limit:
+        base = next(r for r in map(json.loads, filter(None, RUNS.read_text(encoding="utf-8").splitlines())) if r["run_id"] == args.run_id)
+        with RUNS.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(run_record(out_path.stem, args.model, lines, outs, base, cost=cost, replay=args.replay), ensure_ascii=False) + "\n")
+        print(f"runs.jsonl += {out_path.stem}")
 
 
 if __name__ == "__main__":

@@ -1,3 +1,9 @@
+# 합격선 (SUU-137)
+
+- 기본 조합 = hybrid(Kanon) + 규칙 + LLM 리랭크(gpt-5-mini), v2 102건. `runs.jsonl`에 `2026-09-18_hybrid_v2_llm_gpt-5-mini`(저장된 답 리플레이, $0) 기록.
+- **합격선: nDCG@10 ≥ 0.66, Hit@20 ≥ 0.95(top-20 실패율 ≤ 5%), Subpart 적중률@20 ≥ 0.95.** 지금 0.692 / 0.961 / 0.980. 동점 폭 0.03(≈ 3건)을 뺀 퇴보 방지선.
+- 검사: `python "[6] rag/eval/pass_line.py"` 또는 `test_pass_line.py`(CI). 다음 기본 조합 run(`run_eval.py --config hybrid --eval-set v2 --llm gpt-5-mini` 또는 `llm_rerank.py`)이 runs.jsonl에 붙으면 그것을 검사한다.
+
 # LLM 리랭크를 검색 코드에 넣음 (SUU-136)
 
 - 프롬프트·파싱·OpenAI 호출을 `[2] db/pipeline/5_rag/ecfr_llm_rerank.py`로 옮기고 `search_sections(llm=ask)`·`run_eval.py --llm gpt-5-mini`에 연결. 규칙 뒤 상위 20조문(첫 청크 앞 3,000자)만 다시 줄 세우고 21등부터는 그대로.

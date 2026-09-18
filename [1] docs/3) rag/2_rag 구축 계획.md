@@ -280,11 +280,11 @@
    - SUU-81은 contextual(컨텍스트 붙인 벡터)만 잰다. baseline·hybrid·rerank 비교는 그 뒤 티켓.
 
 4) 합격 기준
-   - 가칭: top-20 실패율 5% 이하, Subpart 적중률 95% 이상. Anthropic의 일반 방식이 5.7%였으므로 우리 baseline을 잰 뒤 `실측 후 확정`한다.
+   - 확정(SUU-137, v2 102건): **nDCG@10 ≥ 0.66, top-20 실패율 ≤ 5%(Hit@20 ≥ 0.95), Subpart 적중률@20 ≥ 0.95**. 기본 조합(hybrid + 규칙 + LLM 리랭크) 실측 0.692 / 3.9% / 98.0%에서 동점 폭(0.03 ≈ 3건)을 뺀 퇴보 방지선이다. `[6] rag/eval/pass_line.py`가 `runs.jsonl`의 최신 기본 조합 run을 검사하고, `test_pass_line.py`로 CI가 매 PR마다 돈다. 세부는 `[6] rag/eval/rag_eval_plan.md` [13].
    - 정답이 상위 20개에 없는 경우는 모두 원인을 분류한다: 청크 잘림 / 컨텍스트 오류 / 키워드 누락 / 상호참조 누락 / 정답 라벨 오류. 이 분류가 [11]의 재검토 조건이 된다.
 
 5) 실행 결과
-   - 미실행. 평가셋 수, 설정별 실패율, 원인 분류, 검색 시간(p50/p95), 청크당 비용을 기록해야 완료다.
+   - `[6] rag/eval/results/rag_eval_result.md`와 `[1] docs/3) rag/3_rag 검색 품질 개선 과정.md`에 기록. v2 102건, baseline 0.264 → 기본 조합 0.692(nDCG@10).
 
 ## [11] Ontology / Knowledge Graph / Graph RAG 검토
 
