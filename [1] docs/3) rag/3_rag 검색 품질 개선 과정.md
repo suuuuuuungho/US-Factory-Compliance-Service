@@ -41,7 +41,6 @@
 | 9/18 | LLM 리랭크 시험 | hybrid+규칙 상위 20조문을 OpenAI로 다시 줄 세움(Kanon 재실행 없음) | gpt-4o-mini +0.014(동점), **gpt-5-mini 0.631 → 0.692**, Hit@5 0.931. $0.58 | SUU-135 |
 | 9/18 | LLM 리랭크를 코드에 | `ecfr_llm_rerank.py` + `search_sections(llm=…)`. 저장된 답 리플레이로 확인 | 0.692 그대로, $0. 기본 조합 = hybrid + 규칙 + LLM | SUU-136 |
 | 9/18 | 합격선 | 기본 조합 점수에서 동점 폭을 뺀 퇴보 방지선. `runs.jsonl` 최신 run을 CI가 검사 | nDCG@10 ≥ 0.66 · Hit@20 ≥ 0.95 · Subpart@20 ≥ 0.95 | SUU-137 |
-| 9/18 | 답변 생성 1차 | 상위 5조문 전문 → gpt-5-mini가 판정 기준표 JSON(후보 Subpart + 기준·근거 조문 + 확인할 것, 판정 없음) | Subpart 적중 0.882, 인용 Recall 0.649, 인용 근거율 0.995. $1.0 | SUU-138 |
 
 ## 4. 지금 점수판 (v2 102건, nDCG@10)
 
@@ -84,6 +83,5 @@ Kanon 2 Reranker: Top 150 Chunks reorder  # Rerank
 
 ## 7. 다음
 
-1. 답변 3층 심판 — 기준 설명이 조문에 진짜 있는 말인지 로컬 LLM이 확인(심판 검증 30건 먼저)
-2. 답변 입력을 상위 5 → 10조문으로 (인용 Recall 천장 0.68 → 0.80, 비용 2배)
-3. Subpart A 후보 강제(남은 실패 4건 중 3건, Kanon 1회 ≈ $11)
+1. 답변 생성 단계(상위 5조문 → 답)
+2. Subpart A 후보 강제(남은 실패 4건 중 3건, Kanon 1회 ≈ $11)
