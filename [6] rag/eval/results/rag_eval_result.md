@@ -1,3 +1,11 @@
+# RAG 후처리 규칙을 검색 코드에 넣음 (SUU-134)
+
+- `search_sections`가 리랭크 뒤 조문 상위 60개 안에서 **표 뒤로 + 5등 안 Subpart 상위 2·A 우선**(`ecfr_search.RULES`)을 적용하고 `top_k`로 자른다. 리랭커 없으면(vector) 규칙 없음. `rules=False`/`--no-rules`로 끔.
+- 확인($0): `2026-09-18_hybrid_v2.jsonl`의 `ranked_all`(리랭크 전체 순위) 102건을 `apply_rank_rules(**RULES)`로 다시 채점 → nDCG@10 **0.631** = SUU-132 시뮬. `test_replay_matches_simulation`이 이 값을 고정한다.
+- 기준 조합은 이제 **hybrid(Kanon) + 규칙**: nDCG@10 0.631, Hit@5 0.882, Hit@20 0.961, Recall@20 0.836, miss@20 4.
+
+---
+
 # RAG baseline — bge-m3 로컬 임베딩, 컨텍스트 있음/없음 (SUU-133)
 
 - run_id: `2026-09-18_vector_v2_bge_nocontext`(**baseline**: `chunk_text`만 임베딩), `2026-09-18_vector_v2_bge`(`context_text + chunk_text`). 둘 다 `BAAI/bge-m3`(fp16, max_seq 1024, RTX 4070 Laptop) 로컬, 청크 5,625개 임베딩 ≈ 140초, $0. 비교 대상 `2026-09-17_vector_v2`(Kanon 2 + 컨텍스트, SUU-129).
