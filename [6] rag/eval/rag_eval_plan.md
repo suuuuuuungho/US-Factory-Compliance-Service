@@ -265,6 +265,8 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-18_hybrid_v2_nemotron (SUU-131) | hybrid(nemotron) | v2 102건 | 0.745 | 0.882 | 0.512 | 0.723 | 0.595 | $0 |
 | 2026-09-18_hybrid_v2 (SUU-132, ranked_all 저장) | hybrid(BM25) | v2 102건 | 0.804 | 0.931 | 0.565 | 0.782 | 0.639 | $9.35 |
 | ↑ + 창 60·표 뒤로·Subpart 우선 2 (SUU-132 시뮬 → SUU-134 코드 반영, 리플레이 동일) | hybrid + 규칙 | v2 102건 | 0.882 | 0.961 | **0.631** | 0.836 | — | $0 |
+| 2026-09-18_hybrid_v2_llm_gpt-4o-mini (SUU-135) | hybrid + 규칙 + LLM(gpt-4o-mini, 상위 20·3,000자) | v2 102건 | 0.882 | 0.961 | 0.645 | 0.836 | — | $0.17 |
+| 2026-09-18_hybrid_v2_llm_gpt-5-mini (SUU-135) | hybrid + 규칙 + LLM(gpt-5-mini, 상위 20·3,000자) | v2 102건 | 0.931 | 0.961 | **0.692** | 0.836 | — | $0.58 |
 | 2026-09-18_vector_v2_bge_nocontext (SUU-133) | **baseline**(bge-m3, 컨텍스트 없음) | v2 102건 | 0.441 | 0.627 | 0.264 | 0.426 | 0.345 | $0 |
 | 2026-09-18_vector_v2_bge (SUU-133) | vector(bge-m3, 컨텍스트) | v2 102건 | 0.490 | 0.676 | 0.297 | 0.467 | 0.371 | $0 |
 
@@ -360,7 +362,8 @@ Claude(실행):
 | C-8 | bge·nemotron reranker 비교 | 완료(SUU-131, $0). hybrid nDCG@10 Kanon 0.568 > nemotron 0.512 > bge 0.485 → **Kanon 유지**. 세 모델 공통 실패 5건(Subpart A 정답 4건) → 다음은 Subpart A 항상 포함·조문 단위 리랭크 |
 | C-9 | 창·규칙 시뮬(리랭크 후처리) | 완료(SUU-132, Kanon 1회 $9). 창 60 + 표 뒤로 + Subpart 우선 2 → nDCG@10 **0.631**(+0.065), Hit@20 0.961. **SUU-134에서 `search_sections`에 넣음**(리플레이 0.631 동일, 기본 켜짐) |
 | C-10 | baseline(컨텍스트 없음) | 완료(SUU-133, bge-m3 로컬 $0). baseline nDCG@10 **0.264**, +컨텍스트 0.297, Kanon 임베더 0.437. 임베더 > 컨텍스트 |
-| C-5 | 합격선 + CI 검사 | 기준 조합 = hybrid(Kanon) + 규칙(SUU-134, 0.631). 다음: 합격선 정하기 |
+| C-11 | LLM 리랭크(상위 20조문) | 완료(SUU-135, OpenAI). gpt-4o-mini +0.014(동점), **gpt-5-mini 0.631 → 0.692(+0.061)**, Hit@5 0.931. $0.58, ≈ 20초/건. `search_sections` 반영은 별도 티켓 |
+| C-5 | 합격선 + CI 검사 | 기준 조합 = hybrid(Kanon) + 규칙(SUU-134, 0.631). LLM 리랭크(gpt-5-mini, 0.692)를 넣을지 정한 뒤 합격선 |
 | C-6 | hybrid 채택 여부 | C-7·C-8 완료. hybrid(Kanon)를 기준 조합으로 두고 Subpart A 규칙·조문 단위 리랭크를 얹는다 |
 
 그 뒤: 답변 생성(아직 없음), 대시보드(SUU-113), ADI 회신 `adi_` 테이블 적재.
