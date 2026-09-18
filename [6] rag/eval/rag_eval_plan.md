@@ -106,7 +106,7 @@
 
 | config | 검색 방식 | 필요한 준비 | 티켓 |
 |---|---|---|---|
-| `baseline` | 컨텍스트 **없이** `chunk_text`만 임베딩 → 벡터 | 청크 5,625개를 컨텍스트 없이 다시 임베딩(Kanon만, LLM 비용 없음). `rag_chunk`와 별도 컬럼/테이블(`embedding_nocontext`)에 저장 | 후속 |
+| `baseline` | 컨텍스트 **없이** `chunk_text`만 임베딩 → 벡터 | 로컬 `bge-m3`로 평가 때만 임베딩(`run_eval.py --embedder bge --no-context`, 캐시 `eval/cache/`). Supabase에 저장 안 함 | **SUU-133** 완료 |
 | `contextual` | `context_text + chunk_text` 임베딩 → 벡터 (지금 `rag_chunk.embedding`) | SUU-80 완료 | **SUU-81** |
 | `rerank` | contextual 벡터 상위 150 청크 → Kanon 2 Reranker → 20 | Isaacus rerank 호출 | **SUU-101** |
 | `hybrid` | contextual 벡터 + BM25(파이썬 `rank_bm25`, SUU-116) → RRF(k=60) → 리랭커 | 키워드 검색 함수(SUU-99 ts_rank → SUU-116 BM25로 교체) | SUU-100 (rerank 뒤) |
@@ -265,11 +265,14 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 | 2026-09-18_hybrid_v2_nemotron (SUU-131) | hybrid(nemotron) | v2 102건 | 0.745 | 0.882 | 0.512 | 0.723 | 0.595 | $0 |
 | 2026-09-18_hybrid_v2 (SUU-132, ranked_all 저장) | hybrid(BM25) | v2 102건 | 0.804 | 0.931 | 0.565 | 0.782 | 0.639 | $9.35 |
 | ↑ + 창 60·표 뒤로·Subpart 우선 2 (SUU-132 시뮬) | hybrid + 규칙 | v2 102건 | 0.882 | 0.961 | **0.631** | 0.836 | — | $0 |
+| 2026-09-18_vector_v2_bge_nocontext (SUU-133) | **baseline**(bge-m3, 컨텍스트 없음) | v2 102건 | 0.441 | 0.627 | 0.264 | 0.426 | 0.345 | $0 |
+| 2026-09-18_vector_v2_bge (SUU-133) | vector(bge-m3, 컨텍스트) | v2 102건 | 0.490 | 0.676 | 0.297 | 0.467 | 0.371 | $0 |
 
 - reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result.md`.
 - 후보 풀 스윕(SUU-130, `results/rrf_sweep.csv`): w 0.3~0.5·depth 300에서 recall@150 0.900, 기본 0.889. k 영향 없음. adi-M200005는 후보 안에 있음(SUU-119의 '후보 밖' 판단 정정).
 - 창·규칙 시뮬(SUU-132, `results/rules_sweep.csv`): 리랭크 뒤 창 60에서 표 뒤로 + 5등 안 Subpart 상위 2·A 우선 → nDCG@10 0.565 → 0.631, miss@20 7 → 4. $0. 다음 티켓에서 `search_sections` 후처리로 넣는다.
 - 리랭커 비교(SUU-131, 로컬 GPU $0): Kanon > nemotron > bge > vector, 어느 조합에서나 같은 순서. 세 리랭커 공통 실패 5건 중 4건은 Subpart A 정답 → Kanon 유지, 다음은 Subpart A 규칙·조문 단위 리랭크.
+- baseline(SUU-133, bge-m3 로컬 $0): 컨텍스트 없음 0.264 → 컨텍스트 +0.033 → Kanon 임베더 +0.140. 임베더 효과가 컨텍스트의 4배. Kanon 기준 컨텍스트 효과는 미측정(재임베딩 ≈ $2).
 - v2 102건(SUU-129): reranker → hybrid 98건 동일, 3건 좋아짐, 1건 나빠짐. 공통 top-20 실패 7건 중 4건은 정답이 Subpart A 일반 규정(63.8·63.9·63.91). 세부: `results/rag_eval_result.md`.
 - 지연: 질문 임베딩 p50 572ms / p95 612ms, 파이썬 전수 검색 p50 568ms(서비스 지연 아님).
 
@@ -356,6 +359,7 @@ Claude(실행):
 | C-7 | 후보 풀 진단 + RRF 가중치 스윕 | 완료(SUU-130, $0). recall@150 기본 0.889 → 최고 0.900(동점) → **가중치 튜닝 안 함**. hybrid 실패 7건 중 5건 rank-miss → 병목은 리랭커. BM25 단독 풀(0.873) > vector 단독(0.842) |
 | C-8 | bge·nemotron reranker 비교 | 완료(SUU-131, $0). hybrid nDCG@10 Kanon 0.568 > nemotron 0.512 > bge 0.485 → **Kanon 유지**. 세 모델 공통 실패 5건(Subpart A 정답 4건) → 다음은 Subpart A 항상 포함·조문 단위 리랭크 |
 | C-9 | 창·규칙 시뮬(리랭크 후처리) | 완료(SUU-132, Kanon 1회 $9). 창 60 + 표 뒤로 + Subpart 우선 2 → nDCG@10 **0.631**(+0.065), Hit@20 0.961. 채택 → 다음 티켓에서 검색 코드에 넣음 |
+| C-10 | baseline(컨텍스트 없음) | 완료(SUU-133, bge-m3 로컬 $0). baseline nDCG@10 **0.264**, +컨텍스트 0.297, Kanon 임베더 0.437. 임베더 > 컨텍스트 |
 | C-5 | 합격선 + CI 검사 | 기준 조합 = hybrid(Kanon) + C-9 규칙. 규칙을 코드에 넣은 뒤 정한다 |
 | C-6 | hybrid 채택 여부 | C-7·C-8 완료. hybrid(Kanon)를 기준 조합으로 두고 Subpart A 규칙·조문 단위 리랭크를 얹는다 |
 
