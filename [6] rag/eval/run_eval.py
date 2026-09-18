@@ -96,6 +96,11 @@ def run_id_for(day, config, eval_set, reranker):
     return f"{day}_{config}_{eval_set}{suffix}"
 
 
+def ranked_all_of(sections):
+    """리랭크된 조문 순위 전체를 [section_key, subpart, score]로 (SUU-132 창·규칙 시뮬용)."""
+    return [[s["section_key"], s["subpart"], round(s["score"], 4)] for s in sections]
+
+
 def p(values, q):
     values = sorted(values)
     return round(values[min(len(values) - 1, int(round(q * (len(values) - 1))))])
@@ -139,16 +144,17 @@ def main():
     lines = []
     for c in cases:
         t0 = time.perf_counter()
-        sections = search_sections(
+        sections_all = search_sections(
             c["question"],
             embed=lambda request: cache[c["case_id"]]["embedding"],
             chunks=chunks,
             keyword=keyword,
             rerank=rerank if uses_rerank else None,
-            top_k=K_MAX,
+            top_k=len(chunks),  # 조문 전부. 채점은 아래서 K_MAX로 자른다
             chunk_top_k=150 if uses_rerank else CHUNK_TOP_K,
         )
         search_ms = (time.perf_counter() - t0) * 1000
+        sections = sections_all[:K_MAX]
         ranks = gold_ranks(c["gold_citations"], sections)
         within = lambda k: [r is not None and r <= k for r in ranks.values()]  # noqa: E731
         first = min((r for r in ranks.values() if r is not None), default=None)
@@ -169,6 +175,7 @@ def main():
             "latency_ms": {"embed": round(cache[c["case_id"]]["embed_ms"]), "search": round(search_ms)},
             "failure_code": None,
             "failure_note": None,
+            "ranked_all": ranked_all_of(sections_all),
         })
 
     metrics = summarize(lines, k_max=K_MAX)
