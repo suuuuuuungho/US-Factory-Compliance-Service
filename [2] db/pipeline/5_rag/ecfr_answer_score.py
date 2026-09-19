@@ -33,6 +33,14 @@ JUDGE_SYSTEM = (
 
 _SCORE_RE = re.compile(r"score\D*(-?\d+)", re.I)
 _FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.I)
+_SUBPART_CODE_RE = re.compile(r"^[A-Z]{1,7}$")
+_SUBPART_PREFIX_RE = re.compile(r"^subpart\s+", re.I)
+
+
+def normalize_subpart(label: Any) -> str:
+    """"Subpart M" / "subpart m" / " M " → "M". 코드 모양이 아니면(조문 번호 등) 원문 그대로 둔다."""
+    code = _SUBPART_PREFIX_RE.sub("", str(label).strip()).strip().upper()
+    return code if _SUBPART_CODE_RE.match(code) else str(label)
 
 
 def _answer_sections(answer: dict[str, Any]) -> list[str]:
@@ -52,7 +60,7 @@ def _answer_sections(answer: dict[str, Any]) -> list[str]:
 
 def score_subpart(answer: dict[str, Any], case: dict[str, Any]) -> int:
     """1 if the case's primary gold subpart is one of the answer's candidates."""
-    candidates = {c.get("subpart") for c in answer.get("candidates", [])}
+    candidates = {normalize_subpart(c.get("subpart")) for c in answer.get("candidates", [])}
     return int(case["gold_subparts"][0] in candidates)
 
 
@@ -119,6 +127,6 @@ def aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 __all__ = [
     "JUDGE_MODEL", "JUDGE_SYSTEM", "MAX_COMPLETION_TOKENS",
-    "aggregate", "build_judge_request", "parse_judge",
+    "aggregate", "build_judge_request", "normalize_subpart", "parse_judge",
     "score_citation_grounded", "score_citation_recall", "score_subpart",
 ]
