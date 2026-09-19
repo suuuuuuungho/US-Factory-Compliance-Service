@@ -46,9 +46,27 @@ h3 {
   font-family: var(--font-serif);
 }
 
+/* 스크롤 시차 — 그림이 조금 느리게 따라온다. 지원 안 하는 브라우저는 그냥 정지 */
+@supports (animation-timeline: scroll()) {
+  .parallax {
+    animation: parallax-drift linear both;
+    animation-timeline: scroll();
+    animation-range: 0 100vh;
+  }
+  @keyframes parallax-drift {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-40px);
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-train,
-  .animate-smoke {
+  .animate-smoke,
+  .parallax {
     animation: none;
   }
 }

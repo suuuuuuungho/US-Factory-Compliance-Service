@@ -1,10 +1,12 @@
-// 자리표시. 히어로는 SUU-142, 푸터는 SUU-141이 채운다.
 import EngravedFooter from "../components/EngravedFooter";
+import Hero from "../components/Hero";
 
 export default function Home() {
   return (
     <>
-      <main className="flex-1" />
+      <main className="flex-1">
+        <Hero />
+      </main>
       <EngravedFooter />
     </>
   );
