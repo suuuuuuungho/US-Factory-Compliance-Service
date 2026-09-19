@@ -70,3 +70,30 @@ def test_parse_answer_flags_unknown_fields_and_outside_citations_but_keeps_answe
 def test_parse_answer_rejects_missing_required_parts(raw):
     with pytest.raises(ValueError):
         parse_answer(raw, GIVEN)
+
+
+# ---- SUU-150: 프롬프트가 subpart 칸을 코드로, 정답이 여럿이면 다 적게 시킨다 ----
+
+
+def test_answer_system_tells_code_only_and_list_every_subpart():
+    from ecfr_answer import ANSWER_SYSTEM
+
+    system = ANSWER_SYSTEM.lower()
+    assert "code only" in system  # subpart 칸: "M", "PPPP" 같은 코드만. "Subpart M"·조문 번호 X
+    assert "every subpart" in system  # 적용될 수 있는 subpart가 여럿이면(Subpart A 포함) 다 적기
+
+
+def test_parse_answer_normalizes_subpart_label_to_code():
+    raw = json.loads(json.dumps(GOOD))
+    raw["candidates"][0]["subpart"] = "Subpart PPPP"
+    answer, issues = parse_answer(json.dumps(raw), GIVEN)
+    assert answer["candidates"][0]["subpart"] == "PPPP"
+    assert issues == []
+
+
+def test_parse_answer_keeps_section_number_in_subpart_but_flags_it():
+    raw = json.loads(json.dumps(GOOD))
+    raw["candidates"][0]["subpart"] = "40 CFR 63.4481"
+    answer, issues = parse_answer(json.dumps(raw), GIVEN)
+    assert answer["candidates"][0]["subpart"] == "40 CFR 63.4481"  # 채점기가 미적중으로 잡게 그대로 둔다
+    assert any("subpart" in i and "63.4481" in i for i in issues)
