@@ -112,3 +112,17 @@ def test_aggregate_returns_four_means_and_failed_case_ids():
     assert out["judge"] == pytest.approx(1.0)
     # 실패 = Subpart 0 이거나 심판 0점 이거나 근거율 < 1
     assert out["failed"] == ["b", "c"]
+
+
+# --- SUU-149: subpart 표기 정규화 ----------------------------------------------
+
+
+@pytest.mark.parametrize("label", ["M", "Subpart M", "subpart m", " M "])
+def test_score_subpart_normalizes_label_to_code(label):
+    answer = {"candidates": [{"subpart": label, "criteria": []}], "checklist": []}
+    assert score_subpart(answer, {"gold_subparts": ["M"]}) == 1
+
+
+def test_score_subpart_does_not_accept_section_number_as_subpart():
+    answer = {"candidates": [{"subpart": "40 CFR 63.320", "criteria": []}], "checklist": []}
+    assert score_subpart(answer, {"gold_subparts": ["M"]}) == 0
