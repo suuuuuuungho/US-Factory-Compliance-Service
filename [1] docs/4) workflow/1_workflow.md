@@ -163,7 +163,7 @@
 | 3 | Linear ↔ GitHub 연동 | PR 열면 이슈에 자동 연결, merge 시 Done |  ✅
 | 4 | `slack.yml` | PR 열면 Slack에 메시지 옴 | ✅ SUU-29
 | 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
-| 6 | `cd.yml` + Vercel 연결 | main merge 시 배포 성공 알림 | 🟡 Vercel 연결 ✅ (프로젝트 `lg-cns/us-factory-compliance`, Root `[4]frontend`, SUU-143). `cd.yml`·Slack 배포 알림은 남음 |
+| 6 | `cd.yml` + Vercel 연결 | main merge 시 배포 성공 알림 | (SUU-140~143에서 한 번 연결했다가 SUU-144로 프론트 초기화. Vercel Root Directory에 공백 불가 → 폴더는 `[4]frontend`) |
 
 ## 8. 결정 기록 (왜 이렇게 했나)
 
