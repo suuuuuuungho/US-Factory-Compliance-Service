@@ -54,3 +54,17 @@ def test_answer_run_record_carries_search_run_and_four_means():
     assert rec["metrics"]["n"] == 2 and rec["metrics"]["judge"] == 1.0 and rec["metrics"]["failed"] == ["b"]
     assert rec["cost_usd"]["total"] == 1.23
     assert rec["run_at"].endswith("Z")
+
+
+# ---- SUU-152: 조문 수를 --top-n으로 바꿀 수 있다 (기본 5) ----
+
+
+def test_top_sections_takes_top_n_when_given():
+    line = {"llm_order": [f"section-63.{i}" for i in range(20)], "ranked_all": [[f"section-63.{i}", "A"] for i in range(20)]}
+    top = top_sections(line, top_n=10)
+    assert [s["section_key"] for s in top] == [f"section-63.{i}" for i in range(10)]
+
+
+def test_top_sections_defaults_to_five():
+    line = {"llm_order": [f"section-63.{i}" for i in range(20)], "ranked_all": [[f"section-63.{i}", "A"] for i in range(20)]}
+    assert len(top_sections(line)) == TOP_N == 5
