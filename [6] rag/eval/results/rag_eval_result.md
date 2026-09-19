@@ -326,3 +326,14 @@ reranker → hybrid가 31건 동일한 이유: 리랭커는 후보 150개 중 **
 1. 평가셋 만들기(C-3) — 지금은 32건이라 reranker vs hybrid 1건 차이를 판단할 수 없다.
 2. 합격선(C-5) — nDCG@10 기준. 지금 값이면 reranker 0.66 근처.
 3. adi-M200005 원인(후보 부족) — 정확 일치 경로·질문 다시 쓰기 실험 후보.
+
+## SUU-147 답변 1차 측정 baseline (2026-09-19, v2 102건)
+
+기본 조합(hybrid + 규칙 + LLM 리랭크) 저장 결과의 상위 5조문 전문 → gpt-5-mini → 판정 기준표 JSON → SUU-146 채점기. 채점표 정의는 `[1] docs/3) rag/4_rag 답변 품질 개선 과정.md`.
+
+| Subpart 적중 | 인용 Recall | 인용 근거율 | 판정 기준 점수(0~2) | 실패 | 비용 |
+|---|---|---|---|---|---|
+| 0.863 | 0.685 | 1.000 | 1.667 (2점 71 / 1점 28 / 0점 3) | 15 | $1.45 |
+
+- 결과 `results/2026-09-19_answer_v2_gpt-5-mini.jsonl`, run `answer_runs.jsonl`. 재현: `python "[6] rag/eval/run_answer.py" --replay --run-id 2026-09-19_answer_v2_gpt-5-mini` ($0).
+- 실패 15 = Subpart 미적중 14 + 심판 0점 3(겹침). 지어낸 인용 0건. 다음: SUU-148 심판 사람 검증, SUU-149 실패 원인 분류.

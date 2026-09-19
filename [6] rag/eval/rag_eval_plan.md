@@ -372,8 +372,8 @@ Claude(실행):
 
 | # | 정한 것 | 결과 |
 |---|---|---|
-| A-1 | 채점기 코드 | 예정(SUU-146). `ecfr_answer_score.py`: Subpart 적중·인용 Recall·인용 근거율($0) + 판정 기준 점수(gpt-5-mini 심판, `notes` 기준 0·1·2) |
-| A-2 | 1차 측정 baseline | 예정(SUU-147). 기본 조합 검색 상위 5조문 전문 → gpt-5-mini → 판정 기준표 JSON → 102건 채점. ~$1.3 |
+| A-1 | 채점기 코드 | 완료(SUU-146). `ecfr_answer_score.py`: Subpart 적중·인용 Recall·인용 근거율($0) + 판정 기준 점수(gpt-5-mini 심판, `notes` 기준 0·1·2) |
+| A-2 | 1차 측정 baseline | 완료(SUU-147, $1.45). 상위 5조문 전문 → gpt-5-mini → 판정 기준표 JSON. **Subpart 0.863 / 인용 Recall 0.685 / 근거율 1.000 / 판정 기준 1.667**, 실패 15. 지어낸 인용 0. run은 `answer_runs.jsonl`(runs.jsonl과 분리) |
 | A-3 | 심판 사람 검증 | 예정(SUU-148). 10건 사람이 읽어 일치율. 70% 미만이면 심판 프롬프트 수정 |
 | A-4 | 실패 원인 분류 | 예정(SUU-149). 검색이 못 줌 / 조문은 있는데 답 틀림 / 인용 지어냄 |
 | A-5 | 개선 실험 + 합격선 | 후속. 한 번에 하나: 조문 수 5→10→20, Subpart A 항상 포함, 인용 강제 프롬프트, Claude 비교 → 합격선 + CI |

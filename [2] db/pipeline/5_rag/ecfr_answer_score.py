@@ -36,12 +36,15 @@ _FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.I)
 
 
 def _answer_sections(answer: dict[str, Any]) -> list[str]:
-    """답에 나온 인용을 조문 단위로, 등장 순서대로, 중복 없이."""
+    """답에 나온 인용을 조문 단위로, 등장 순서대로, 중복 없이. 63.xxxx가 아닌 인용(표·부록)은 건너뛴다."""
     keys: list[str] = []
     for cand in answer.get("candidates", []):
         for crit in cand.get("criteria", []):
             for citation in crit.get("citations", []):
-                key = citation_section_key(citation)
+                try:
+                    key = citation_section_key(citation)
+                except ValueError:
+                    continue
                 if key not in keys:
                     keys.append(key)
     return keys
