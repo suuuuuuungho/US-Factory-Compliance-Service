@@ -356,3 +356,14 @@ reranker → hybrid가 31건 동일한 이유: 리랭커는 후보 150개 중 **
 | answer | 5 | dashboard-eaton-auburn-2023-09-07, adi-M170004, dashboard-lhoist-north-america-montevallo-plant-2021-04-09, adi-M080034, adi-M150036 |
 
 - 7/10이 프롬프트 쪽(subpart 칸에 조문 번호, 정답 Subpart 둘 중 하나만) → A-5 1순위 프롬프트, 2순위 조문 수 확대. 자세한 표는 `[1] docs/3) rag/4_rag 답변 품질 개선 과정.md` 5·6절.
+
+## SUU-150 프롬프트 v2: subpart 코드만·적용 가능한 subpart 다 적기 (2026-09-19, v2 102건)
+
+`ANSWER_SYSTEM`에 두 줄 추가(코드만, 1~4개 다 적기) + `parse_answer`가 subpart 정규화. 검색·조문 수·모델·심판 그대로. run `2026-09-19_answer_v2_gpt-5-mini_prompt2`, $1.38.
+
+| 조합 | Subpart 적중 | 인용 Recall | 인용 근거율 | 판정 기준 점수 | 실패 |
+|---|---|---|---|---|---|
+| baseline (SUU-149) | 0.912 | 0.685 | 1.000 | 1.667 | 10 |
+| 프롬프트 v2 | 0.922 | 0.707 | 0.998 | 1.686 | 11 |
+
+실패 11: 지어냄 1(adi-M180004) / 검색 3 / 형식 0 / 답 7. 차이는 모두 동점 폭(0.03 / 심판 0.06) 안 → **동점, 채택 안 함**. 완료 기준 "Subpart ≥ 0.94" 미달. `format` 0은 됐다. 복수 정답(ZZZZ+PPPPP 등)은 "다 적기"로도 못 잡음 — Subpart A만 덧붙임. 다음: A-5 ② 조문 수 확대.

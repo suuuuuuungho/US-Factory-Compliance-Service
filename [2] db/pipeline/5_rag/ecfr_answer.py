@@ -13,6 +13,7 @@ import os
 import re
 from typing import Any
 
+from ecfr_answer_score import normalize_subpart
 from ecfr_eval import citation_section_key
 
 ANSWER_MODEL = "gpt-5-mini"
@@ -25,7 +26,8 @@ Build an APPLICABILITY CRITERIA TABLE as JSON with exactly this schema:
 {"candidates": [{"subpart": "PPPP", "title": "<subpart name>", "criteria": [{"criterion": "<one sentence>", "citations": ["40 CFR 63.xxxx(a)"]}]}], "checklist": ["<fact the plant must verify>"]}
 
 Rules:
-- candidates: 1 to 3 subparts, only subparts that appear in the given sections.
+- candidates: list EVERY subpart that could apply to this plant (1 to 4), including the general provisions Subpart A when its sections were given. Only subparts that appear in the given sections.
+- subpart: the subpart code only ("A", "M", "PPPP"). Never "Subpart M", never a section number like "40 CFR 63.460".
 - criterion: one sentence of the form "if ... then subject" / "if ... then not subject". It is the test, not the result.
 - citations: only sections you were given, formatted "40 CFR 63.xxxx" with the paragraph, e.g. "40 CFR 63.4481(a)". At least one per criterion.
 - checklist: concrete facts the plant must check about its own operation to apply the criteria.
@@ -33,6 +35,7 @@ Rules:
 - No other fields. Output the JSON only, no prose."""
 
 _FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.I)
+_SUBPART_CODE_RE = re.compile(r"[A-Z]{1,7}")
 _TOP_KEYS = {"candidates", "checklist"}
 _CANDIDATE_KEYS = {"subpart", "title", "criteria"}
 _CRITERION_KEYS = {"criterion", "citations"}
@@ -88,6 +91,11 @@ def parse_answer(text: str, given_section_keys: list[str]) -> tuple[dict[str, An
         if not isinstance(cand, dict) or not isinstance(cand.get("subpart"), str):
             raise ValueError(f"candidates[{ci}]: 'subpart' must be a string")
         cand = _keep(cand, _CANDIDATE_KEYS, f"candidates[{ci}]", issues)
+        code = normalize_subpart(cand["subpart"])
+        if _SUBPART_CODE_RE.fullmatch(code):
+            cand["subpart"] = code
+        else:
+            issues.append(f"candidates[{ci}].subpart is not a code: {cand['subpart']}")
         criteria = _nonempty_list(cand, "criteria", f"candidates[{ci}]")
         cand["criteria"] = []
         for ki, crit in enumerate(criteria):
