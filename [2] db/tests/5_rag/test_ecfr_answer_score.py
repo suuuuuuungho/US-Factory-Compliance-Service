@@ -126,3 +126,26 @@ def test_score_subpart_normalizes_label_to_code(label):
 def test_score_subpart_does_not_accept_section_number_as_subpart():
     answer = {"candidates": [{"subpart": "40 CFR 63.320", "criteria": []}], "checklist": []}
     assert score_subpart(answer, {"gold_subparts": ["M"]}) == 0
+
+
+# ---- SUU-151: 정답 Subpart가 여럿이면 A 빼고 하나만 맞아도 적중 ----
+
+
+def _ans(*subparts):
+    return {"candidates": [{"subpart": s, "criteria": []} for s in subparts], "checklist": []}
+
+
+def test_score_subpart_hits_when_any_non_a_gold_is_present():
+    assert score_subpart(_ans("PPPPP"), {"gold_subparts": ["ZZZZ", "PPPPP"]}) == 1
+    assert score_subpart(_ans("HHH", "A"), {"gold_subparts": ["DDDDD", "HHH"]}) == 1
+
+
+def test_score_subpart_does_not_count_general_provisions_a_alone():
+    assert score_subpart(_ans("A"), {"gold_subparts": ["FFFFF", "A"]}) == 0
+    assert score_subpart(_ans("A", "EE"), {"gold_subparts": ["FFFFF", "A"]}) == 0
+    assert score_subpart(_ans("FFFFF"), {"gold_subparts": ["FFFFF", "A"]}) == 1
+
+
+def test_score_subpart_counts_a_when_it_is_the_only_gold():
+    assert score_subpart(_ans("A"), {"gold_subparts": ["A"]}) == 1
+    assert score_subpart(_ans("ZZZZ"), {"gold_subparts": ["A"]}) == 0

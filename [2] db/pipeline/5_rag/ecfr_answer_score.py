@@ -59,9 +59,15 @@ def _answer_sections(answer: dict[str, Any]) -> list[str]:
 
 
 def score_subpart(answer: dict[str, Any], case: dict[str, Any]) -> int:
-    """1 if the case's primary gold subpart is one of the answer's candidates."""
+    """1 if any gold subpart other than the general provisions (A) is among the candidates.
+
+    A only counts when it is the sole gold subpart: it applies to almost every plant,
+    so matching it alone would hide a missed real rule (SUU-151).
+    """
     candidates = {normalize_subpart(c.get("subpart")) for c in answer.get("candidates", [])}
-    return int(case["gold_subparts"][0] in candidates)
+    gold = set(case["gold_subparts"])
+    real = (gold - {"A"}) or gold
+    return int(bool(real & candidates))
 
 
 def score_citation_recall(answer: dict[str, Any], case: dict[str, Any]) -> float:
