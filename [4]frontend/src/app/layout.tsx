@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
-const lora = Lora({ variable: "--font-lora", subsets: ["latin"] });
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+// 제목·본문 모두 Source Serif 4 Regular(400). 굵기는 제목만 600.
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  weight: ["400", "600"],
+});
 
 export const metadata: Metadata = {
   title: "US Factory Compliance",
@@ -15,7 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${lora.variable} ${inter.variable} h-full bg-paper text-ink antialiased`}
+      className={`${sourceSerif.variable} h-full bg-paper text-ink antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
