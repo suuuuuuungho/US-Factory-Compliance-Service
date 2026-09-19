@@ -337,3 +337,22 @@ reranker → hybrid가 31건 동일한 이유: 리랭커는 후보 150개 중 **
 
 - 결과 `results/2026-09-19_answer_v2_gpt-5-mini.jsonl`, run `answer_runs.jsonl`. 재현: `python "[6] rag/eval/run_answer.py" --replay --run-id 2026-09-19_answer_v2_gpt-5-mini` ($0).
 - 실패 15 = Subpart 미적중 14 + 심판 0점 3(겹침). 지어낸 인용 0건. 다음: SUU-148 심판 사람 검증, SUU-149 실패 원인 분류.
+
+## SUU-149 답변 실패 분류 + 채점기 subpart 정규화 (2026-09-19, v2 102건)
+
+채점기 `score_subpart`가 `"Subpart M"`/`"subpart m"`을 `M`으로 보게 고치고 같은 답을 `--replay`($0)로 다시 잼. 답·심판 점수는 그대로.
+
+| Subpart 적중 | 인용 Recall | 인용 근거율 | 판정 기준 점수(0~2) | 실패 | 비용 |
+|---|---|---|---|---|---|
+| **0.912** (0.863→) | 0.685 | 1.000 | 1.667 | 10 (15→) | $0 |
+
+실패 10건 원인(`python "[6] rag/eval/answer_failures.py"`, 우선순위 지어냄 > 검색 > 형식 > 답):
+
+| 태그 | 건수 | case_id |
+|---|---|---|
+| fabricated | 0 | — |
+| search | 3 | adi-M070020, adi-M100018, adi-M110005 |
+| format | 2 | adi-M070010, adi-M110015 |
+| answer | 5 | dashboard-eaton-auburn-2023-09-07, adi-M170004, dashboard-lhoist-north-america-montevallo-plant-2021-04-09, adi-M080034, adi-M150036 |
+
+- 7/10이 프롬프트 쪽(subpart 칸에 조문 번호, 정답 Subpart 둘 중 하나만) → A-5 1순위 프롬프트, 2순위 조문 수 확대. 자세한 표는 `[1] docs/3) rag/4_rag 답변 품질 개선 과정.md` 5·6절.
