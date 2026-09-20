@@ -2,10 +2,11 @@
 프롬프트·파싱·호출은 파이프라인 `ecfr_answer`, 채점은 `ecfr_answer_score`(SUU-146). 검색은 다시 돌리지 않는다.
 
 사용법 (레포 루트에서):
-  python "[6] rag/eval/run_answer.py" [--model gpt-5-mini] [--judge-model gpt-5-mini] [--top-n 5] [--limit 3] [--workers 8]
+  python "[6] rag/eval/run_answer.py" [--model gpt-5-mini] [--judge-model gpt-5-mini] [--top-n 5] [--always-a] [--limit 3] [--workers 8]
   → results/<날짜>_answer_v2_<model>.jsonl + answer_runs.jsonl 한 줄 + 점수판·토큰·비용 출력
   --replay: OpenAI를 안 부르고 저장된 raw_answer·judge_text를 다시 파싱·채점한다($0)
   --retry-empty: 저장 결과 중 answer가 없는(파싱 실패) 케이스만 다시 부른다
+  --always-a: 상위 N 뒤에 Subpart A 공통 규칙 63.2·63.7·63.8을 항상 붙인다 (SUU-153)
 
 - 입력: results/<SEARCH_RUN_ID>.jsonl 의 llm_order(hybrid + 규칙 + LLM 리랭크, SUU-136) 앞 TOP_N
 - 조문 전문: rag_chunk 그 조문의 청크 전부(본문 /0, /0-1… 먼저, 표 /1, /2… 뒤)를 chunk_text만 이어 붙임. cache/section_texts.json 에 캐시
@@ -36,6 +37,7 @@ ANSWER_RUNS = HERE / "answer_runs.jsonl"
 TEXTS_CACHE = HERE / "cache" / "section_texts.json"
 SEARCH_RUN_ID = "2026-09-18_hybrid_v2_llm_gpt-5-mini"
 TOP_N = 5
+ALWAYS_SECTIONS = ("section-63.2", "section-63.7", "section-63.8")  # 정의·성능시험·모니터링. 정답 인용에 가장 자주 나오는 A 조문
 
 
 def _piece_order(chunk_key: str) -> tuple[int, int]:
@@ -69,9 +71,11 @@ def fetch_texts(section_keys: list[str]) -> dict[str, str]:
     return texts
 
 
-def top_sections(line: dict, top_n: int = TOP_N) -> list[dict]:
+def top_sections(line: dict, top_n: int = TOP_N, always: tuple[str, ...] = ()) -> list[dict]:
     subpart = {k: sp for k, sp in line["ranked_all"]}
-    return [{"section_key": k, "subpart": subpart.get(k, "?")} for k in line["llm_order"][:top_n]]
+    top = line["llm_order"][:top_n]
+    return ([{"section_key": k, "subpart": subpart.get(k, "?")} for k in top]
+            + [{"section_key": k, "subpart": "A"} for k in always if k not in top])
 
 
 def score_line(case: dict, answer: dict | None, *, given: list[str], issues: list[str], judge_score: int, judge_text: str) -> dict:
@@ -86,7 +90,8 @@ def score_line(case: dict, answer: dict | None, *, given: list[str], issues: lis
             "judge": judge_score, "judge_text": judge_text}
 
 
-def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, model: str, judge_model: str, top_n: int, cost: float) -> dict:
+def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, model: str, judge_model: str, top_n: int, cost: float,
+                      always: tuple[str, ...] = ()) -> dict:
     return {
         "run_id": run_id,
         "run_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -94,6 +99,7 @@ def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, mode
         "eval_set_version": "v2",
         "n_cases": len(outs),
         "top_n": top_n,
+        "always_sections": list(always),
         "answer_model": model,
         "judge_model": judge_model,
         "metrics": aggregate(outs),
@@ -106,6 +112,7 @@ def main():
     ap.add_argument("--model", default="gpt-5-mini")
     ap.add_argument("--judge-model", default="gpt-5-mini")
     ap.add_argument("--top-n", type=int, default=TOP_N)
+    ap.add_argument("--always-a", action="store_true")
     ap.add_argument("--limit", type=int)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--replay", action="store_true")
@@ -113,6 +120,7 @@ def main():
     ap.add_argument("--run-id", default=f"{datetime.now(timezone.utc):%Y-%m-%d}_answer_v2_{ap.parse_known_args()[0].model}")
     args = ap.parse_args()
     load_env()
+    always = ALWAYS_SECTIONS if args.always_a else ()
     out_path = RESULTS / f"{args.run_id}.jsonl"
     saved: dict[str, dict] = {}
     if args.replay or args.retry_empty:
@@ -121,7 +129,7 @@ def main():
     lines = [json.loads(l) for l in (RESULTS / f"{SEARCH_RUN_ID}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
     cases = {c["case_id"]: c for c in map(json.loads, filter(None, (HERE / "rag_eval_case_v2.jsonl").read_text(encoding="utf-8").splitlines()))}
     lines = lines[: args.limit] if args.limit else lines
-    texts = {} if args.replay else fetch_texts(sorted({s["section_key"] for l in lines for s in top_sections(l, args.top_n)}))
+    texts = {} if args.replay else fetch_texts(sorted({s["section_key"] for l in lines for s in top_sections(l, args.top_n, always)}))
 
     usage = {"prompt_tokens": 0, "completion_tokens": 0}
 
@@ -133,7 +141,7 @@ def main():
 
     def one(line: dict) -> dict:
         case = cases[line["case_id"]]
-        sections = top_sections(line, args.top_n)
+        sections = top_sections(line, args.top_n, always)
         given = [s["section_key"] for s in sections]
         prev = saved.get(case["case_id"])
         reuse = prev is not None and (args.replay or (args.retry_empty and prev.get("answer") is not None))
@@ -172,7 +180,7 @@ def main():
     if not args.limit:
         with ANSWER_RUNS.open("a", encoding="utf-8") as f:
             f.write(json.dumps(answer_run_record(args.run_id, outs, search_run_id=SEARCH_RUN_ID, model=args.model,
-                                                 judge_model=args.judge_model, top_n=args.top_n, cost=cost), ensure_ascii=False) + "\n")
+                                                 judge_model=args.judge_model, top_n=args.top_n, cost=cost, always=always), ensure_ascii=False) + "\n")
         print(f"answer_runs.jsonl += {args.run_id}")
 
 
