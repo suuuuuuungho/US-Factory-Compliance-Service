@@ -68,3 +68,34 @@ def test_top_sections_takes_top_n_when_given():
 def test_top_sections_defaults_to_five():
     line = {"llm_order": [f"section-63.{i}" for i in range(20)], "ranked_all": [[f"section-63.{i}", "A"] for i in range(20)]}
     assert len(top_sections(line)) == TOP_N == 5
+
+
+# ---- SUU-153: Subpart A 63.2·63.7·63.8을 항상 붙인다 (--always-a) ----
+
+
+def _line(keys):
+    return {"llm_order": keys, "ranked_all": [[k, "X"] for k in keys]}
+
+
+def test_always_sections_are_appended_after_top_n_without_duplicates():
+    from run_answer import ALWAYS_SECTIONS
+
+    assert ALWAYS_SECTIONS == ("section-63.2", "section-63.7", "section-63.8")
+    # 상위 10 안에 63.7이 이미 있으면 다시 붙이지 않는다
+    keys = [f"section-63.{i}" for i in range(100, 109)] + ["section-63.7"] + ["section-63.200"]
+    top = top_sections(_line(keys), top_n=10, always=ALWAYS_SECTIONS)
+    got = [s["section_key"] for s in top]
+    assert got == keys[:10] + ["section-63.2", "section-63.8"]
+    assert [s["subpart"] for s in top[-2:]] == ["A", "A"]  # 붙인 조문의 subpart는 A
+
+
+def test_without_always_top_sections_is_unchanged():
+    keys = [f"section-63.{i}" for i in range(100, 120)]
+    assert [s["section_key"] for s in top_sections(_line(keys), top_n=10)] == keys[:10]
+
+
+def test_answer_run_record_keeps_always_sections():
+    outs = [{"case_id": "a", "subpart": 1, "citation_recall": 1.0, "citation_grounded": 1.0, "judge": 2}]
+    rec = answer_run_record("r", outs, search_run_id="s", model="m", judge_model="j", top_n=10, cost=0.0,
+                            always=("section-63.2", "section-63.7", "section-63.8"))
+    assert rec["always_sections"] == ["section-63.2", "section-63.7", "section-63.8"]
