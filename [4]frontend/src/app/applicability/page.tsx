@@ -23,7 +23,7 @@ import {
 import Workspace from "../Workspace";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
-const CARD_TITLE = "bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
+const CARD_TITLE = "sticky top-0 z-10 bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
 
 type OpenedSection = { section: Section | null; error: string | null; paragraph: string | null };
