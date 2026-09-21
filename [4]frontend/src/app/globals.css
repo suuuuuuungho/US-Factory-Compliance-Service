@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* DESIGN.md(Framer) colors / rounded 토큰. SUU-170 */
+@theme {
+  --color-primary: #ffffff;
+  --color-on-primary: #000000;
+  --color-accent-blue: #0099ff;
+  --color-ink: #ffffff;
+  --color-ink-muted: #999999;
+  --color-canvas: #090909;
+  --color-surface-1: #141414;
+  --color-surface-2: #1c1c1c;
+  --color-hairline: #262626;
+  --color-hairline-soft: #1a1a1a;
+  --color-inverse-canvas: #ffffff;
+  --color-inverse-ink: #000000;
+  --color-gradient-magenta: #d44df0;
+  --color-gradient-violet: #6a4cf5;
+  --color-gradient-orange: #ff7a3d;
+  --color-gradient-coral: #ff5577;
+  --color-semantic-success: #22c55e;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-xl: 20px;
+  --radius-xxl: 30px;
+  --radius-pill: 100px;
+  --radius-full: 9999px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
 }
