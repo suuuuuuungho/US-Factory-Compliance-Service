@@ -87,17 +87,22 @@ def search_sections(
     chunk_top_k: int = 300,
     rules: bool = True,
     llm: Callable[[str], str] | None = None,
+    vector: Callable[[list[float], int], list[dict[str, Any]]] | None = None,
 ) -> list[dict]:
     """Embed a question, rank its chunks, and collapse them to sections.
 
     With a reranker, ``rules`` applies ``RULES`` to the reranked sections.
     ``llm`` (prompt -> answer) then reorders the top ``LLM_TOP_N`` sections
-    (SUU-136) before cutting to ``top_k``.
+    (SUU-136) before cutting to ``top_k``. ``vector`` (query_embedding, k)
+    -> scored chunks replaces the in-memory cosine ranking (SUU-166).
     """
     query_embedding = embed(build_query_embedding_request(question))
-    vector_chunks = rank_chunks_by_similarity(
-        query_embedding, chunks, top_k=chunk_top_k
-    )
+    if vector is not None:
+        vector_chunks = vector(query_embedding, chunk_top_k)
+    else:
+        vector_chunks = rank_chunks_by_similarity(
+            query_embedding, chunks, top_k=chunk_top_k
+        )
     if keyword is None:
         ranked_chunks = vector_chunks
     else:

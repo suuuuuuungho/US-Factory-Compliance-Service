@@ -59,6 +59,7 @@ def answer_question(
         chunk_top_k=CHUNK_TOP_K,
         rules=True,
         llm=lambda prompt: count(llm(prompt)),
+        vector=index.vector,  # SUU-166: pgvector RPC. None이면 메모리 코사인
     )
     request = build_answer_request(question, [{**s, "text": section_text(index, s)} for s in found])
     text = count(chat(request))
