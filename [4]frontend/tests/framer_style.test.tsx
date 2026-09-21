@@ -24,10 +24,12 @@ async function askAndWait() {
 
 afterEach(() => vi.unstubAllGlobals());
 
-it("Ask 버튼은 흰 알약이다 (rounded-full + bg-primary + text-on-primary)", () => {
+// SUU-197: 알약(rounded-full)이 아니라 질문 칸과 같은 둥근 네모(rounded-md)
+it("Ask 버튼은 흰 둥근 네모다 (rounded-md + bg-primary + text-on-primary)", () => {
   render(<Home />);
   const cls = screen.getByRole("button", { name: /ask/i }).classList;
-  expect(cls.contains("rounded-full")).toBe(true);
+  expect(cls.contains("rounded-md")).toBe(true);
+  expect(cls.contains("rounded-full")).toBe(false);
   expect(cls.contains("bg-primary")).toBe(true);
   expect(cls.contains("text-on-primary")).toBe(true);
 });

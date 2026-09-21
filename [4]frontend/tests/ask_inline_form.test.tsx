@@ -28,6 +28,14 @@ it("처음부터 Ask 버튼이 textarea 바로 오른쪽 형제이고, form은 �
   expect(button.classList.contains("self-stretch")).toBe(true);
 });
 
+// SUU-197: 버튼 모서리는 textarea와 같다
+it("Ask 버튼의 모서리 클래스는 textarea와 같다 (rounded-md)", () => {
+  render(<Home />);
+  const rounded = (el: Element) => Array.from(el.classList).filter((c) => c.startsWith("rounded-"));
+  expect(rounded(screen.getByRole("button", { name: "Ask" }))).toEqual(rounded(screen.getByRole("textbox")));
+  expect(rounded(screen.getByRole("textbox"))).toEqual(["rounded-md"]);
+});
+
 it("Ask를 누르면 로딩 중에도, 답이 온 뒤에도 h1과 설명 p가 사라진다", async () => {
   let resolve!: (r: Response) => void;
   vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((r) => (resolve = r))));
