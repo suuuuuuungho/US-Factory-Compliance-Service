@@ -1,5 +1,5 @@
-// SUU-198: Memo 버튼 → 페이지 좌·우 2분할. 왼쪽 = 질문 폼 + Workspace, 오른쪽 = 메모 pane(제목·본문·Save·저장 기록).
-// 메모는 localStorage "applicability-memos"에 남고, 기록 항목을 누르면 편집칸에 다시 불려온다.
+// SUU-198: Memo 버튼 → 메모 pane(제목·본문·Save·저장 기록). 메모는 localStorage "applicability-memos"에 남고, 기록 항목을 누르면 편집칸에 다시 불려온다.
+// SUU-199: Memo는 dockview 칸이다. 누르면 Checklist 왼쪽에 Memo 칸이 생겨 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌 수 있다.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Home from "../src/app/applicability/page";
@@ -41,17 +41,28 @@ it("Memo 버튼은 Checklist 오른쪽에 있고, 누르기 전엔 메모 pane�
   expect(screen.queryByRole("complementary", { name: "Memo" })).toBeNull();
 });
 
-it("Memo를 누르면 2분할: 왼쪽 열에 질문 폼, 오른쪽에 메모 pane", async () => {
+it("Memo를 누르면 Memo 칸이 Checklist 왼쪽에 생기고 pane은 그 안에 있다", async () => {
   await askAndWait();
   fireEvent.click(memoButton());
-  expect(memoButton().getAttribute("aria-pressed")).toBe("true");
-  const memoPane = pane();
-  const form = screen.getByPlaceholderText(/describe the process/i).closest("form")!;
-  // 질문 폼과 pane은 같은 부모(2분할 상자)의 서로 다른 열에 있고, 폼이 먼저(왼쪽)다
-  const split = memoPane.parentElement!;
-  expect(split.contains(form)).toBe(true);
-  expect(form.compareDocumentPosition(memoPane) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  expect(split.className).toMatch(/flex-row|grid-cols-2/);
+  await screen.findByRole("button", { name: "Memo", pressed: true });
+  const tabs = screen.getAllByRole("tab").map((t) => t.getAttribute("aria-label"));
+  expect(tabs).toEqual(["Question", "Subparts", "Memo", "Checklist"]);
+  expect(pane().closest('[data-panel="memo"]')).not.toBeNull();
+  // Memo 칸은 Question/Subparts 열 밖에 있다 (세로 전체를 쓴다)
+  const column = (id: string) => document.querySelector(`[data-panel="${id}"]`)!.closest(".dv-branch-node")!;
+  expect(column("memo")).not.toBe(column("question"));
+});
+
+it("Ask 뒤에는 main의 최대 폭이 풀리고 좌우 여백이 줄어든다", async () => {
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(ASK), { status: 200, headers: { "content-type": "application/json" } })));
+  render(<Home />);
+  const main = screen.getByRole("main");
+  expect(main.classList.contains("max-w-7xl")).toBe(true);
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
+  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  await screen.findByText(/Subpart PPPP/);
+  expect(main.classList.contains("max-w-7xl")).toBe(false);
+  expect(main.classList.contains("px-4")).toBe(true);
 });
 
 it("Save하면 기록 목록에 제목과 시각이 남고 localStorage에도 저장된다", async () => {

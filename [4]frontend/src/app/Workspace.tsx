@@ -1,7 +1,9 @@
 "use client";
 // SUU-193: Subparts · Checklist · 조문 칸을 VSCode처럼 끌어서 크기·위치를 바꾼다 (dockview).
 // 조문은 인용마다 칸 하나(id "section:<key>")로 열려 여러 개를 나란히 놓을 수 있다.
-// 칸 배치는 localStorage에 저장하고, "Reset layout"으로 기본(Subparts | Checklist)으로 되돌린다.
+// 칸 배치는 localStorage에 저장하고, "Reset layout"으로 기본으로 되돌린다.
+// SUU-199: 질문 폼(question)과 메모(memo)도 칸이다. 기본 배치 = 왼쪽 열 Question(위)/Subparts(아래), 오른쪽 Checklist.
+// Memo는 버튼으로 열면 Checklist 왼쪽에 들어간다. 버튼 줄은 panels의 모든 id(조문 제외)를 토글한다.
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   DockviewReact,
@@ -13,9 +15,9 @@ import {
 import "dockview/dist/styles/dockview.css";
 
 export type Panels = Record<string, { title: string; node: ReactNode }>;
-export const FIXED = { subparts: "Subparts", checklist: "Checklist" } as const;
+const DEFAULT = ["question", "checklist", "subparts"]; // 추가 순서. addPanel이 자리를 정한다
 
-const STORAGE_KEY = "workspace-layout";
+const STORAGE_KEY = "workspace-layout-v2"; // v1 배치에는 question 칸이 없다
 const PanelContent = createContext<Panels>({});
 
 // SUU-188의 칸(COLUMN) 역할: 칸은 overflow-hidden, 카드가 flex-1로 채우고 카드 안에서 스크롤.
@@ -29,39 +31,35 @@ function Panel(props: IDockviewPanelProps) {
 }
 const components = { panel: Panel };
 
-function addPanel(api: DockviewApi, id: string, title: string) {
-  // 조문은 이미 열린 조문 칸에 탭으로, 그 외(첫 조문 포함)는 맨 오른쪽 칸 옆에.
+function position(api: DockviewApi, id: string) {
+  // 조문은 이미 열린 조문 칸에 탭으로. subparts는 question 아래, memo는 checklist 왼쪽. 그 외는 checklist(없으면 마지막 칸) 오른쪽에.
   const sibling = id.startsWith("section:")
     ? api.panels.find((p) => p.id.startsWith("section:") && p.id !== id)
     : undefined;
-  const last = api.panels[api.panels.length - 1];
-  api.addPanel({
-    id,
-    title,
-    component: "panel",
-    position: sibling
-      ? { referenceGroup: sibling.group }
-      : last
-        ? { referencePanel: last.id, direction: "right" }
-        : undefined,
-  });
+  if (sibling) return { referenceGroup: sibling.group };
+  if (id === "subparts" && api.getPanel("question")) return { referencePanel: "question", direction: "below" as const };
+  if (id === "memo" && api.getPanel("checklist")) return { referencePanel: "checklist", direction: "left" as const };
+  const ref = api.getPanel("checklist") ?? api.panels[api.panels.length - 1];
+  return ref ? { referencePanel: ref.id, direction: "right" as const } : undefined;
 }
 
-function addDefaultPanels(api: DockviewApi) {
-  for (const [id, title] of Object.entries(FIXED)) addPanel(api, id, title);
+function addPanel(api: DockviewApi, id: string, title: string) {
+  api.addPanel({ id, title, component: "panel", position: position(api, id) });
+}
+
+function addDefaultPanels(api: DockviewApi, panels: Panels) {
+  for (const id of DEFAULT) addPanel(api, id, panels[id].title);
 }
 
 export default function Workspace({
   panels,
   active,
   onClose,
-  toolbar,
   className = "",
 }: {
   panels: Panels;
   active?: string; // 이 id의 칸을 앞으로 가져온다 (인용 클릭)
   onClose?: (id: string) => void; // 사용자가 탭 ✕로 칸을 닫음
-  toolbar?: ReactNode; // SUU-198: Subparts·Checklist 버튼 오른쪽에 붙는 버튼(Memo)
   className?: string;
 }) {
   const [api, setApi] = useState<DockviewApi | null>(null);
@@ -77,7 +75,7 @@ export default function Workspace({
     }
     // 저장된 배치에 남아 있지만 지금은 내용이 없는 칸(지난번 조문)은 뺀다.
     for (const p of [...api.panels]) if (!panels[p.id]) api.removePanel(p);
-    if (api.panels.length === 0) addDefaultPanels(api);
+    if (api.panels.length === 0) addDefaultPanels(api, panels);
     prevIds.current = Object.keys(panels);
     const save = () => {
       try {
@@ -115,7 +113,7 @@ export default function Workspace({
   function reset() {
     if (!api) return;
     api.clear();
-    addDefaultPanels(api);
+    addDefaultPanels(api, panels);
   }
 
   const BTN = "rounded-full border border-hairline px-3 py-1 text-sm";
@@ -123,7 +121,7 @@ export default function Workspace({
     <PanelContent.Provider value={panels}>
       <div className={`flex flex-col gap-2 ${className}`}>
         <div className="flex items-center gap-2">
-          {Object.entries(FIXED).map(([id, title]) => {
+          {Object.entries(panels).filter(([id]) => !id.startsWith("section:")).map(([id, { title }]) => {
             const open = !!api?.getPanel(id);
             return (
               <button
@@ -137,7 +135,6 @@ export default function Workspace({
               </button>
             );
           })}
-          {toolbar}
           <button type="button" onClick={reset} className={`${BTN} ml-auto text-ink-muted hover:text-ink`}>
             Reset layout
           </button>
