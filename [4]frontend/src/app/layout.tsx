@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import TopNav from "./TopNav";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+// SUU-204: 글꼴은 로컬 SF Pro (가변, wght 400~700, 라틴만 60KB).
+const sfPro = localFont({
+  src: "./fonts/SF-Pro-latin.woff2",
+  variable: "--font-sf-pro",
+  weight: "400 700",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -15,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${sfPro.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <TopNav />
         {children}

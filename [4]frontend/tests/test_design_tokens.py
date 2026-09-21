@@ -34,10 +34,12 @@ def test_globals_css_registers_tokens_in_theme():
     assert "--font-geist-sans" not in body and "--font-geist-mono" not in body
 
 
-def test_layout_uses_inter_not_geist():
+def test_layout_uses_sf_pro_not_geist():
+    """SUU-204: Inter → 로컬 SF Pro(next/font/local)."""
     src = LAYOUT.read_text(encoding="utf-8")
-    assert re.search(r'import\s*\{[^}]*\bInter\b[^}]*\}\s*from\s*"next/font/google"', src)
-    assert "Geist" not in src
+    assert re.search(r'from\s*"next/font/local"', src)
+    assert "SF-Pro-latin.woff2" in src
+    assert "Geist" not in src and "next/font/google" not in src
 
 
 def test_globals_css_has_no_text_metal():
