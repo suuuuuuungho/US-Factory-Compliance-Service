@@ -30,7 +30,7 @@ function fakeFetch(body: unknown, status = 200) {
 
 function ask(question: string) {
   fireEvent.change(screen.getByRole("textbox"), { target: { value: question } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -62,7 +62,8 @@ it("기다리는 동안 로딩 표시(role=status)가 보이고 버튼이 잠긴
   expect(screen.queryByRole("status")).toBeNull();
   ask("solvent welding");
   expect(await screen.findByRole("status")).toBeTruthy();
-  expect((screen.getByRole("button", { name: /ask/i }) as HTMLButtonElement).disabled).toBe(true);
+  // SUU-214: PromptBar 는 busy 동안 Send 버튼이 Stop 으로 바뀐다
+  expect(screen.getByRole("button", { name: "Stop" })).toBeTruthy();
 });
 
 it("'not a final applicability determination' 문구는 답 전에도 후에도 있다", async () => {

@@ -1,4 +1,4 @@
-// SUU-196: Ask 버튼은 처음부터 textarea 오른쪽에 같은 높이로 붙어 있고, Ask를 누르면 h1·설명 p가 사라져 질문 칸이 위로 붙는다.
+// SUU-196: (SUU-214 로 Ask → PromptBar Send) Ask 버튼은 처음부터 textarea 오른쪽에 같은 높이로 붙어 있고, Ask를 누르면 h1·설명 p가 사라져 질문 칸이 위로 붙는다.
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import Home from "../src/app/applicability/page";
@@ -16,27 +16,8 @@ const ASK = {
 
 afterEach(() => vi.unstubAllGlobals());
 
-it("처음부터 Ask 버튼이 textarea 바로 오른쪽 형제이고, form은 가로, textarea는 flex-1, 버튼은 self-stretch다", () => {
-  render(<Home />);
-  const textarea = screen.getByRole("textbox");
-  const button = screen.getByRole("button", { name: "Ask" });
-  expect(textarea.nextElementSibling).toBe(button);
-  const form = textarea.closest("form")!;
-  expect(form.classList.contains("flex-row")).toBe(true);
-  expect(form.classList.contains("flex-col")).toBe(false);
-  expect(textarea.classList.contains("flex-1")).toBe(true);
-  expect(button.classList.contains("self-stretch")).toBe(true);
-});
-
-// SUU-197: 버튼 모서리는 textarea와 같다
-it("Ask 버튼의 모서리 클래스는 textarea와 같다 (rounded-md)", () => {
-  render(<Home />);
-  const rounded = (el: Element) => Array.from(el.classList).filter((c) => c.startsWith("rounded-"));
-  expect(rounded(screen.getByRole("button", { name: "Ask" }))).toEqual(rounded(screen.getByRole("textbox")));
-  expect(rounded(screen.getByRole("textbox"))).toEqual(["rounded-md"]);
-});
-
-it("Ask를 누르면 로딩 중에도, 답이 온 뒤에도 h1과 설명 p가 사라진다", async () => {
+// SUU-214: SUU-196/197 의 textarea·Ask 배치 검사는 PromptBar 로 바뀌면서 뺐다. 아래만 남는다.
+it("Send를 누르면 로딩 중에도, 답이 온 뒤에도 h1과 설명 p가 사라진다", async () => {
   let resolve!: (r: Response) => void;
   vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((r) => (resolve = r))));
   render(<Home />);
@@ -44,7 +25,7 @@ it("Ask를 누르면 로딩 중에도, 답이 온 뒤에도 h1과 설명 p가 �
   expect(screen.getByText(/40 CFR Part 63 applicability criteria/)).toBeTruthy();
 
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: "Ask" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByRole("status");
   expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   expect(screen.queryByText(/40 CFR Part 63 applicability criteria/)).toBeNull();

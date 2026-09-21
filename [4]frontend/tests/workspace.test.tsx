@@ -34,7 +34,7 @@ async function askAndWait() {
     url.endsWith("/ask") ? json(ASK) : json(SECTIONS[url.split("/").pop()!])));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
 }
 
@@ -61,7 +61,7 @@ it("질문 폼은 Question 칸 안에 있고, Question·Subparts는 한 열에 �
   await askAndWait();
   const question = screen.getByRole("region", { name: "Question" });
   within(question).getByPlaceholderText(/describe the process/i);
-  within(question).getByRole("button", { name: /ask/i });
+  within(question).getByRole("button", { name: "Send" });
   const column = (id: string) => document.querySelector(`[data-panel="${id}"]`)!.closest(".dv-branch-node")!;
   expect(column("question")).toBe(column("subparts"));
   expect(column("question")).not.toBe(column("checklist"));

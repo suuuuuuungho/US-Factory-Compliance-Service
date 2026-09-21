@@ -18,29 +18,13 @@ async function askAndWait() {
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(RESULT), { status: 200, headers: { "content-type": "application/json" } })));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
 }
 
 afterEach(() => vi.unstubAllGlobals());
 
-// SUU-197: 알약(rounded-full)이 아니라 질문 칸과 같은 둥근 네모(rounded-md)
-it("Ask 버튼은 흰 둥근 네모다 (rounded-md + bg-primary + text-on-primary)", () => {
-  render(<Home />);
-  const cls = screen.getByRole("button", { name: /ask/i }).classList;
-  expect(cls.contains("rounded-md")).toBe(true);
-  expect(cls.contains("rounded-full")).toBe(false);
-  expect(cls.contains("bg-primary")).toBe(true);
-  expect(cls.contains("text-on-primary")).toBe(true);
-});
-
-it("질문 입력칸은 차콜 바탕 + hairline 테두리다 (bg-surface-1 + border-hairline)", () => {
-  render(<Home />);
-  const cls = screen.getByRole("textbox").classList;
-  expect(cls.contains("bg-surface-1")).toBe(true);
-  expect(cls.contains("border-hairline")).toBe(true);
-});
-
+// SUU-214: Ask 버튼·질문 입력칸 클래스 검사는 PromptBar(자체 CSS) 로 바뀌면서 뺐다.
 it("후보 Subpart 카드는 차콜 카드다 (bg-surface-1 + border-hairline + rounded-lg)", async () => {
   await askAndWait();
   const card = screen.getByText(/Subpart PPPP/).closest("section")!;

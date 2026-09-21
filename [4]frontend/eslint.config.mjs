@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // SUU-214: react-bits 에서 받은 그대로 두는 파일. 우리 lint 규칙(react-compiler)에 안 맞아도 손대지 않는다.
+    "src/components/PromptBar.tsx",
   ]),
 ]);
 
