@@ -23,6 +23,7 @@ const BANDS = [
 const CARD = "overflow-hidden rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
+const COLUMN = "flex flex-col gap-6 overflow-y-auto md:max-h-[calc(100vh-22rem)]";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -62,15 +63,17 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-1">
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-        <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
-          US Factory Compliance AI Service
-        </h1>
-        <p className="text-lg text-accent-blue">
-          40 CFR Part 63 applicability criteria, with the sections to check.
-        </p>
-        <form onSubmit={onSubmit} className="flex flex-col gap-2">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-8">
+      <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
+        US Factory Compliance AI Service
+      </h1>
+      <p className="text-lg text-accent-blue">
+        40 CFR Part 63 applicability criteria, with the sections to check.
+      </p>
+
+      {/* SUU-182: 1행 = 질문 폼(3열 전부), 2행 = Subparts | Checklist | 조문. 칸마다 스크롤. */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <form onSubmit={onSubmit} className="flex flex-col gap-2 md:col-span-3">
           <textarea
             className="rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
             rows={3}
@@ -87,83 +90,92 @@ export default function Home() {
           </button>
         </form>
 
-        {loading && <p role="status">Searching the regulations… (10–20 s)</p>}
-        {error && <p className="text-red-400">{error}</p>}
+        {loading && <p role="status" className="md:col-span-3">Searching the regulations… (10–20 s)</p>}
+        {error && <p className="text-red-400 md:col-span-3">{error}</p>}
 
         {result && result.answer === null && (
-          <ul className="list-disc pl-6">
+          <ul className="list-disc pl-6 md:col-span-3">
             {result.issues.map((issue) => (
               <li key={issue}>{issue}</li>
             ))}
           </ul>
         )}
 
-        {result?.answer?.candidates.map((c, i) => (
-          <section key={c.subpart} className={CARD}>
-            <h2 className={`${CARD_TITLE} ${BANDS[i % BANDS.length]}`}>
-              Subpart {c.subpart} — {c.title}
-            </h2>
-            <ul className={CARD_LIST}>
-              {c.criteria.map((cr, i) => (
-                <li key={i}>
-                  {cr.criterion}{" "}
-                  {cr.citations.map((cit) => {
-                    const key = citationToSectionKey(cit);
-                    return key ? (
-                      <button
-                        key={cit}
-                        type="button"
-                        onClick={() => openSection(key)}
-                        className="mt-1 mr-2 block text-sm text-accent-blue underline"
-                      >
-                        {cit}
-                      </button>
-                    ) : (
-                      <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
-                        {cit}
-                      </span>
-                    );
-                  })}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-
         {result?.answer && (
-          <section className={CARD}>
-            <h2 className={`${CARD_TITLE} bg-gradient-violet`}>Checklist</h2>
-            <ul className={CARD_LIST}>
-              {result.answer.checklist.map((item) => (
-                <li key={item}>{item}</li>
+          <>
+            <section aria-label="Subparts" className={COLUMN}>
+              {result.answer.candidates.map((c, i) => (
+                <section key={c.subpart} className={CARD}>
+                  <h2 className={`${CARD_TITLE} ${BANDS[i % BANDS.length]}`}>
+                    Subpart {c.subpart} — {c.title}
+                  </h2>
+                  <ul className={CARD_LIST}>
+                    {c.criteria.map((cr, i) => (
+                      <li key={i}>
+                        {cr.criterion}{" "}
+                        {cr.citations.map((cit) => {
+                          const key = citationToSectionKey(cit);
+                          return key ? (
+                            <button
+                              key={cit}
+                              type="button"
+                              onClick={() => openSection(key)}
+                              className="mt-1 mr-2 block text-sm text-accent-blue underline"
+                            >
+                              {cit}
+                            </button>
+                          ) : (
+                            <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
+                              {cit}
+                            </span>
+                          );
+                        })}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               ))}
-            </ul>
-          </section>
-        )}
+            </section>
 
-        <p className="mt-auto text-sm text-ink-muted">
-          This is not a final applicability determination. The plant decides;
-          this page gives the criteria and where to look.
-        </p>
-      </main>
-      {(section || sectionError) && (
-        <aside
-          aria-label="Section text"
-          className="w-full max-w-md border-l border-hairline bg-surface-1 p-8"
-        >
-          {section && (
-            <>
-              <h2 className="mb-3 text-[22px] font-bold leading-tight tracking-[-0.8px]">
-                {section.section_key} (Subpart {section.subpart})
-              </h2>
-              <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed text-ink">
-                {section.text}
-              </pre>
-            </>
-          )}
-          {sectionError && <p className="text-red-400">{sectionError}</p>}
-        </aside>
-      )}
-    </div>
+            <section aria-label="Checklist" className={COLUMN}>
+              <section className={CARD}>
+                <h2 className={`${CARD_TITLE} bg-gradient-violet`}>Checklist</h2>
+                <ul className={CARD_LIST}>
+                  {result.answer.checklist.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </section>
+            </section>
+
+            <section aria-label="Section text column" className={COLUMN}>
+              {!section && !sectionError && (
+                <p className="text-sm text-ink-muted">Click a citation to read the section.</p>
+              )}
+              {(section || sectionError) && (
+                <aside aria-label="Section text" className="rounded-lg border border-hairline bg-surface-1 p-5">
+                  {section && (
+                    <>
+                      <h2 className="mb-3 text-[22px] font-bold leading-tight tracking-[-0.8px]">
+                        {section.section_key} (Subpart {section.subpart})
+                      </h2>
+                      <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed text-ink">
+                        {section.text}
+                      </pre>
+                    </>
+                  )}
+                  {sectionError && <p className="text-red-400">{sectionError}</p>}
+                </aside>
+              )}
+            </section>
+          </>
+        )}
+      </div>
+
+      <p className="mt-auto text-sm text-ink-muted">
+        This is not a final applicability determination. The plant decides;
+        this page gives the criteria and where to look.
+      </p>
+    </main>
   );
 }
