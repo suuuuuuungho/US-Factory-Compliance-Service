@@ -10,11 +10,12 @@ from typing import Callable
 from ecfr_answer import build_answer_request, parse_answer
 from ecfr_search import search_sections
 
+from app.claude import MODEL
 from app.index import Index
 
 TOP_N = 10                                   # SUU-152·154 기준 조합
 CHUNK_TOP_K = 150                            # run_eval.py: 리랭크 쓸 때 150
-PRICE_PER_M = {"gpt-5-mini": (0.25, 2.00)}   # [6] rag/eval/llm_rerank.py 와 같음 (USD / 1M 토큰: prompt, completion)
+PRICE_PER_M = {"claude-haiku-4-5": (1.00, 5.00)}   # USD / 1M 토큰: prompt, completion
 
 
 def _piece_order(chunk_key: str) -> tuple[int, int]:
@@ -61,7 +62,7 @@ def answer_question(
         llm=lambda prompt: count(llm(prompt)),
         vector=index.vector,  # SUU-166: pgvector RPC. None이면 메모리 코사인
     )
-    request = build_answer_request(question, [{**s, "text": section_text(index, s)} for s in found])
+    request = build_answer_request(question, [{**s, "text": section_text(index, s)} for s in found], model=MODEL)
     text = count(chat(request))
     try:
         answer, issues = parse_answer(text, [s["section_key"] for s in found])
