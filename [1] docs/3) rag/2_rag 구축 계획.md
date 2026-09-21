@@ -229,11 +229,18 @@
    - `rag_eval_case`: `case_id text PK`, `question text`, `gold_citations text[]`, `gold_subparts text[]`, `source text`(adi/dashboard/manual), `source_ref text NULL`(ADI Control Number 또는 Dashboard 회신 URL), `notes text`.
    - `rag_eval_result`: `(eval_run_id, case_id) PK`, `config text`(baseline/contextual/hybrid/rerank), `release_id FK`, `first_gold_rank integer NULL`, `top20_hit boolean`, `subpart_hit boolean`, `returned_keys text[]`.
 
-4) 인덱스
+4) `rag_answer_log` — 서비스 질문 로그 (SUU-159). `/ask` 한 번 = 한 줄. 평가셋 v3 재료
+   - `id bigint identity PK`, `created_at timestamptz`.
+   - `release_id FK → common_dataset_release`: 답을 만들 때 쓴 색인.
+   - `question text`, `answer jsonb NULL`(답이 JSON이 아니면 null), `sections jsonb`(넘긴 조문 `[{section_key, subpart}]`), `issues jsonb`(파싱·인용 경고).
+   - `prompt_tokens integer`, `completion_tokens integer`, `cost_usd numeric(10,6)`, `ms integer`.
+   - 정책 없이 RLS만 켠다. insert가 실패해도 답은 그대로 나간다.
+
+5) 인덱스
    - `embedding`: HNSW, 코사인(`vector_cosine_ops`). 처음에는 기본 매개변수로 만들고 검색 시간을 실측한 뒤 조정한다.
    - `(dataset, release_id, doc_key)`, `(release_id, node_key)`: 구조 확장과 갱신 조회용.
 
-5) 유의점
+6) 유의점
    - 벡터 컬럼은 release마다 따로 있다. 새 release를 만들 때 바뀌지 않은 청크의 벡터는 `content_hash + embed_model + context_prompt_version`이 같으면 복사한다.
    - 한 청크가 두 release에 있어도 저장은 두 번이다. 용량은 실측 후 이전 release 보존 정책을 정한다.
 
