@@ -30,3 +30,11 @@ it("예시 질문 3개가 있고, 누르면 Prompt 칸에 그 글이 들어가�
   expect(box.value).toMatch(/perchloroethylene dry cleaning/);
   expect(send.disabled).toBe(false);
 });
+
+it("Ask 전에는 main 이 가운데 정렬(items-center text-center)이고 Prompt 안내문은 'Ask what you want to know' 다", () => {
+  render(<Applicability />);
+  const main = screen.getByRole("main").classList;
+  expect(main.contains("items-center")).toBe(true);
+  expect(main.contains("text-center")).toBe(true);
+  expect(screen.getByRole("textbox", { name: "Prompt" }).getAttribute("placeholder")).toBe("Ask what you want to know");
+});

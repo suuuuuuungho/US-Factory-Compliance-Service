@@ -30,7 +30,7 @@ import MemoPane from "../MemoPane";
 // SUU-214: 질문 칸은 react-bits PromptBar (npx shadcn add @react-bits/PromptBar-TS-CSS). 메뉴는 전부 비우고 Send 만 쓴다.
 import PromptBar from "../../components/PromptBar";
 
-// SUU-215: 제목은 다른 페이지와 같은 28px. PromptBar 는 640px. 아래 예시 질문 3개(manual_test_questions.md A-1~A-3)를 누르면 PromptBar 에 올라간다.
+// SUU-215: 제목은 다른 페이지와 같은 28px. Ask 전 화면은 가운데 정렬. PromptBar 는 640px, 안내문 'Ask what you want to know'. 아래 예시 질문 3개(manual_test_questions.md A-1~A-3)를 누르면 PromptBar 에 올라간다.
 const EXAMPLES = [
   "Our medical device plant in Indiana is a major source of HAP. On the breathing-circuit assembly lines we bond polymer sub-assemblies by applying methylene chloride so the plastic softens and fuses as the solvent evaporates; nothing with solids is applied and no dry film is left behind. We are adding six more of these lines. Does the NESHAP for surface coating of plastic parts cover this solvent welding step?",
   "We run a small perchloroethylene dry cleaning shop in Michigan. There is an apartment above the shop that is currently unoccupied, and the machine is often idle because the location is mainly a pick-up and drop-off store. Does the requirement to eliminate perc emissions from dry cleaning systems located in a building with a residence after December 21, 2020 apply to us?",
@@ -103,7 +103,7 @@ export default function ApplicabilityPage() {
     <PromptBar
       width={640}
       value={preset}
-      placeholder="Describe the process, e.g. we solvent weld plastic parts"
+      placeholder="Ask what you want to know"
       sources={[]}
       commands={[]}
       models={[]}
@@ -129,7 +129,7 @@ export default function ApplicabilityPage() {
   return (
     // SUU-199: Ask 뒤에는 최대 폭을 풀고 좌우 여백을 줄여 네 칸이 화면을 넉넉히 쓴다.
     <main
-      className={`mx-auto flex w-full flex-1 flex-col gap-6 md:h-[calc(100dvh-60px)] md:overflow-hidden ${asked ? "px-4 py-6" : "max-w-7xl p-8"}`}
+      className={`mx-auto flex w-full flex-1 flex-col gap-6 md:h-[calc(100dvh-60px)] md:overflow-hidden ${asked ? "px-4 py-6" : "max-w-7xl items-center p-8 text-center"}`}
     >
       {!asked && (
         <>
@@ -141,10 +141,10 @@ export default function ApplicabilityPage() {
       )}
 
       {/* SUU-182: 1행 = 질문 폼, 2행 = Subparts | Checklist | 조문. SUU-193: Workspace 패널. SUU-199: 폼도 Question 칸. */}
-      <div className="flex flex-col gap-6 md:min-h-0 md:flex-1">
+      <div className="flex w-full flex-col items-center gap-6 md:min-h-0 md:flex-1">
         {!answer && form}
         {!answer && (
-          <ul aria-label="Example questions" className="flex max-w-[640px] flex-col gap-2">
+          <ul aria-label="Example questions" className="flex w-full max-w-[640px] flex-col gap-2">
             {EXAMPLES.map((q) => (
               <li key={q}>
                 <button
