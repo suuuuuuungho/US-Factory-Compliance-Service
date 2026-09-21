@@ -1,15 +1,12 @@
-// SUU-215: /applicability 제목은 About 과 같은 28px, PromptBar 는 640px, 아래 예시 질문 3개를 누르면 Prompt 칸에 올라간다.
+// SUU-215: /applicability 제목은 28px 굵게, PromptBar 는 640px, 아래 예시 질문 3개를 누르면 Prompt 칸에 올라간다.
+// SUU-217: About h1이 큰 serif 제목이 되어, 기준을 About 대신 클래스 문자열로 바꿈.
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
-import About from "../src/app/about/page";
 import Applicability from "../src/app/applicability/page";
 
-it("h1 클래스가 About 페이지 h1 과 같다", () => {
-  const { unmount } = render(<About />);
-  const aboutCls = screen.getByRole("heading", { level: 1 }).className;
-  unmount();
+it("h1 클래스가 28px 굵게다", () => {
   render(<Applicability />);
-  expect(screen.getByRole("heading", { level: 1 }).className).toBe(aboutCls);
+  expect(screen.getByRole("heading", { level: 1 }).className).toBe("text-[28px] font-bold text-ink");
 });
 
 it("PromptBar 너비가 640px 다", () => {
