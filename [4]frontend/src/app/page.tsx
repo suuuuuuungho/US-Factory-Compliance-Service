@@ -6,8 +6,10 @@
 import { useRef, useState } from "react";
 import {
   ask,
+  citationToParagraph,
   citationToSectionKey,
   getSection,
+  paragraphText,
   type AskResult,
   type Section,
 } from "../lib/api";
@@ -27,10 +29,13 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [section, setSection] = useState<Section | null>(null);
   const [sectionError, setSectionError] = useState<string | null>(null);
+  // SUU-189: 인용의 문단 글자("a"). null이면 전체 보기. "Show all" 버튼이 null로 바꾼다
+  const [paragraph, setParagraph] = useState<string | null>(null);
   const sectionCache = useRef<Record<string, Section>>({});
 
-  async function openSection(key: string) {
+  async function openSection(key: string, para: string | null) {
     setSectionError(null);
+    setParagraph(para);
     const cached = sectionCache.current[key];
     if (cached) return setSection(cached);
     try {
@@ -115,7 +120,7 @@ export default function Home() {
                               <button
                                 key={cit}
                                 type="button"
-                                onClick={() => openSection(key)}
+                                onClick={() => openSection(key, citationToParagraph(cit))}
                                 className="mt-1 mr-2 block text-sm text-accent-blue underline"
                               >
                                 {cit}
@@ -151,16 +156,29 @@ export default function Home() {
               )}
               {(section || sectionError) && (
                 <aside aria-label="Section text" className={CARD}>
-                  {section && (
-                    <>
-                      <h2 className={CARD_TITLE}>
-                        {section.section_key} (Subpart {section.subpart})
-                      </h2>
-                      <pre className="whitespace-pre-wrap p-5 font-sans text-base leading-relaxed text-ink">
-                        {section.text}
-                      </pre>
-                    </>
-                  )}
+                  {section && (() => {
+                    // SUU-189: 문단이 있으면 그 문단만. 본문에서 못 찾으면 전체로 떨어진다
+                    const shown = paragraph ? paragraphText(section.text, paragraph) : null;
+                    return (
+                      <>
+                        <h2 className={CARD_TITLE}>
+                          {section.section_key}{shown && `(${paragraph})`} (Subpart {section.subpart})
+                        </h2>
+                        {shown && (
+                          <button
+                            type="button"
+                            onClick={() => setParagraph(null)}
+                            className="mx-5 mt-4 text-sm text-accent-blue underline"
+                          >
+                            Show all of {section.section_key.replace("section-", "")}
+                          </button>
+                        )}
+                        <pre className="whitespace-pre-wrap p-5 font-sans text-base leading-relaxed text-ink">
+                          {shown ?? section.text}
+                        </pre>
+                      </>
+                    );
+                  })()}
                   {sectionError && <p className="p-5 text-red-400">{sectionError}</p>}
                 </aside>
               )}

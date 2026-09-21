@@ -34,6 +34,23 @@ export function citationToSectionKey(citation: string): string | null {
   return m ? `section-63.${m[1]}` : null;
 }
 
+// SUU-189: "40 CFR 63.460(a)(1)" → "a". 문단 표시가 없으면 null
+export function citationToParagraph(citation: string): string | null {
+  const m = citation.match(/63\.\d+\(([a-z]+)\)/);
+  return m ? m[1] : null;
+}
+
+/** 조문 본문("(a) …\n\n(1) …\n\n(b) …")에서 문단 letter 부터 다음 상위 문단 앞까지. 못 찾으면 null */
+export function paragraphText(text: string, letter: string): string | null {
+  const pieces = text.split("\n\n");
+  const start = pieces.findIndex((p) => p.startsWith(`(${letter})`));
+  if (start < 0) return null;
+  const next = `(${String.fromCharCode(letter.charCodeAt(0) + 1)})`;
+  let end = pieces.findIndex((p, i) => i > start && p.startsWith(next));
+  if (end < 0) end = pieces.length;
+  return pieces.slice(start, end).join("\n\n");
+}
+
 export async function getSection(key: string): Promise<Section> {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
   const r = await fetch(`${base}/section/${key}`);

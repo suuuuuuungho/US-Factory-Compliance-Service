@@ -61,7 +61,7 @@ it("인용을 누르면 /section/section-63.4481을 부르고 패널에 본문�
   const panel = await screen.findByRole("complementary");
   expect(within(panel).getByText(/section-63\.4481/)).toBeTruthy();
   expect(within(panel).getByText(/\(a\) first piece/)).toBeTruthy();
-  expect(within(panel).getByText(/\(b\) second piece/)).toBeTruthy();
+  expect(within(panel).queryByText(/\(b\) second piece/)).toBeNull(); // SUU-189: (a)만. 전체는 Show all
   expect(calls).toContain("GET http://api.test/section/section-63.4481");
 });
 
@@ -70,8 +70,8 @@ it("같은 조문을 두 번 눌러도 /section은 한 번만 부른다", async 
   await askAndWait();
   fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(a)(1)" }));
   await screen.findByRole("complementary");
-  fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(b)" })); // 같은 63.4481
-  await waitFor(() => expect(within(screen.getByRole("complementary")).getByText(/\(a\) first piece/)).toBeTruthy());
+  fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(b)" })); // 같은 63.4481, 문단은 (b)
+  await waitFor(() => expect(within(screen.getByRole("complementary")).getByText(/\(b\) second piece/)).toBeTruthy());
   expect(calls.filter((c) => c.includes("/section/")).length).toBe(1);
 });
 
