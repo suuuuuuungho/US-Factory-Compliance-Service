@@ -89,6 +89,7 @@ Linear 제목 + ` (SUU-번호)`
 - 위치: `<영역 폴더>/tests/test_*.py` (예: `[3] backend/tests/test_calc.py`). DB는 데이터셋별로 `[2] db/tests/<데이터셋>/test_*.py`에 두고 fixture도 같은 폴더의 `fixtures/`에 둔다.
 - 실행: 레포 루트에서 `python -m pytest`
 - 테스트는 **Claude가 쓰고**(`/spec`), **Codex는 통과만** 시킨다. Codex는 `tests/` 아래를 수정하지 않는다
+- 프론트는 **vitest**. 위치 `[4]frontend/tests/*.test.tsx`, 실행 `[4]frontend`에서 `npm test`. Codex는 여기도 수정하지 않는다
 - CI가 매 PR마다 실행한다. 빨강이면 merge 불가
 
 ## 9. 파이프라인·테스트 파일 이름
