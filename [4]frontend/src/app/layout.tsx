@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Comp.Doc",
+  title: "US Factory Compliance AI Service",
   description: "40 CFR Part 63 applicability criteria",
 };
 
