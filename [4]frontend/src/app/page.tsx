@@ -12,6 +12,7 @@ import {
   type Section,
 } from "../lib/api";
 
+// SUU-175: 카드 제목 headline(22px/700), 목록 줄 간격, 옆 패널 조문 body 크기.
 // SUU-174: 후보 카드 왼쪽 색 띠(순환) + Checklist는 보라 카드.
 const STRIPES = [
   "border-gradient-violet",
@@ -99,10 +100,10 @@ export default function Home() {
             key={c.subpart}
             className={`rounded-lg border border-hairline border-l-4 bg-surface-1 p-5 ${STRIPES[i % STRIPES.length]}`}
           >
-            <h2 className="font-semibold">
+            <h2 className="text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink">
               Subpart {c.subpart} — {c.title}
             </h2>
-            <ul className="list-disc pl-6">
+            <ul className="mt-3 list-disc space-y-3 pl-6 leading-relaxed">
               {c.criteria.map((cr, i) => (
                 <li key={i}>
                   {cr.criterion}{" "}
@@ -113,12 +114,12 @@ export default function Home() {
                         key={cit}
                         type="button"
                         onClick={() => openSection(key)}
-                        className="mr-2 text-sm text-accent-blue underline"
+                        className="mt-1 mr-2 block text-sm text-accent-blue underline"
                       >
                         {cit}
                       </button>
                     ) : (
-                      <span key={cit} className="mr-2 text-sm text-ink-muted">
+                      <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
                         {cit}
                       </span>
                     );
@@ -131,8 +132,8 @@ export default function Home() {
 
         {result?.answer && (
           <section className="rounded-xl bg-gradient-violet p-5 text-ink">
-            <h2 className="font-semibold">Checklist</h2>
-            <ul className="list-disc pl-6">
+            <h2 className="text-[22px] font-bold leading-tight tracking-[-0.8px]">Checklist</h2>
+            <ul className="mt-3 list-disc space-y-3 pl-6 leading-relaxed">
               {result.answer.checklist.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -152,10 +153,10 @@ export default function Home() {
         >
           {section && (
             <>
-              <h2 className="font-semibold">
+              <h2 className="mb-3 text-[22px] font-bold leading-tight tracking-[-0.8px]">
                 {section.section_key} (Subpart {section.subpart})
               </h2>
-              <pre className="whitespace-pre-wrap font-sans text-sm">
+              <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed text-ink">
                 {section.text}
               </pre>
             </>
