@@ -30,6 +30,13 @@ import MemoPane from "../MemoPane";
 // SUU-214: 질문 칸은 react-bits PromptBar (npx shadcn add @react-bits/PromptBar-TS-CSS). 메뉴는 전부 비우고 Send 만 쓴다.
 import PromptBar from "../../components/PromptBar";
 
+// SUU-215: 제목은 다른 페이지와 같은 28px. PromptBar 는 640px. 아래 예시 질문 3개(manual_test_questions.md A-1~A-3)를 누르면 PromptBar 에 올라간다.
+const EXAMPLES = [
+  "Our medical device plant in Indiana is a major source of HAP. On the breathing-circuit assembly lines we bond polymer sub-assemblies by applying methylene chloride so the plastic softens and fuses as the solvent evaporates; nothing with solids is applied and no dry film is left behind. We are adding six more of these lines. Does the NESHAP for surface coating of plastic parts cover this solvent welding step?",
+  "We run a small perchloroethylene dry cleaning shop in Michigan. There is an apartment above the shop that is currently unoccupied, and the machine is often idle because the location is mainly a pick-up and drop-off store. Does the requirement to eliminate perc emissions from dry cleaning systems located in a building with a residence after December 21, 2020 apply to us?",
+  "At our gas plant in Utah, an area source of HAP, we operate three existing 800 hp four-stroke lean-burn natural gas engines that have met the geographic criteria for a remote location since October 2013. We never sent the state a notification of remote status. Can we meet the work practice standards for remote engines instead of doing performance tests?",
+];
+
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "sticky top-0 z-10 bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
@@ -38,6 +45,7 @@ type OpenedSection = { section: Section | null; error: string | null; paragraph:
 
 export default function ApplicabilityPage() {
   const [asked, setAsked] = useState(false);
+  const [preset, setPreset] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,8 +101,8 @@ export default function ApplicabilityPage() {
   // SUU-199: 폼과 상태 표시는 답이 오기 전엔 제목 아래에, 답이 온 뒤엔 Question 칸 안에 들어간다.
   const form = (
     <PromptBar
-      className="w-full"
-      width={9999}
+      width={640}
+      value={preset}
       placeholder="Describe the process, e.g. we solvent weld plastic parts"
       sources={[]}
       commands={[]}
@@ -125,9 +133,7 @@ export default function ApplicabilityPage() {
     >
       {!asked && (
         <>
-          <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
-            Applicability
-          </h1>
+          <h1 className="text-[28px] font-bold text-ink">Applicability</h1>
           <p className="text-lg text-accent-blue">
             40 CFR Part 63 applicability criteria, with the sections to check.
           </p>
@@ -137,6 +143,21 @@ export default function ApplicabilityPage() {
       {/* SUU-182: 1행 = 질문 폼, 2행 = Subparts | Checklist | 조문. SUU-193: Workspace 패널. SUU-199: 폼도 Question 칸. */}
       <div className="flex flex-col gap-6 md:min-h-0 md:flex-1">
         {!answer && form}
+        {!answer && (
+          <ul aria-label="Example questions" className="flex max-w-[640px] flex-col gap-2">
+            {EXAMPLES.map((q) => (
+              <li key={q}>
+                <button
+                  type="button"
+                  onClick={() => setPreset(q)}
+                  className="w-full rounded-md border border-hairline bg-surface-1 px-4 py-3 text-left text-sm text-ink-muted hover:text-ink"
+                >
+                  {q}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         {!answer && status}
 
         {answer && (
