@@ -23,6 +23,8 @@ import {
 // SUU-196: Ask 버튼은 textarea 오른쪽에 같은 높이. 한 번 Ask를 누르면 h1·설명 p를 숨겨 Workspace가 더 길어진다.
 // SUU-197: 버튼 모서리는 textarea와 같은 rounded-md (알약 아님).
 import Workspace from "../Workspace";
+// SUU-198: Memo 버튼 → 페이지 좌·우 2분할. 왼쪽 = 질문 폼 + Workspace, 오른쪽 = MemoPane.
+import MemoPane from "../MemoPane";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "sticky top-0 z-10 bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
@@ -33,6 +35,7 @@ type OpenedSection = { section: Section | null; error: string | null; paragraph:
 export default function ApplicabilityPage() {
   const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState(false);
+  const [memoOpen, setMemoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -91,8 +94,10 @@ export default function ApplicabilityPage() {
         </>
       )}
 
+      {/* SUU-198: 2분할 상자. 메모가 열리면 오른쪽에 MemoPane, 왼쪽 열은 기존 그대로. */}
+      <div className="flex flex-col gap-6 md:min-h-0 md:flex-1 md:flex-row">
       {/* SUU-182: 1행 = 질문 폼, 2행 = Subparts | Checklist | 조문. SUU-193: 2행은 Workspace 패널. */}
-      <div className="flex flex-col gap-6 md:min-h-0 md:flex-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-6 md:min-h-0">
         <form onSubmit={onSubmit} className="flex flex-row gap-2">
           <textarea
             className="flex-1 rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
@@ -125,6 +130,16 @@ export default function ApplicabilityPage() {
           <Workspace
             className="h-[70vh] md:h-auto md:min-h-0 md:flex-1"
             active={activeKey ? `section:${activeKey}` : undefined}
+            toolbar={
+              <button
+                type="button"
+                aria-pressed={memoOpen}
+                onClick={() => setMemoOpen((v) => !v)}
+                className={`rounded-full border border-hairline px-3 py-1 text-sm ${memoOpen ? "bg-surface-2 text-ink" : "text-ink-muted"}`}
+              >
+                Memo
+              </button>
+            }
             onClose={(id) =>
               setOpened((o) => Object.fromEntries(Object.entries(o).filter(([k]) => `section:${k}` !== id)))
             }
@@ -224,6 +239,8 @@ export default function ApplicabilityPage() {
             }}
           />
         )}
+      </div>
+      {memoOpen && <MemoPane />}
       </div>
 
       <p className="mt-auto text-sm text-ink-muted">

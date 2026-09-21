@@ -55,11 +55,13 @@ export default function Workspace({
   panels,
   active,
   onClose,
+  toolbar,
   className = "",
 }: {
   panels: Panels;
   active?: string; // 이 id의 칸을 앞으로 가져온다 (인용 클릭)
   onClose?: (id: string) => void; // 사용자가 탭 ✕로 칸을 닫음
+  toolbar?: ReactNode; // SUU-198: Subparts·Checklist 버튼 오른쪽에 붙는 버튼(Memo)
   className?: string;
 }) {
   const [api, setApi] = useState<DockviewApi | null>(null);
@@ -135,6 +137,7 @@ export default function Workspace({
               </button>
             );
           })}
+          {toolbar}
           <button type="button" onClick={reset} className={`${BTN} ml-auto text-ink-muted hover:text-ink`}>
             Reset layout
           </button>
