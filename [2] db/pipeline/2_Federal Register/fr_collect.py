@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
 import hashlib
 import json
@@ -36,7 +37,7 @@ def _reason(exc: Exception) -> str:
     return f"HTTP {exc.code}" if isinstance(exc, HTTPError) else str(exc)
 
 
-def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0) -> dict:
+def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0, workers: int = 1) -> dict:
     """Collect raw files, retaining per-file failures for later retry."""
 
     del pause  # Reserved for production throttling without slowing test doubles.
@@ -53,14 +54,18 @@ def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0) -> di
     missing: list[dict] = []
     retries: list[dict] = []
 
-    def fail(pub: str, number: str, kind: str, url: str, exc: Exception | None = None, reason: str | None = None) -> None:
-        text = reason if reason is not None else _reason(exc)  # type: ignore[arg-type]
-        item = {"publication_date": pub, "document_number": number, "kind": kind, "reason": text}
-        missing.append(item)
-        if url:
-            retries.append({**item, "url": url})
+    def one(row: dict) -> tuple[dict, list[dict], list[dict]]:
+        obtained = {"detail": 0, "xml": 0, "pdf": 0}
+        missing: list[dict] = []
+        retries: list[dict] = []
 
-    for row in listed["rows"]:
+        def fail(pub: str, number: str, kind: str, url: str, exc: Exception | None = None, reason: str | None = None) -> None:
+            text = reason if reason is not None else _reason(exc)  # type: ignore[arg-type]
+            item = {"publication_date": pub, "document_number": number, "kind": kind, "reason": text}
+            missing.append(item)
+            if url:
+                retries.append({**item, "url": url})
+
         pub, number = row["publication_date"], row["document_number"]
         url = detail_url(number, pub)
         entry = _existing(root, pub, number, "detail", url)
@@ -75,7 +80,7 @@ def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0) -> di
             obtained["detail"] += 1
         except (HTTPError, URLError, OSError, FormatMismatch, ValueError, json.JSONDecodeError) as exc:
             fail(pub, number, "detail", url, exc)
-            continue
+            return obtained, missing, retries
 
         for kind, key in (("xml", "full_text_xml_url"), ("pdf", "pdf_url")):
             content_url = detail.get(key)
@@ -92,6 +97,15 @@ def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0) -> di
                 obtained[kind] += 1
             except (HTTPError, URLError, OSError, FormatMismatch, ValueError) as exc:
                 fail(pub, number, kind, content_url, exc)
+        return obtained, missing, retries
+
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        results = list(pool.map(one, listed["rows"]))
+    for got, miss, retry in results:
+        for kind in obtained:
+            obtained[kind] += got[kind]
+        missing.extend(miss)
+        retries.extend(retry)
 
     retry_path = root / "raw" / "lists" / end_date.isoformat() / "retry.jsonl"
     if retries:
@@ -110,8 +124,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2] / "2) Federal Register")
     parser.add_argument("--end", type=date.fromisoformat, default=date.today())
+    parser.add_argument("--workers", type=int, default=6)
     args = parser.parse_args(argv)
-    result = collect(args.root, args.end)
+    result = collect(args.root, args.end, workers=args.workers)
     print(json.dumps(result, ensure_ascii=False))
     return 0 if result["status"] == "succeeded" else 2
 
