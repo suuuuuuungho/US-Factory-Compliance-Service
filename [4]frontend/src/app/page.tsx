@@ -1,5 +1,6 @@
 "use client";
 // SUU-163: 질문 → POST /ask → 후보 Subpart 카드 + 체크리스트. 디자인 없음.
+// SUU-171: h1을 히어로(display-lg 근사)로. 상단바는 layout의 TopNav.
 // SUU-164: 인용 버튼 → GET /section/{key} → 옆 패널(aside)에 조문 전문. 같은 조문은 캐시.
 import { useRef, useState } from "react";
 import {
@@ -50,9 +51,12 @@ export default function Home() {
   return (
     <div className="flex flex-1">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-        <h1 className="text-2xl font-semibold">
-          US Factory Compliance — 40 CFR Part 63
+        <h1 className="text-5xl font-medium leading-none tracking-[-0.05em] text-ink md:text-6xl">
+          US FACTORY COMPLIANCE AI SERVICE
         </h1>
+        <p className="text-lg text-ink-muted">
+          40 CFR Part 63 applicability criteria, with the sections to check.
+        </p>
         <form onSubmit={onSubmit} className="flex flex-col gap-2">
           <textarea
             className="rounded border p-2"
