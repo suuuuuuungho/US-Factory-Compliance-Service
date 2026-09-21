@@ -21,15 +21,6 @@ export default function Home() {
         <div className="absolute inset-0 z-10 bg-canvas/60" />
         <HeroSmoke left="14%" top="21%" />
         <HeroSmoke left="29%" top="19%" />
-        <Image
-          src="/flag-etching.png"
-          alt="Etched American flag"
-          width={1152}
-          height={768}
-          priority
-          sizes="(min-width: 768px) 34vw, 60vw"
-          className="pointer-events-none absolute top-0 right-0 z-20 h-auto w-[60vw] max-w-[600px] select-none opacity-90 md:w-[34vw]"
-        />
       </section>
     </main>
   );
