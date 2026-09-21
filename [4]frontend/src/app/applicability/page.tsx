@@ -20,6 +20,7 @@ import {
 // SUU-184: main을 화면 높이(100dvh-상단바 60px)로 고정, 2행이 남은 높이를 다 쓰고 카드 안에서 스크롤.
 // SUU-188: 카드가 flex-1로 칸을 꽉 채워 세 카드 높이가 같다. 칸은 overflow-hidden, 스크롤은 카드가 한다.
 // SUU-193: 2행 세 칸은 Workspace(dockview) 안의 패널. 끌어서 크기·위치를 바꾼다. 칸(COLUMN) 역할은 Workspace의 Panel이 한다.
+// SUU-196: Ask 버튼은 textarea 오른쪽에 같은 높이. 한 번 Ask를 누르면 h1·설명 p를 숨겨 Workspace가 더 길어진다.
 import Workspace from "../Workspace";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
@@ -30,6 +31,7 @@ type OpenedSection = { section: Section | null; error: string | null; paragraph:
 
 export default function ApplicabilityPage() {
   const [question, setQuestion] = useState("");
+  const [asked, setAsked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +63,7 @@ export default function ApplicabilityPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setAsked(true);
     setLoading(true);
     setResult(null);
     setError(null);
@@ -76,18 +79,22 @@ export default function ApplicabilityPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-8 md:h-[calc(100dvh-60px)] md:overflow-hidden">
-      <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
-        Applicability
-      </h1>
-      <p className="text-lg text-accent-blue">
-        40 CFR Part 63 applicability criteria, with the sections to check.
-      </p>
+      {!asked && (
+        <>
+          <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
+            Applicability
+          </h1>
+          <p className="text-lg text-accent-blue">
+            40 CFR Part 63 applicability criteria, with the sections to check.
+          </p>
+        </>
+      )}
 
       {/* SUU-182: 1행 = 질문 폼, 2행 = Subparts | Checklist | 조문. SUU-193: 2행은 Workspace 패널. */}
       <div className="flex flex-col gap-6 md:min-h-0 md:flex-1">
-        <form onSubmit={onSubmit} className="flex flex-col gap-2">
+        <form onSubmit={onSubmit} className="flex flex-row gap-2">
           <textarea
-            className="rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
+            className="flex-1 rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
             rows={3}
             placeholder="Describe the process, e.g. we solvent weld plastic parts"
             value={question}
@@ -96,7 +103,7 @@ export default function ApplicabilityPage() {
           <button
             type="submit"
             disabled={loading}
-            className="self-start rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-on-primary disabled:opacity-50"
+            className="shrink-0 self-stretch rounded-full bg-primary px-6 text-sm font-medium text-on-primary disabled:opacity-50"
           >
             Ask
           </button>
