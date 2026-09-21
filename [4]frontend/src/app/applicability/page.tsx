@@ -21,6 +21,7 @@ import {
 // SUU-188: 카드가 flex-1로 칸을 꽉 채워 세 카드 높이가 같다. 칸은 overflow-hidden, 스크롤은 카드가 한다.
 // SUU-193: 2행 세 칸은 Workspace(dockview) 안의 패널. 끌어서 크기·위치를 바꾼다. 칸(COLUMN) 역할은 Workspace의 Panel이 한다.
 // SUU-196: Ask 버튼은 textarea 오른쪽에 같은 높이. 한 번 Ask를 누르면 h1·설명 p를 숨겨 Workspace가 더 길어진다.
+// SUU-197: 버튼 모서리는 textarea와 같은 rounded-md (알약 아님).
 import Workspace from "../Workspace";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
@@ -103,7 +104,7 @@ export default function ApplicabilityPage() {
           <button
             type="submit"
             disabled={loading}
-            className="shrink-0 self-stretch rounded-full bg-primary px-6 text-sm font-medium text-on-primary disabled:opacity-50"
+            className="shrink-0 self-stretch rounded-md bg-primary px-6 text-sm font-medium text-on-primary disabled:opacity-50"
           >
             Ask
           </button>
