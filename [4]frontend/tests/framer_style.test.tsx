@@ -1,7 +1,7 @@
 // SUU-172: 질문창·Ask 버튼·후보 카드·인용 버튼이 DESIGN.md(Framer) 토큰 클래스를 쓴다. 기능은 page/section 테스트가 지킨다.
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const RESULT = {
   answer: {

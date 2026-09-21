@@ -1,7 +1,7 @@
 // SUU-163: 질문 → POST /ask → 후보 Subpart 카드 + 체크리스트. fetch는 가짜. 항상 "not a final" 문구.
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const RESULT = {
   answer: {

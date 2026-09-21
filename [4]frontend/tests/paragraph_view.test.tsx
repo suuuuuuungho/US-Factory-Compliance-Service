@@ -1,7 +1,7 @@
 // SUU-189: 인용 "63.460(a)" 클릭 → 조문 카드에 (a) 문단만. "Show all of 63.460" 누르면 전체. 문단 없는 인용은 처음부터 전체.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 import { citationToParagraph, paragraphText } from "../src/lib/api";
 
 const TEXT = [

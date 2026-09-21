@@ -1,7 +1,7 @@
 // SUU-184: Subpart는 카드 하나 안에 보라 제목 띠 여러 개. 2행은 화면 남은 높이를 다 쓰고 카드 안에서 스크롤.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const ASK = {
   answer: {
