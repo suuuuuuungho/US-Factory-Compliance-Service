@@ -38,3 +38,21 @@ body {
   font-family: var(--font-sans);
 }
 
+/* SUU-193: dockview 칸 색을 DESIGN 토큰에 맞춘다. */
+.dockview-theme-dark {
+  --dv-group-view-background-color: var(--color-canvas);
+  --dv-tabs-and-actions-container-background-color: var(--color-surface-2);
+  --dv-activegroup-visiblepanel-tab-background-color: var(--color-canvas);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--color-surface-2);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--color-canvas);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--color-surface-2);
+  --dv-tab-divider-color: var(--color-hairline);
+  --dv-separator-border: var(--color-hairline);
+  --dv-activegroup-visiblepanel-tab-color: var(--color-ink);
+  --dv-activegroup-hiddenpanel-tab-color: var(--color-ink-muted);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--color-ink-muted);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--color-ink-muted);
+  --dv-active-sash-color: var(--color-accent-blue);
+  --dv-edge-dock-indicator-color: var(--color-accent-blue);
+}
+
