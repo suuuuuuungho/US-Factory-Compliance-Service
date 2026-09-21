@@ -178,3 +178,30 @@ def test_main_prints_summary_and_returns_exit_code(tmp_path, capsys, monkeypatch
     printed = json.loads(capsys.readouterr().out)
     assert printed["status"] == "succeeded"
     assert printed["obtained"]["detail"] == 5
+
+
+def test_workers_collect_the_same_files_in_parallel(tmp_path):
+    """SUU-210: 1,532건을 한 요청씩 받으면 2시간 → 문서 여러 개를 동시에 받는다. 결과·missing 순서는 목록 순서 그대로."""
+    root = tmp_path / "fr"
+    calls: list[str] = []
+
+    run = collect(root, END, fetch=make_fetch(calls), workers=4)
+
+    assert run["obtained"] == {"detail": 5, "xml": 4, "pdf": 5}
+    assert run["missing"] == [
+        {"publication_date": "1994-01-11", "document_number": "94-752", "kind": "xml", "reason": "no url"},
+    ]
+    assert len(calls) == 3 + 5 + 4 + 5  # 목록 3쪽 + 상세 5 + xml 4 + pdf 5, 중복 요청 없음
+    for pub, num in DOCS:
+        assert (root / "raw" / pub[:4] / f"{pub}_{num}" / "manifest.json").exists()
+
+
+def test_main_defaults_to_several_workers(tmp_path, capsys, monkeypatch):
+    import fr_collect
+
+    seen = {}
+    monkeypatch.setattr(fr_collect, "collect", lambda root, end, **kw: seen.update(kw) or {"status": "succeeded"})
+
+    main(["--root", str(tmp_path / "fr")])
+
+    assert seen["workers"] >= 4
