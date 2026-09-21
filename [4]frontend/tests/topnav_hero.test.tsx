@@ -4,8 +4,8 @@ import { render, screen } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import TopNav from "../src/app/TopNav";
 
-// next/font/google은 Next 빌드 밖(vitest)에서 못 돈다 → 가짜로 바꿔서 layout의 metadata만 읽는다
-vi.mock("next/font/google", () => ({ Inter: () => ({ variable: "--font-inter" }) }));
+// next/font/local은 Next 빌드 밖(vitest)에서 못 돈다 → 가짜로 바꿔서 layout의 metadata만 읽는다 (SUU-204: Inter → SF Pro)
+vi.mock("next/font/local", () => ({ default: () => ({ variable: "--font-sf-pro" }) }));
 
 it("상단바에 US Factory Compliance AI Service 글자가 보인다", () => {
   render(<TopNav />);
