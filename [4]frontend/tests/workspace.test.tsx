@@ -60,7 +60,7 @@ it("답이 오면 dockview 안에 끌 수 있는 탭 네 개(Question, Subparts,
 it("질문 폼은 Question 칸 안에 있고, Question·Subparts는 한 열에 세로로 쌓인다", async () => {
   await askAndWait();
   const question = screen.getByRole("region", { name: "Question" });
-  within(question).getByPlaceholderText(/describe the process/i);
+  within(question).getByPlaceholderText(/ask what you want to know/i); // SUU-215: 안내문 바뀜
   within(question).getByRole("button", { name: "Send" });
   const column = (id: string) => document.querySelector(`[data-panel="${id}"]`)!.closest(".dv-branch-node")!;
   expect(column("question")).toBe(column("subparts"));

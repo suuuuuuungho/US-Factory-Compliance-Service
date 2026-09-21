@@ -58,6 +58,8 @@ export interface PromptBarSendDetail {
 
 export interface PromptBarProps {
   placeholder?: string;
+  /** SUU-215: 바깥에서 글을 넣는다(예시 질문 클릭). 값이 바뀔 때마다 입력칸을 덮어쓴다. */
+  value?: string;
   sources?: PromptBarSource[];
   commands?: PromptBarCommand[];
   models?: PromptBarModel[];
@@ -211,6 +213,7 @@ function SendGlyph({ busy, morphDuration, squash, tilt }: SendGlyphProps) {
 
 const PromptBar: React.FC<PromptBarProps> = ({
   placeholder = 'Ask anything',
+  value,
   sources = DEFAULT_SOURCES,
   commands = DEFAULT_COMMANDS,
   models = DEFAULT_MODELS,
@@ -252,6 +255,9 @@ const PromptBar: React.FC<PromptBarProps> = ({
   latest.current = { onSend, onStop, onAttach, onDictate, onEffortChange };
 
   const [draft, setDraft] = useState('');
+  useEffect(() => {
+    if (value !== undefined) setDraft(value);
+  }, [value]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [modelKey, setModelKey] = useState(defaultModel);
   const [plusOpen, setPlusOpen] = useState(false);
