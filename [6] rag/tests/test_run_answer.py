@@ -99,3 +99,23 @@ def test_answer_run_record_keeps_always_sections():
     rec = answer_run_record("r", outs, search_run_id="s", model="m", judge_model="j", top_n=10, cost=0.0,
                             always=("section-63.2", "section-63.7", "section-63.8"))
     assert rec["always_sections"] == ["section-63.2", "section-63.7", "section-63.8"]
+
+
+# ---- SUU-154: run 기록에 토큰 수를 남긴다 ----
+
+
+def test_answer_run_record_keeps_tokens():
+    outs = [{"case_id": "a", "subpart": 1, "citation_recall": 1.0, "citation_grounded": 1.0, "judge": 2},
+            {"case_id": "b", "subpart": 1, "citation_recall": 1.0, "citation_grounded": 1.0, "judge": 2}]
+    rec = answer_run_record("r", outs, search_run_id="s", model="m", judge_model="j", top_n=10, cost=0.0,
+                            tokens={"prompt_tokens": 50000, "completion_tokens": 10000})
+    assert rec["tokens"] == {"prompt": 50000, "completion": 10000, "prompt_per_case": 25000}
+
+
+def test_every_saved_answer_run_has_tokens():
+    import json
+
+    runs = [json.loads(l) for l in ANSWER_RUNS.read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert len(runs) >= 4
+    for r in runs:
+        assert r["tokens"]["prompt"] > 0 and r["tokens"]["completion"] > 0 and r["tokens"]["prompt_per_case"] > 0, r["run_id"]
