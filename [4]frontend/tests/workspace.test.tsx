@@ -114,3 +114,14 @@ it("Reset layout을 누르면 닫았던 칸이 돌아오고 기본(Subparts | Ch
   fireEvent.click(screen.getByRole("button", { name: "Reset layout" }));
   expect(tabNames()).toEqual(["Subparts", "Checklist"]);
 });
+
+// SUU-194: dockview 루트(.dv-shell)는 height:100%인데, flex로 늘어난 칸 안에서는 브라우저가 0px로 계산한다.
+// jsdom은 크기를 재지 않으므로, 상자를 relative로 두고 dockview를 absolute inset-0으로 꽉 채우는 클래스를 검사한다.
+it("dockview 상자는 relative이고 dockview 루트를 absolute inset-0으로 꽉 채운다 (높이 0 방지)", async () => {
+  await askAndWait();
+  const root = document.querySelector(".dockview-theme-dark")!;
+  const box = root.parentElement!.parentElement!; // DockviewReact가 그리는 div → 우리 상자
+  expect(box.className).toContain("relative");
+  expect(box.className).toContain("[&>div]:absolute");
+  expect(box.className).toContain("[&>div]:inset-0");
+});

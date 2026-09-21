@@ -139,7 +139,8 @@ export default function Workspace({
             Reset layout
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-hairline">
+        {/* SUU-194: dockview 루트는 height:100%인데 flex로 늘어난 칸에서는 0이 된다 → absolute로 꽉 채운다 */}
+        <div className="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-hairline [&>div]:absolute [&>div]:inset-0">
           <DockviewReact theme={themeDark} components={components} onReady={onReady} />
         </div>
       </div>
