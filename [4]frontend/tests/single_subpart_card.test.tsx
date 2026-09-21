@@ -56,7 +56,8 @@ it("세 카드 모두 카드 안에서 스크롤된다 (overflow-y-auto + min-h-
 it("2행이 화면 남은 높이를 다 쓴다 (main 고정 높이, Workspace flex-1 min-h-0)", async () => {
   await askAndWait();
   expect(screen.getByRole("main").classList.contains("md:h-[calc(100dvh-60px)]")).toBe(true);
-  const workspace = screen.getByRole("button", { name: "Reset layout" }).parentElement!.parentElement!;
+  // SUU-200: 버튼 줄이 없어져 Workspace 상자 = dockview 루트의 부모
+  const workspace = document.querySelector(".dockview-theme-dark")!.parentElement!.parentElement!; // DockviewReact div → 우리 상자
   expect(workspace.classList.contains("md:flex-1")).toBe(true);
   expect(workspace.classList.contains("md:min-h-0")).toBe(true);
 });

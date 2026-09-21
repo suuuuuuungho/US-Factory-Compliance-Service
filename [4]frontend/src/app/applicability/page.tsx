@@ -25,6 +25,7 @@ import {
 import Workspace from "../Workspace";
 // SUU-198: Memo 버튼 → MemoPane. SUU-199: Ask 뒤에는 질문 폼(question)과 메모(memo)도 Workspace 칸이라
 // 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌어서 크기·위치를 바꾼다. 기본 배치는 Workspace.tsx.
+// SUU-200: 각 칸의 + 메뉴에 답변에 인용된 조문(sections)을 넘겨 그 칸에 열 수 있게 한다.
 import MemoPane from "../MemoPane";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
@@ -82,6 +83,12 @@ export default function ApplicabilityPage() {
   }
 
   const answer = result?.answer;
+  // + 메뉴에 보일 조문: 후보들의 인용에서 section_key를 모아 중복 없이
+  const sections = Array.from(
+    new Set(answer?.candidates.flatMap((c) => c.criteria.flatMap((cr) => cr.citations.map(citationToSectionKey))) ?? []),
+  )
+    .filter((k): k is string => !!k)
+    .map((key) => ({ key, title: `§${key.replace("section-", "")}` }));
 
   // SUU-199: 폼과 상태 표시는 답이 오기 전엔 제목 아래에, 답이 온 뒤엔 Question 칸 안에 들어간다.
   const form = (
@@ -141,6 +148,8 @@ export default function ApplicabilityPage() {
           <Workspace
             className="h-[70vh] md:h-auto md:min-h-0 md:flex-1"
             active={activeKey ? `section:${activeKey}` : undefined}
+            sections={sections}
+            onOpenSection={(key) => openSection(key, null)}
             onClose={(id) =>
               setOpened((o) => Object.fromEntries(Object.entries(o).filter(([k]) => `section:${k}` !== id)))
             }

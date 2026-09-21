@@ -2,6 +2,7 @@
 // 끌어서 크기·위치를 바꾸고, 배치는 localStorage에 남는다. SUU-182의 three_columns.test.tsx(고정 3열 grid)를 대체한다.
 // SUU-199: 질문 폼도 Question 칸이 된다. 저장 키는 workspace-layout-v2.
 // SUU-200: 기본 배치 = 왼쪽 열 Question(위)/Subparts(아래) | Memo | Checklist. Memo는 처음부터 열려 있고, 조문은 Subparts 옆에 열린다.
+// 위쪽 버튼 줄(Question~Memo, Reset layout)은 없다. 각 칸 머리의 + 메뉴로 칸을 넣고, ✕로 지운다. 저장 키는 workspace-layout-v3.
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Home from "../src/app/applicability/page";
@@ -38,6 +39,12 @@ async function askAndWait() {
 }
 
 const tabNames = () => screen.getAllByRole("tab").map((t) => t.getAttribute("aria-label"));
+// 탭 이름으로 그 칸(dockview group)을 찾고, 그 칸의 + 메뉴에서 항목을 고른다
+const groupOf = (tab: string) => screen.getByRole("tab", { name: tab }).closest(".dv-groupview") as HTMLElement;
+function pickFromMenu(tab: string, item: string) {
+  fireEvent.click(within(groupOf(tab)).getByRole("button", { name: "Add panel" }));
+  fireEvent.click(within(groupOf(tab)).getByRole("menuitem", { name: item }));
+}
 
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.unstubAllGlobals());
@@ -100,19 +107,52 @@ it("조문 칸을 ✕로 닫으면 사라지고, 인용을 다시 클릭하면 �
   await screen.findByRole("tab", { name: "§63.4481" });
 });
 
-it("Subparts·Checklist 버튼으로 칸을 껐다 켤 수 있다 (aria-pressed)", async () => {
+// SUU-200: 위쪽 버튼 줄이 없다. 칸마다 + 버튼이 있고, 메뉴에는 네 칸 + 인용된 조문이 있다 (Reset layout 없음)
+it("위쪽에 Question~Memo·Reset layout 버튼이 없고, 각 칸 머리에 + 버튼이 있다", async () => {
   await askAndWait();
-  const btn = () => screen.getByRole("button", { name: "Checklist", pressed: true });
-  fireEvent.click(btn());
-  await waitFor(() => expect(screen.queryByRole("tab", { name: "Checklist" })).toBeNull());
-  fireEvent.click(screen.getByRole("button", { name: "Checklist", pressed: false }));
-  await screen.findByRole("tab", { name: "Checklist" });
-  btn();
+  for (const name of ["Question", "Subparts", "Checklist", "Memo", "Reset layout"])
+    expect(screen.queryByRole("button", { name })).toBeNull();
+  expect(screen.getAllByRole("button", { name: "Add panel" })).toHaveLength(4);
+  fireEvent.click(within(groupOf("Checklist")).getByRole("button", { name: "Add panel" }));
+  const items = within(groupOf("Checklist")).getAllByRole("menuitem").map((m) => m.textContent);
+  expect(items).toEqual(["Question", "Subparts", "Checklist", "Memo", "§63.4481", "§63.4482"]);
 });
 
-it("칸 배치는 localStorage 'workspace-layout-v2'에 저장되고, 닫은 칸은 다시 열어도 닫혀 있다", async () => {
+it("✕로 닫은 칸을 다른 칸의 + 메뉴로 고르면 그 칸에 탭으로 들어온다", async () => {
   await askAndWait();
-  const saved = () => JSON.parse(localStorage.getItem("workspace-layout-v2")!);
+  fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
+  await waitFor(() => expect(screen.queryByRole("tab", { name: "Checklist" })).toBeNull());
+  pickFromMenu("Subparts", "Checklist");
+  await screen.findByRole("tab", { name: "Checklist" });
+  expect(groupOf("Checklist")).toBe(groupOf("Subparts"));
+});
+
+it("이미 열린 칸을 + 메뉴로 고르면 그 칸으로 옮겨 온다", async () => {
+  await askAndWait();
+  expect(groupOf("Memo")).not.toBe(groupOf("Checklist"));
+  pickFromMenu("Checklist", "Memo");
+  await waitFor(() => expect(groupOf("Memo")).toBe(groupOf("Checklist")));
+  expect(screen.getAllByRole("tab", { name: "Memo" })).toHaveLength(1);
+});
+
+it("+ 메뉴의 조문을 고르면 그 칸에 조문이 열린다", async () => {
+  await askAndWait();
+  pickFromMenu("Memo", "§63.4482");
+  const tab = await screen.findByRole("tab", { name: "§63.4482" });
+  await screen.findByText("(a) second section");
+  expect(tab.closest(".dv-groupview")).toBe(groupOf("Memo"));
+});
+
+it("칸을 전부 닫으면 기본 배치로 돌아온다", async () => {
+  await askAndWait();
+  for (const name of ["Question", "Subparts", "Memo"]) fireEvent.click(screen.getByRole("button", { name: `Close ${name}` }));
+  fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
+  await waitFor(() => expect(tabNames()).toEqual(["Question", "Subparts", "Memo", "Checklist"]));
+});
+
+it("칸 배치는 localStorage 'workspace-layout-v3'에 저장되고, 닫은 칸은 다시 열어도 닫혀 있다", async () => {
+  await askAndWait();
+  const saved = () => JSON.parse(localStorage.getItem("workspace-layout-v3")!);
   expect(Object.keys(saved().panels).sort()).toEqual(["checklist", "memo", "question", "subparts"]);
 
   fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
@@ -121,14 +161,6 @@ it("칸 배치는 localStorage 'workspace-layout-v2'에 저장되고, 닫은 칸
   cleanup();
   await askAndWait();
   expect(tabNames()).toEqual(["Question", "Subparts", "Memo"]);
-});
-
-it("Reset layout을 누르면 닫았던 칸이 돌아오고 기본(Question/Subparts | Memo | Checklist)이 된다", async () => {
-  await askAndWait();
-  fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
-  await waitFor(() => expect(screen.queryByRole("tab", { name: "Checklist" })).toBeNull());
-  fireEvent.click(screen.getByRole("button", { name: "Reset layout" }));
-  expect(tabNames()).toEqual(["Question", "Subparts", "Memo", "Checklist"]);
 });
 
 // SUU-194: dockview 루트(.dv-shell)는 height:100%인데, flex로 늘어난 칸 안에서는 브라우저가 0px로 계산한다.
