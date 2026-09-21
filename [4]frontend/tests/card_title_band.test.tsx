@@ -1,4 +1,4 @@
-// SUU-174: 후보 카드마다 gradient 색 띠(border-l-4)가 순환하고, 체크리스트는 보라(bg-gradient-violet) 카드다.
+// SUU-180: 카드 제목 줄(h2)만 gradient 색 배경(순환), 카드 본문(section)은 차콜. SUU-174의 color_cards.test.tsx를 대체한다.
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import Home from "../src/app/page";
@@ -22,20 +22,28 @@ async function askAndWait() {
   await screen.findByText(/Subpart PPPP/);
 }
 
+const hasGradient = (el: Element) => Array.from(el.classList).some((c) => c.includes("gradient-"));
+
 afterEach(() => vi.unstubAllGlobals());
 
-it("후보 카드는 순서대로 violet, magenta 색 띠가 붙는다 (border-l-4 + border-gradient-*)", async () => {
+it("후보 카드 제목 줄은 순서대로 violet, magenta 배경이다 (h2에 bg-gradient-*)", async () => {
   await askAndWait();
-  const first = screen.getByText(/Subpart PPPP/).closest("section")!;
-  const second = screen.getByText(/Subpart T /).closest("section")!;
-  expect(first.classList.contains("border-l-4")).toBe(true);
-  expect(first.classList.contains("border-gradient-violet")).toBe(true);
-  expect(second.classList.contains("border-l-4")).toBe(true);
-  expect(second.classList.contains("border-gradient-magenta")).toBe(true);
+  expect(screen.getByText(/Subpart PPPP/).classList.contains("bg-gradient-violet")).toBe(true);
+  expect(screen.getByText(/Subpart T /).classList.contains("bg-gradient-magenta")).toBe(true);
 });
 
-it("체크리스트는 보라 카드다 (bg-gradient-violet)", async () => {
+it("후보 카드 본문은 차콜이다 (section에 gradient 클래스 없음 + bg-surface-1)", async () => {
   await askAndWait();
-  const card = screen.getByText("Checklist").closest("section")!;
-  expect(card.classList.contains("bg-gradient-violet")).toBe(true);
+  const card = screen.getByText(/Subpart PPPP/).closest("section")!;
+  expect(hasGradient(card)).toBe(false);
+  expect(card.classList.contains("bg-surface-1")).toBe(true);
+});
+
+it("Checklist는 본문 차콜, 제목 줄만 보라다", async () => {
+  await askAndWait();
+  const h2 = screen.getByText("Checklist");
+  const card = h2.closest("section")!;
+  expect(h2.classList.contains("bg-gradient-violet")).toBe(true);
+  expect(card.classList.contains("bg-surface-1")).toBe(true);
+  expect(hasGradient(card)).toBe(false);
 });
