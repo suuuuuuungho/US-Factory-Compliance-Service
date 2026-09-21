@@ -54,9 +54,10 @@ it("3열은 인용 클릭 전엔 안내 문구, 클릭 후엔 조문 패널이�
   within(col).getByText("(a) first piece");
 });
 
-it("2행 세 칸 모두 따로 스크롤된다 (overflow-y-auto)", async () => {
+// SUU-188: 스크롤은 칸이 아니라 카드가 한다 (equal_card_height.test.tsx). 칸은 min-h-0만 본다.
+it("2행 세 칸 모두 min-h-0 (칸이 grid 행 높이를 넘지 않는다)", async () => {
   await askAndWait();
   for (const name of ["Subparts", "Checklist", "Section text column"]) {
-    expect(screen.getByRole("region", { name }).classList.contains("overflow-y-auto")).toBe(true);
+    expect(screen.getByRole("region", { name }).classList.contains("min-h-0")).toBe(true);
   }
 });

@@ -15,10 +15,11 @@ import {
 // SUU-175: 카드 제목 headline(22px/700), 목록 줄 간격, 옆 패널 조문 body 크기.
 // SUU-180: 카드 제목 줄만 gradient 배경, 본문은 차콜. SUU-183: 세 칸 제목 띠 전부 같은 보라.
 // SUU-184: main을 화면 높이(100dvh-상단바 60px)로 고정, 2행이 남은 높이를 다 쓰고 카드 안에서 스크롤.
-const CARD = "min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
+// SUU-188: 카드가 flex-1로 칸을 꽉 채워 세 카드 높이가 같다. 칸은 overflow-hidden, 스크롤은 카드가 한다.
+const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
-const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto";
+const COLUMN = "flex min-h-0 flex-col gap-6 overflow-hidden";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
