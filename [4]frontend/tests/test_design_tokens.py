@@ -38,3 +38,12 @@ def test_layout_uses_inter_not_geist():
     src = LAYOUT.read_text(encoding="utf-8")
     assert re.search(r'import\s*\{[^}]*\bInter\b[^}]*\}\s*from\s*"next/font/google"', src)
     assert "Geist" not in src
+
+
+def test_globals_css_has_text_metal_utility():
+    """SUU-176: 히어로용 은색 metal 글자 utility."""
+    css = GLOBALS.read_text(encoding="utf-8")
+    m = re.search(r"@utility text-metal\s*\{(?P<body>[^}]*)\}", css)
+    assert m, "globals.css에 @utility text-metal 없음"
+    assert "background-clip: text" in m.group("body")
+    assert "linear-gradient" in m.group("body")
