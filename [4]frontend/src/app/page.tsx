@@ -52,8 +52,9 @@ export default function Home() {
   return (
     <div className="flex flex-1">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-        <h1 className="text-5xl font-medium leading-none tracking-[-0.05em] text-ink md:text-6xl">
-          US FACTORY COMPLIANCE AI SERVICE
+        <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
+          US Factory Compliance{" "}
+          <span className="text-accent-blue">AI Service</span>
         </h1>
         <p className="text-lg text-ink-muted">
           40 CFR Part 63 applicability criteria, with the sections to check.

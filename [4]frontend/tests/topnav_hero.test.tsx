@@ -13,9 +13,19 @@ it("상단바에 Comp.Doc 글자가 보인다", () => {
   expect(screen.getByText("Comp.Doc")).toBeTruthy();
 });
 
-it("첫 화면 h1이 US FACTORY COMPLIANCE AI SERVICE 다", () => {
+// SUU-173: 대소문자 섞은 문구, 한 줄(nowrap), "AI Service"만 accent-blue
+it("첫 화면 h1이 US Factory Compliance AI Service 다", () => {
   render(<Home />);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("US FACTORY COMPLIANCE AI SERVICE");
+  const h1 = screen.getByRole("heading", { level: 1 });
+  expect(h1.textContent).toBe("US Factory Compliance AI Service");
+  expect(h1.classList.contains("whitespace-nowrap")).toBe(true);
+});
+
+it("h1의 AI Service 부분만 accent-blue 다", () => {
+  render(<Home />);
+  const em = screen.getByText("AI Service");
+  expect(em.classList.contains("text-accent-blue")).toBe(true);
+  expect(em.closest("h1")).toBeTruthy();
 });
 
 it("탭 제목(metadata.title)이 Comp.Doc 이다", async () => {
