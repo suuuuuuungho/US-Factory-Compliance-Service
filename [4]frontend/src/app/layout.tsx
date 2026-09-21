@@ -10,6 +10,13 @@ const sfPro = localFont({
   weight: "400 700",
   display: "swap",
 });
+// SUU-211: 랜딩 제목·카피용 New York 세리프 (가변, wght 400~700 + opsz 12~256, 라틴만 62KB).
+const newYork = localFont({
+  src: "./fonts/NewYork-latin.woff2",
+  variable: "--font-new-york",
+  weight: "400 700",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "US Factory Compliance AI Service",
@@ -18,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sfPro.variable} h-full antialiased`}>
+    <html lang="en" className={`${sfPro.variable} ${newYork.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <TopNav />
         {children}

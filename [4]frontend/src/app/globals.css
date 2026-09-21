@@ -30,6 +30,7 @@
   --radius-full: 9999px;
 
   --font-sans: var(--font-sf-pro);
+  --font-serif: var(--font-new-york);
 }
 
 body {
