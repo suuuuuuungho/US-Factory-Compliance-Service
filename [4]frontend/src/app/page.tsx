@@ -12,6 +12,14 @@ import {
   type Section,
 } from "../lib/api";
 
+// SUU-174: 후보 카드 왼쪽 색 띠(순환) + Checklist는 보라 카드.
+const STRIPES = [
+  "border-gradient-violet",
+  "border-gradient-magenta",
+  "border-gradient-orange",
+  "border-gradient-coral",
+];
+
 export default function Home() {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,10 +95,10 @@ export default function Home() {
           </ul>
         )}
 
-        {result?.answer?.candidates.map((c) => (
+        {result?.answer?.candidates.map((c, i) => (
           <section
             key={c.subpart}
-            className="rounded-lg border border-hairline bg-surface-1 p-5"
+            className={`rounded-lg border border-hairline border-l-4 bg-surface-1 p-5 ${STRIPES[i % STRIPES.length]}`}
           >
             <h2 className="font-semibold">
               Subpart {c.subpart} — {c.title}
@@ -123,7 +131,7 @@ export default function Home() {
         ))}
 
         {result?.answer && (
-          <section className="rounded-lg border border-hairline bg-surface-1 p-5">
+          <section className="rounded-xl bg-gradient-violet p-5 text-ink">
             <h2 className="font-semibold">Checklist</h2>
             <ul className="list-disc pl-6">
               {result.answer.checklist.map((item) => (
