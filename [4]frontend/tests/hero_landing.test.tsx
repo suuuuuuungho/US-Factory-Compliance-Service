@@ -1,0 +1,20 @@
+// SUU-191: / 는 히어로 랜딩. gradient 배경 섹션 + h1 + 부제 + Start 링크(/applicability).
+import { render, screen } from "@testing-library/react";
+import { expect, it } from "vitest";
+import Home from "../src/app/page";
+
+it("/ 의 h1이 US Factory Compliance AI Service 다", () => {
+  render(<Home />);
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("US Factory Compliance AI Service");
+});
+
+it("Start 링크의 href가 /applicability 다", () => {
+  render(<Home />);
+  expect(screen.getByRole("link", { name: "Start" }).getAttribute("href")).toBe("/applicability");
+});
+
+it("히어로 섹션(region=Hero)에 gradient 배경 클래스가 있다", () => {
+  render(<Home />);
+  const hero = screen.getByRole("region", { name: "Hero" });
+  expect(hero.classList.contains("bg-gradient-violet")).toBe(true);
+});
