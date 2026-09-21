@@ -27,8 +27,8 @@ export default function Home() {
           width={1152}
           height={768}
           priority
-          sizes="(min-width: 768px) 52vw, 85vw"
-          className="pointer-events-none absolute top-0 right-0 z-20 h-auto w-[85vw] max-w-[900px] select-none opacity-90 md:w-[52vw]"
+          sizes="(min-width: 768px) 34vw, 60vw"
+          className="pointer-events-none absolute top-0 right-0 z-20 h-auto w-[60vw] max-w-[600px] select-none opacity-90 md:w-[34vw]"
         />
       </section>
     </main>
