@@ -52,6 +52,23 @@ it("후보 카드 본문은 차콜이다 (section에 gradient 클래스 없음 +
   expect(card.classList.contains("bg-surface-1")).toBe(true);
 });
 
+// SUU-195: 카드 안을 스크롤해도 제목 띠는 위에 붙어 있다 (sticky top-0, 스크롤 상자는 카드 자신)
+it("세 카드의 제목 줄은 sticky top-0이고, 스크롤 상자(카드)는 overflow-y-auto다", async () => {
+  await askAndWait();
+  fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(a)" }));
+  const panel = await screen.findByRole("complementary");
+  const titles = [
+    screen.getByText(/^Subpart PPPP —/),
+    screen.getByRole("heading", { name: "Checklist" }),
+    within(panel).getByRole("heading", { level: 2 }),
+  ];
+  for (const h2 of titles) {
+    expect(h2.classList.contains("sticky")).toBe(true);
+    expect(h2.classList.contains("top-0")).toBe(true);
+    expect(h2.closest(".overflow-y-auto")).toBe(h2.closest("section, aside"));
+  }
+});
+
 it("Checklist는 본문 차콜, 제목 줄만 보라다", async () => {
   await askAndWait();
   const h2 = screen.getByRole("heading", { name: "Checklist" });
