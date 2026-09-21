@@ -38,17 +38,3 @@ body {
   font-family: var(--font-sans);
 }
 
-/* SUU-176: 은색 metal 질감 글자. 히어로 h1용 */
-@utility text-metal {
-  background-image: linear-gradient(
-    180deg,
-    #f4f4f4 0%,
-    #c9c9c9 35%,
-    #8f8f8f 50%,
-    #d6d6d6 65%,
-    #ffffff 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}

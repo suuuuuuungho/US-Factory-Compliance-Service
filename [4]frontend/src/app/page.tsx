@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <div className="flex flex-1">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-        <h1 className="text-metal whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] sm:text-4xl md:text-[2.75rem]">
+        <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
           US Factory Compliance AI Service
         </h1>
         <p className="text-lg text-accent-blue">

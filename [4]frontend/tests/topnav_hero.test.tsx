@@ -13,7 +13,7 @@ it("상단바에 Comp.Doc 글자가 보인다", () => {
   expect(screen.getByText("Comp.Doc")).toBeTruthy();
 });
 
-// SUU-173: 대소문자 섞은 문구, 한 줄(nowrap). SUU-176: h1은 metal, 설명문은 accent-blue
+// SUU-173: 대소문자 섞은 문구, 한 줄(nowrap). SUU-176: 설명문은 accent-blue. SUU-181: h1 metal 제거
 it("첫 화면 h1이 US Factory Compliance AI Service 다", () => {
   render(<Home />);
   const h1 = screen.getByRole("heading", { level: 1 });
@@ -21,10 +21,11 @@ it("첫 화면 h1이 US Factory Compliance AI Service 다", () => {
   expect(h1.classList.contains("whitespace-nowrap")).toBe(true);
 });
 
-it("h1은 metal 질감이고 파란 강조는 없다", () => {
+it("h1은 흰 글자(text-ink)이고 metal·파란 강조는 없다", () => {
   render(<Home />);
   const h1 = screen.getByRole("heading", { level: 1 });
-  expect(h1.classList.contains("text-metal")).toBe(true);
+  expect(h1.classList.contains("text-ink")).toBe(true);
+  expect(h1.classList.contains("text-metal")).toBe(false);
   expect(h1.querySelector(".text-accent-blue")).toBeNull();
 });
 
