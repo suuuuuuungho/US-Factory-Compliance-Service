@@ -1,5 +1,5 @@
-// SUU-180: 카드 제목 줄(h2)만 gradient 색 배경(순환), 카드 본문(section)은 차콜. SUU-174의 color_cards.test.tsx를 대체한다.
-import { fireEvent, render, screen } from "@testing-library/react";
+// SUU-180: 카드 제목 줄(h2)만 gradient 배경, 본문(section)은 차콜. SUU-183: 띠는 전부 같은 보라, 조문 칸도 같은 띠. SUU-174의 color_cards.test.tsx를 대체한다.
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import Home from "../src/app/page";
 
@@ -15,7 +15,8 @@ const RESULT = {
 };
 
 async function askAndWait() {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(RESULT), { status: 200, headers: { "content-type": "application/json" } })));
+  const SECTION = { section_key: "section-63.4481", subpart: "PPPP", text: "(a) first piece" };
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => new Response(JSON.stringify(url.endsWith("/ask") ? RESULT : SECTION), { status: 200, headers: { "content-type": "application/json" } })));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
   fireEvent.click(screen.getByRole("button", { name: /ask/i }));
@@ -26,10 +27,22 @@ const hasGradient = (el: Element) => Array.from(el.classList).some((c) => c.incl
 
 afterEach(() => vi.unstubAllGlobals());
 
-it("후보 카드 제목 줄은 순서대로 violet, magenta 배경이다 (h2에 bg-gradient-*)", async () => {
+it("모든 카드 제목 줄은 같은 보라색이다 (bg-gradient-violet, magenta 없음)", async () => {
   await askAndWait();
-  expect(screen.getByText(/Subpart PPPP/).classList.contains("bg-gradient-violet")).toBe(true);
-  expect(screen.getByText(/Subpart T /).classList.contains("bg-gradient-magenta")).toBe(true);
+  const h1 = screen.getByText(/Subpart PPPP/);
+  const h2 = screen.getByText(/Subpart T /);
+  expect(h1.classList.contains("bg-gradient-violet")).toBe(true);
+  expect(h2.classList.contains("bg-gradient-violet")).toBe(true);
+  expect(document.querySelector(".bg-gradient-magenta")).toBeNull();
+});
+
+it("조문 칸 제목 줄은 Subpart 제목 줄과 className이 같다", async () => {
+  await askAndWait();
+  fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(a)" }));
+  const panel = await screen.findByRole("complementary");
+  const sectionH2 = within(panel).getByRole("heading", { level: 2 });
+  expect(sectionH2.className).toBe(screen.getByText(/^Subpart PPPP —/).className);
+  expect(sectionH2.classList.contains("bg-gradient-violet")).toBe(true);
 });
 
 it("후보 카드 본문은 차콜이다 (section에 gradient 클래스 없음 + bg-surface-1)", async () => {

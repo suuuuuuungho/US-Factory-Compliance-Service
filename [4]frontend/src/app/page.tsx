@@ -13,15 +13,9 @@ import {
 } from "../lib/api";
 
 // SUU-175: 카드 제목 headline(22px/700), 목록 줄 간격, 옆 패널 조문 body 크기.
-// SUU-180: 카드 제목 줄만 gradient 배경(순환), 본문은 차콜. (SUU-174의 왼쪽 띠·보라 카드 대체)
-const BANDS = [
-  "bg-gradient-violet",
-  "bg-gradient-magenta",
-  "bg-gradient-orange",
-  "bg-gradient-coral",
-];
+// SUU-180: 카드 제목 줄만 gradient 배경, 본문은 차콜. SUU-183: 세 칸 제목 띠 전부 같은 보라.
 const CARD = "overflow-hidden rounded-lg border border-hairline bg-surface-1";
-const CARD_TITLE = "px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
+const CARD_TITLE = "bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
 const COLUMN = "flex flex-col gap-6 overflow-y-auto md:max-h-[calc(100vh-22rem)]";
 
@@ -104,9 +98,9 @@ export default function Home() {
         {result?.answer && (
           <>
             <section aria-label="Subparts" className={COLUMN}>
-              {result.answer.candidates.map((c, i) => (
+              {result.answer.candidates.map((c) => (
                 <section key={c.subpart} className={CARD}>
-                  <h2 className={`${CARD_TITLE} ${BANDS[i % BANDS.length]}`}>
+                  <h2 className={CARD_TITLE}>
                     Subpart {c.subpart} — {c.title}
                   </h2>
                   <ul className={CARD_LIST}>
@@ -139,7 +133,7 @@ export default function Home() {
 
             <section aria-label="Checklist" className={COLUMN}>
               <section className={CARD}>
-                <h2 className={`${CARD_TITLE} bg-gradient-violet`}>Checklist</h2>
+                <h2 className={CARD_TITLE}>Checklist</h2>
                 <ul className={CARD_LIST}>
                   {result.answer.checklist.map((item) => (
                     <li key={item}>{item}</li>
@@ -153,18 +147,18 @@ export default function Home() {
                 <p className="text-sm text-ink-muted">Click a citation to read the section.</p>
               )}
               {(section || sectionError) && (
-                <aside aria-label="Section text" className="rounded-lg border border-hairline bg-surface-1 p-5">
+                <aside aria-label="Section text" className={CARD}>
                   {section && (
                     <>
-                      <h2 className="mb-3 text-[22px] font-bold leading-tight tracking-[-0.8px]">
+                      <h2 className={CARD_TITLE}>
                         {section.section_key} (Subpart {section.subpart})
                       </h2>
-                      <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed text-ink">
+                      <pre className="whitespace-pre-wrap p-5 font-sans text-base leading-relaxed text-ink">
                         {section.text}
                       </pre>
                     </>
                   )}
-                  {sectionError && <p className="text-red-400">{sectionError}</p>}
+                  {sectionError && <p className="p-5 text-red-400">{sectionError}</p>}
                 </aside>
               )}
             </section>
