@@ -1,12 +1,15 @@
 """SUU-158: FastAPI. 켜질 때 색인 한 번(SUU-156), POST /ask → answer_question(SUU-157), GET /health → release_id.
-SUU-159: /ask 한 번마다 rag_answer_log 한 줄."""
+SUU-159: /ask 한 번마다 rag_answer_log 한 줄.
+SUU-167: 포트를 먼저 열고 색인은 스레드가 뒤에서 올린다. 준비 전엔 /health·/ask 503."""
 from __future__ import annotations
 
 import os
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from ecfr_answer import call_openai_chat
@@ -23,13 +26,18 @@ ORIGINS = [o.strip() for o in os.environ.get("FRONTEND_ORIGIN", "http://localhos
 STATE: dict = {"index": None, "client": None}
 
 
-@asynccontextmanager
-async def lifespan(app):
+def _load():
     from supabase import create_client
     client = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
     release_id = client.table("common_dataset_current").select("release_id").eq("dataset", "ecfr").execute().data[0]["release_id"]
-    STATE["index"] = load_index(client, release_id)
     STATE["client"] = client
+    STATE["index"] = load_index(client, release_id)  # 마지막에 넣는다. index가 차면 "준비됨"
+
+
+@asynccontextmanager
+async def lifespan(app):
+    # Render는 포트가 열릴 때까지만 기다린다. 색인은 스레드에 맡기고 바로 연다
+    threading.Thread(target=_load, daemon=True).start()
     yield
 
 
@@ -43,6 +51,8 @@ class Ask(BaseModel):
 
 @app.post("/ask")
 def ask(body: Ask) -> dict:
+    if STATE["index"] is None:
+        raise HTTPException(503, "index not ready")
     if not body.question.strip():
         raise HTTPException(400, "question is empty")
     result = answer_question(
@@ -59,5 +69,7 @@ def ask(body: Ask) -> dict:
 
 
 @app.get("/health")
-def health() -> dict:
+def health():
+    if STATE["index"] is None:
+        return JSONResponse({"ready": False}, status_code=503)
     return {"release_id": STATE["index"].release_id}
