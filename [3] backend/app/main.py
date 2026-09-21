@@ -1,6 +1,7 @@
 """SUU-158: FastAPI. 켜질 때 색인 한 번(SUU-156), POST /ask → answer_question(SUU-157), GET /health → release_id.
 SUU-159: /ask 한 번마다 rag_answer_log 한 줄.
-SUU-167: 포트를 먼저 열고 색인은 스레드가 뒤에서 올린다. 준비 전엔 /health·/ask 503."""
+SUU-167: 포트를 먼저 열고 색인은 스레드가 뒤에서 올린다. 준비 전엔 /health·/ask 503.
+SUU-161: GET /section/{key} → 메모리 청크를 이어 붙인 조문 전문."""
 from __future__ import annotations
 
 import os
@@ -14,10 +15,11 @@ from pydantic import BaseModel
 
 from ecfr_answer import call_openai_chat
 from ecfr_chunk_index import call_isaacus_rerank_api, call_kanon2_api
+from ecfr_eval import _subpart_of_chunk, section_key_of_chunk
 from ecfr_llm_rerank import call_openai_rerank_api
 from ecfr_search import build_rerank_request
 
-from app.answer import answer_question
+from app.answer import answer_question, section_text
 from app.index import load_index
 from app.log import answer_log_row, save_answer_log
 
@@ -66,6 +68,18 @@ def ask(body: Ask) -> dict:
     if STATE.get("client"):  # 테스트(test_main.py)는 client가 없다 → 저장 건너뜀
         save_answer_log(STATE["client"], answer_log_row(body.question, result, STATE["index"].release_id))
     return result
+
+
+@app.get("/section/{section_key}")
+def section(section_key: str) -> dict:
+    if STATE["index"] is None:
+        raise HTTPException(503, "index not ready")
+    index = STATE["index"]
+    rows = [c for c in index.chunks if section_key_of_chunk(c) == section_key]  # 5,700개 선형 검색, ms 단위
+    if not rows:
+        raise HTTPException(404, "section not found")
+    return {"section_key": section_key, "subpart": _subpart_of_chunk(rows[0]),
+            "text": section_text(index, {"chunk_key": rows[0]["chunk_key"]})}
 
 
 @app.get("/health")

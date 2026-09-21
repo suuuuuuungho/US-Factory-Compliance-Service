@@ -59,3 +59,36 @@ def test_cors_preflight_allows_frontend_origin(client):
     # 목록에 없는 주소는 안 열린다
     r = client.options("/ask", headers={**headers, "Origin": "https://evil.example"})
     assert "access-control-allow-origin" not in r.headers
+
+
+# ---- SUU-161: GET /section/{section_key} → 조문 전문. 색인 메모리의 청크를 이어 붙인다(Supabase 안 감) ----
+def _chunk(section, subpart, piece, text):
+    return {"chunk_key": f"ecfr/40/63/subpart-{subpart}/section-{section}/{piece}",
+            "node_key": f"40/63/subpart-{subpart}/section-{section}", "context_text": "", "chunk_text": text}
+
+
+SECTION_CHUNKS = [
+    _chunk("63.4481", "PPPP", "1", "Table 1 to 63.4481"),   # 표 조각은 맨 뒤
+    _chunk("63.4481", "PPPP", "0-1", "(b) second piece"),
+    _chunk("63.4481", "PPPP", "0", "(a) first piece"),
+    _chunk("63.320", "M", "0", "body of 63.320"),
+]
+
+
+def test_get_section_returns_joined_text(client):
+    import app.main as main
+    main.STATE["index"] = Index("rel-9", SECTION_CHUNKS, lambda q, k: [])
+    r = client.get("/section/section-63.4481")
+    assert r.status_code == 200
+    assert r.json() == {
+        "section_key": "section-63.4481",
+        "subpart": "PPPP",
+        "text": "(a) first piece\n\n(b) second piece\n\nTable 1 to 63.4481",  # /0, /0-1 먼저, 표 /1 뒤
+    }
+
+
+def test_get_missing_section_is_404(client):
+    import app.main as main
+    main.STATE["index"] = Index("rel-9", SECTION_CHUNKS, lambda q, k: [])
+    r = client.get("/section/section-63.9999")
+    assert r.status_code == 404 and r.json() == {"detail": "section not found"}  # 길 없음(Not Found)과 구분
