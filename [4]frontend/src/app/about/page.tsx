@@ -43,7 +43,7 @@ export default function AboutPage() {
       <div className="mx-auto flex max-w-3xl flex-col gap-20">
         <header className="flex flex-col gap-5">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">About</p>
-          <h1 className="font-serif text-5xl leading-[1.05] tracking-[-0.01em] text-ink sm:text-6xl">
+          <h1 className="font-serif text-3xl leading-tight tracking-[-0.01em] text-ink sm:text-4xl">
             Questions and evidence, not verdicts.
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-ink-muted">
@@ -102,7 +102,7 @@ export default function AboutPage() {
               </ul>
             </div>
           </div>
-          <blockquote className="border-t border-hairline pt-6 font-serif text-2xl italic leading-snug text-ink">
+          <blockquote className="border-t border-hairline pt-6 font-serif text-lg italic leading-snug text-ink">
             We don&apos;t tell you the answer. We tell you where to look and what to confirm.
           </blockquote>
         </section>

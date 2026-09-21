@@ -10,6 +10,18 @@ it("h1이 있고 New York(font-serif)을 쓴다", () => {
   expect(h1.className).toContain("font-serif");
 });
 
+// SUU-219: 제목·인용구가 768px 안에 한 줄로 들어오게 크기를 줄임
+it("h1은 text-3xl/sm:text-4xl, 인용구는 text-lg 다", () => {
+  const { container } = render(<About />);
+  const h1 = screen.getByRole("heading", { level: 1 }).className;
+  expect(h1).toContain("text-3xl");
+  expect(h1).toContain("sm:text-4xl");
+  expect(h1).not.toContain("text-5xl");
+  const quote = container.querySelector("blockquote")!.className;
+  expect(quote).toContain("text-lg");
+  expect(quote).not.toContain("text-2xl");
+});
+
 it("섹션 6개가 순서대로 있다", () => {
   render(<About />);
   const h2s = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
