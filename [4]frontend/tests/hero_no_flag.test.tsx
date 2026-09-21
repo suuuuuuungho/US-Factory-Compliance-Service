@@ -1,4 +1,4 @@
-// SUU-205: / 히어로에서 판화풍 미국 국기(SUU-203)를 뺀다. 글자·Start 없는 상태와 공장 배경·연기(SUU-201)는 그대로.
+// SUU-205: / 히어로에서 판화풍 미국 국기(SUU-203)를 뺀다. 공장 배경·연기(SUU-201)는 그대로.
 import { render, screen } from "@testing-library/react";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -20,9 +20,9 @@ it("공장 에칭 img 와 hero-smoke 2개는 그대로 있다", () => {
   expect(screen.getAllByTestId("hero-smoke")).toHaveLength(2);
 });
 
-it("/ 에 h1·설명문·Start 링크는 여전히 없다", () => {
+// SUU-211: h1·카피는 다시 넣었다 (hero_title_new_york.test.tsx). 옛 설명문·Start 만 없는지 본다.
+it("/ 에 옛 설명문·Start 링크는 여전히 없다", () => {
   render(<Home />);
-  expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   expect(screen.queryByText(/40 CFR Part 63 applicability criteria/)).toBeNull();
   expect(screen.queryByRole("link", { name: "Start" })).toBeNull();
 });
