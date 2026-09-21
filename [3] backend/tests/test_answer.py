@@ -73,13 +73,13 @@ def test_answer_question_returns_answer_ten_sections_tokens_cost_ms():
     assert out["issues"] == []
     assert VECTOR_CALLS == [([1.0, 0.0], CHUNK_TOP_K)]  # 벡터 검색은 index.vector 한 번
     assert out["tokens"] == {"prompt": 300, "completion": 30}  # 리랭크 100+10, 답 200+20
-    assert abs(out["cost_usd"] - (300 / 1e6 * 1.00 + 30 / 1e6 * 5.00)) < 1e-12  # claude-haiku-4-5 단가
+    assert abs(out["cost_usd"] - (300 / 1e6 * 0.25 + 30 / 1e6 * 2.00)) < 1e-12  # gpt-5-mini 단가
     assert isinstance(out["ms"], int) and out["ms"] >= 0
 
-    # 답 요청: claude-haiku-4-5, 조문 10개 전문(조각을 이어 붙임)이 들어간다
+    # 답 요청: gpt-5-mini, 조문 10개 전문(조각을 이어 붙임)이 들어간다
     assert len(calls["chat"]) == 1
     request = calls["chat"][0]
-    assert request["model"] == "claude-haiku-4-5"
+    assert request["model"] == "gpt-5-mini"
     user = request["messages"][-1]["content"]
     assert "SECTIONS (10)" in user
     assert "solvent welding is coating\n\n(b) second piece" in user
