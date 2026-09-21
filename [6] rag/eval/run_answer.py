@@ -91,7 +91,10 @@ def score_line(case: dict, answer: dict | None, *, given: list[str], issues: lis
 
 
 def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, model: str, judge_model: str, top_n: int, cost: float,
-                      always: tuple[str, ...] = ()) -> dict:
+                      always: tuple[str, ...] = (), tokens: dict | None = None) -> dict:
+    tokens = tokens or {}
+    prompt_tokens = int(tokens.get("prompt_tokens", 0))
+    completion_tokens = int(tokens.get("completion_tokens", 0))
     return {
         "run_id": run_id,
         "run_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -102,6 +105,11 @@ def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, mode
         "always_sections": list(always),
         "answer_model": model,
         "judge_model": judge_model,
+        "tokens": {
+            "prompt": prompt_tokens,
+            "completion": completion_tokens,
+            "prompt_per_case": prompt_tokens // len(outs) if outs else 0,
+        },
         "metrics": aggregate(outs),
         "cost_usd": {"per_query": cost / len(outs) if outs else 0.0, "total": cost},
     }
@@ -180,7 +188,8 @@ def main():
     if not args.limit:
         with ANSWER_RUNS.open("a", encoding="utf-8") as f:
             f.write(json.dumps(answer_run_record(args.run_id, outs, search_run_id=SEARCH_RUN_ID, model=args.model,
-                                                 judge_model=args.judge_model, top_n=args.top_n, cost=cost, always=always), ensure_ascii=False) + "\n")
+                                                 judge_model=args.judge_model, top_n=args.top_n, cost=cost, always=always,
+                                                 tokens=usage), ensure_ascii=False) + "\n")
         print(f"answer_runs.jsonl += {args.run_id}")
 
 
