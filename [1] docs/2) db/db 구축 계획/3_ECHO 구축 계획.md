@@ -1,6 +1,6 @@
 # ECHO DB 구축 계획
 
-[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 실제 DB 적재는 미실행이다.
+[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 2026-09-17 release를 2026-09-21에 Supabase에 적재·공개했다 (3-4절).
 
 ## [1] Step.1 수집
 
@@ -203,13 +203,35 @@
    - 현재/직전 release와 근거로 인용된 이력은 유지한다. 매주 750만 행을 무기한 복제하는 비용을 측정한 뒤, 그 밖의 이력은 보존 정책을 정한다.
 
 3) 3-3. DB 적재 시 마주한 문제와 해결
-   - 실제 DB 적재 미실행. 예상 고유키 충돌은 원본 행 보존 후 동일 행·동일 활동의 여러 속성·실제 충돌로 구분한다.
-   - 시설 연결 실패는 이름만으로 합치지 않는다. 보류 목록과 FRS의 검증된 연결로 해결한다.
+   - 첫 실행(2026-09-21 19:28)은 `echo_facility` COPY에서 `canceling statement due to statement timeout`으로 실패했다. Supabase pooler 세션의 기본 `statement_timeout`이 2분이고, 접속 URL의 `options`는 pooler가 무시한다. `echo_load.py`가 세션 안에서 `set statement_timeout = 0`을 실행하도록 고쳤다 (eCFR SUU-77과 같은 종류).
+   - 두 번째 실행은 초당 약 2,000행으로 `echo_pollutant`까지 18분이 걸려 중단했다. 원인은 행마다 도는 FK 검사 트리거. 같은 연결로 FK·인덱스 없는 임시 표에 COPY하면 초당 25,000행이었다. `echo_load.py`가 적재 동안 `set session_replication_role = replica`로 FK 트리거를 끄도록 고쳤다. 고아 FK는 `echo_check`가 적재 뒤 검사하므로 안전하다.
+   - 트랜잭션이 하나라 실패한 실행은 모두 롤백됐고, 재실행은 같은 `manifest_hash`의 release를 재사용해 지우고 다시 넣었다. 중복 release·중복 행은 생기지 않았다.
+   - `echo_source_row`는 `held` 행만 넣는데 이번 파싱은 held 0이라 0행이다. 정상 행은 ZIP + `source_row_no`로 되짚는다. 7,580,620행짜리 jsonl을 훑는 데만 약 1.5분이 든다.
 
 4) 3-4. DB 적재 실행 결과
-   - 미실행. 전국 원본 행 수와 적재·보류 행 수를 대조한 뒤 Part 63 후보 수와 제조업 후보 수를 별도로 보고한다.
-   - 같은 ZIP 재실행의 중복 증가 0, 벌금 중복 집계 0, 실패 시 기존 release 조회 가능을 확인해야 한다.
+   - 실행: `python echo_ingest.py 2026-09-17` (2026-09-21 20:01:11 → 20:08:25, **7분 14초**). release `a1d0ad6d-57c0-436b-ac7c-c90c64daccb8`, `status=published`, `common_dataset_current(echo)`가 이 release를 가리킨다.
+   - 표별 행 수 (2-5절 jsonl 행 수와 12개 표 모두 일치):
 
+     | 표 | 행 |
+     |---|---|
+     | echo_facility | 280,071 |
+     | echo_facility_identifier | 279,995 |
+     | echo_industry | 536,235 |
+     | echo_program | 458,109 |
+     | echo_program_subpart | 191,226 |
+     | echo_pollutant | 864,562 |
+     | echo_activity | 3,242,036 |
+     | echo_activity_facility | 3,246,696 |
+     | echo_violation | 102,676 |
+     | echo_violation_facility | 102,676 |
+     | echo_penalty | 106,520 |
+     | echo_pipeline_link | 67,123 |
+     | echo_source_row | 0 (held 없음) |
+     | echo_code_map | 306 |
+
+   - 검사(`echo_check`): 행 수·고아 FK·벌금 모두 통과. Part 63 후보는 DB에서도 Subpart 행 64,955 / 시설 49,618로 2-5절과 같다.
+   - DB 용량: 728 MB → **3,109 MB** (+2.4 GB). echo_* 표·인덱스 합계 2,884 MB. 매주 release를 쌓으면 주당 약 2.4 GB가 늘므로 이전 release 보존 정책이 필요하다 (3-2절).
+   - 같은 ZIP 재실행의 중복 증가 0은 release 재사용으로 확인했다. 벌금 중복 집계 0, 실패 시 기존 release 조회 가능은 다음 release 적재 때 확인한다.
 5) 3-5. 테이블 스키마
    - 모든 snapshot 테이블은 `release_id FK → common_dataset_release`를 가진다. 원본 근거는 `source_object_id FK → common_raw_object`, `source_file`, `source_row_no`로 되짚는다. UUID·정규화 키는 설계 필드다.
    - `echo_source_row`: `(release_id, source_file, source_row_no bigint) PK`, `raw_payload jsonb`, `row_hash text`, `parse_status text`, `source_object_id FK`. 원본의 반복 행도 추적한다.
