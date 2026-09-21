@@ -13,7 +13,7 @@ it("상단바에 Comp.Doc 글자가 보인다", () => {
   expect(screen.getByText("Comp.Doc")).toBeTruthy();
 });
 
-// SUU-173: 대소문자 섞은 문구, 한 줄(nowrap), "AI Service"만 accent-blue
+// SUU-173: 대소문자 섞은 문구, 한 줄(nowrap). SUU-176: h1은 metal, 설명문은 accent-blue
 it("첫 화면 h1이 US Factory Compliance AI Service 다", () => {
   render(<Home />);
   const h1 = screen.getByRole("heading", { level: 1 });
@@ -21,11 +21,17 @@ it("첫 화면 h1이 US Factory Compliance AI Service 다", () => {
   expect(h1.classList.contains("whitespace-nowrap")).toBe(true);
 });
 
-it("h1의 AI Service 부분만 accent-blue 다", () => {
+it("h1은 metal 질감이고 파란 강조는 없다", () => {
   render(<Home />);
-  const em = screen.getByText("AI Service");
-  expect(em.classList.contains("text-accent-blue")).toBe(true);
-  expect(em.closest("h1")).toBeTruthy();
+  const h1 = screen.getByRole("heading", { level: 1 });
+  expect(h1.classList.contains("text-metal")).toBe(true);
+  expect(h1.querySelector(".text-accent-blue")).toBeNull();
+});
+
+it("설명문은 accent-blue 다", () => {
+  render(<Home />);
+  const p = screen.getByText(/40 CFR Part 63 applicability criteria/);
+  expect(p.classList.contains("text-accent-blue")).toBe(true);
 });
 
 it("탭 제목(metadata.title)이 Comp.Doc 이다", async () => {
