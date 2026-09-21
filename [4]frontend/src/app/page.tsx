@@ -1,6 +1,7 @@
 // SUU-190: 질문 화면은 /applicability 로 옮겼다.
 // SUU-191: 히어로 랜딩. 이미지는 아직 없음, 나중에 배경 이미지로 교체. SUU-192: 보라 gradient 배경은 뺌(다른 페이지처럼 canvas).
 // SUU-211: 가운데 제목 h1 + 카피 한 줄, New York 세리프. Start 버튼은 없다.
+// SUU-212: 상단바가 투명해져서 히어로를 60px 위로 올려 상단바 밑까지 채운다.
 import Image from "next/image";
 
 import HeroSmoke from "./HeroSmoke";
@@ -10,7 +11,7 @@ export default function Home() {
     <main className="flex flex-1 flex-col">
       <section
         aria-label="Hero"
-        className="relative flex min-h-[calc(100dvh-60px)] flex-col items-center justify-center overflow-hidden px-8 text-center"
+        className="relative -mt-[60px] flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-8 text-center"
       >
         <Image
           src="/hero-etching.png"
