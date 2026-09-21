@@ -148,7 +148,7 @@
 | GitHub → Settings → Secrets | `SLACK_WEBHOOK_URL` | Slack 알림용 |
 | GitHub → Settings → Branches → main | PR 필수, CI 통과 필수 | main 직접 push 금지 |
 | GitHub → Settings → General | Squash merge만 허용, 머지 후 브랜치 자동 삭제 | 히스토리 깔끔 |
-| Vercel | GitHub 레포 연결 | main merge 시 자동 배포, PR마다 미리보기 |
+| Vercel | GitHub 레포 연결 + Root Directory `[4]frontend` + `NEXT_PUBLIC_API_URL` | main merge 시 자동 배포, PR마다 미리보기 |
 | Render | GitHub 레포 연결(Blueprint) + 환경변수 4개 + Slack 연동 | main merge 시 백엔드 자동 배포 |
 
 > "승인 1명 필수"는 켜지 않는다. GitHub은 자기 PR을 자기가 승인 못 하게 막아서 혼자 개발하면 merge가 안 된다. **Merge 버튼을 누르는 것이 승인**이다.
@@ -163,7 +163,7 @@
 | 3 | Linear ↔ GitHub 연동 | PR 열면 이슈에 자동 연결, merge 시 Done |  ✅
 | 4 | `slack.yml` | PR 열면 Slack에 메시지 옴 | ✅ SUU-29
 | 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
-| 6 | `cd.yml` + Vercel 연결 | main merge 시 배포 성공 알림 | (SUU-140~143에서 한 번 연결했다가 SUU-144로 프론트 초기화. Vercel Root Directory에 공백 불가 → 폴더는 `[4]frontend`) |
+| 6 | Vercel 연결(cd.yml 없음) + slack.yml deployment_status | main merge 시 Slack에 🚀 배포 알림, `https://us-factory-compliance-service.vercel.app` | ✅ SUU-165 (SUU-140~143에서 한 번 연결했다가 SUU-144로 초기화. Root Directory 공백 불가 → `[4]frontend`) |
 | 6-b | `render.yaml` + Render 연결 | `/health` 200 | SUU-160 |
 
 ## 8. 결정 기록 (왜 이렇게 했나)
