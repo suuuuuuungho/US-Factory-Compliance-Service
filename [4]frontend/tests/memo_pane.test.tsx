@@ -1,6 +1,7 @@
 // SUU-198: Memo 버튼 → 메모 pane(제목·본문·Save·저장 기록). 메모는 localStorage "applicability-memos"에 남고, 기록 항목을 누르면 편집칸에 다시 불려온다.
-// SUU-199: Memo는 dockview 칸이다. 누르면 Checklist 왼쪽에 Memo 칸이 생겨 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌 수 있다.
-import { fireEvent, render, screen, within } from "@testing-library/react";
+// SUU-199: Memo는 dockview 칸이다. Checklist 왼쪽에 놓여 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌 수 있다.
+// SUU-200: Memo 칸은 처음부터 열려 있다. 탭 ✕로 닫고 다른 칸의 + 메뉴로 다시 연다. 기록은 ✕로 지운다.
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Home from "../src/app/applicability/page";
 
@@ -20,8 +21,7 @@ async function askAndWait() {
   await screen.findByText(/Subpart PPPP/);
 }
 
-const memoButton = () => screen.getByRole("button", { name: "Memo" });
-const pane = () => screen.getByRole("complementary", { name: "Memo" });
+const pane = () => screen.getByRole("region", { name: "Memo pane" });
 
 function saveMemo(title: string, body: string) {
   fireEvent.change(within(pane()).getByPlaceholderText(/title/i), { target: { value: title } });
@@ -32,19 +32,8 @@ function saveMemo(title: string, body: string) {
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.unstubAllGlobals());
 
-it("Memo 버튼은 Checklist 오른쪽에 있고, 누르기 전엔 메모 pane이 없다", async () => {
+it("Memo 칸은 처음부터 열려 있고 Checklist 왼쪽에 있다", async () => {
   await askAndWait();
-  const checklist = screen.getByRole("button", { name: "Checklist" });
-  const memo = memoButton();
-  expect(checklist.compareDocumentPosition(memo) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  expect(memo.getAttribute("aria-pressed")).toBe("false");
-  expect(screen.queryByRole("complementary", { name: "Memo" })).toBeNull();
-});
-
-it("Memo를 누르면 Memo 칸이 Checklist 왼쪽에 생기고 pane은 그 안에 있다", async () => {
-  await askAndWait();
-  fireEvent.click(memoButton());
-  await screen.findByRole("button", { name: "Memo", pressed: true });
   const tabs = screen.getAllByRole("tab").map((t) => t.getAttribute("aria-label"));
   expect(tabs).toEqual(["Question", "Subparts", "Memo", "Checklist"]);
   expect(pane().closest('[data-panel="memo"]')).not.toBeNull();
@@ -67,7 +56,6 @@ it("Ask 뒤에는 main의 최대 폭이 풀리고 좌우 여백이 줄어든다"
 
 it("Save하면 기록 목록에 제목과 시각이 남고 localStorage에도 저장된다", async () => {
   await askAndWait();
-  fireEvent.click(memoButton());
   saveMemo("First note", "Check major source status");
   const list = within(pane()).getByRole("list", { name: /saved/i });
   const items = within(list).getAllByRole("listitem");
@@ -82,7 +70,6 @@ it("Save하면 기록 목록에 제목과 시각이 남고 localStorage에도 �
 
 it("기록 항목을 누르면 그 메모가 편집칸에 불려온다", async () => {
   await askAndWait();
-  fireEvent.click(memoButton());
   saveMemo("A", "body a");
   saveMemo("B", "body b");
   const list = within(pane()).getByRole("list", { name: /saved/i });
@@ -92,11 +79,25 @@ it("기록 항목을 누르면 그 메모가 편집칸에 불려온다", async (
   expect((within(pane()).getByPlaceholderText(/write/i) as HTMLTextAreaElement).value).toBe("body a");
 });
 
-it("Memo를 다시 누르면 pane이 닫힌다", async () => {
+it("Memo 탭을 ✕로 닫으면 사라지고, 다른 칸의 + 메뉴에서 Memo를 고르면 다시 열린다", async () => {
   await askAndWait();
-  fireEvent.click(memoButton());
-  expect(screen.queryByRole("complementary", { name: "Memo" })).not.toBeNull();
-  fireEvent.click(memoButton());
-  expect(screen.queryByRole("complementary", { name: "Memo" })).toBeNull();
-  expect(memoButton().getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(screen.getByRole("button", { name: "Close Memo" }));
+  await waitFor(() => expect(screen.queryByRole("region", { name: "Memo pane" })).toBeNull());
+  const checklist = screen.getByRole("tab", { name: "Checklist" }).closest(".dv-groupview") as HTMLElement;
+  fireEvent.click(within(checklist).getByRole("button", { name: "Add panel" }));
+  fireEvent.click(within(checklist).getByRole("menuitem", { name: "Memo" }));
+  await screen.findByRole("region", { name: "Memo pane" });
+});
+
+it("기록 옆 ✕를 누르면 그 메모가 목록과 localStorage에서 지워진다", async () => {
+  await askAndWait();
+  saveMemo("A", "body a");
+  saveMemo("B", "body b");
+  fireEvent.click(within(pane()).getByRole("button", { name: "Delete A" }));
+  const list = within(pane()).getByRole("list", { name: /saved/i });
+  expect(within(list).getAllByRole("listitem")).toHaveLength(1);
+  within(list).getByRole("button", { name: /^B/ }); // 시각 글자("AM")와 헷갈리지 않게 제목 버튼으로 본다
+  expect(within(list).queryByRole("button", { name: /^A/ })).toBeNull();
+  expect(within(list).queryByRole("button", { name: "Delete A" })).toBeNull();
+  expect(JSON.parse(localStorage.getItem("applicability-memos")!)).toHaveLength(1);
 });

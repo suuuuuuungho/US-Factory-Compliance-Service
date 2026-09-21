@@ -1,6 +1,6 @@
 "use client";
-// SUU-198: 오른쪽 메모 pane. 제목·본문을 쓰고 Save하면 localStorage에 쌓이고, 아래 기록 목록에 제목+시각이 남는다.
-// 기록 항목을 누르면 그 메모가 편집칸에 다시 불려온다. 다시 Save하면 새 기록으로 추가된다.
+// SUU-198: 메모 pane. (SUU-200: 조문 칸 aside와 구분하려고 section/region) 제목·본문을 쓰고 Save하면 localStorage에 쌓이고, 아래 기록 목록에 제목+시각이 남는다.
+// 기록 항목을 누르면 그 메모가 편집칸에 다시 불려온다. 다시 Save하면 새 기록으로 추가된다. SUU-200: 기록 옆 ✕로 지운다.
 import { useState } from "react";
 
 type Memo = { title: string; body: string; savedAt: string };
@@ -23,16 +23,17 @@ export default function MemoPane() {
   const [body, setBody] = useState("");
   const [memos, setMemos] = useState<Memo[]>(load);
 
-  function save() {
-    const next = [{ title, body, savedAt: new Date().toISOString() }, ...memos];
+  function persist(next: Memo[]) {
     setMemos(next);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {}
   }
+  const save = () => persist([{ title, body, savedAt: new Date().toISOString() }, ...memos]);
+  const remove = (i: number) => persist(memos.filter((_, j) => j !== i));
 
   return (
-    <aside aria-label="Memo" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
+    <section aria-label="Memo pane" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
       <input className={INPUT} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea
         className={`${INPUT} min-h-40 flex-1 resize-none`}
@@ -49,21 +50,29 @@ export default function MemoPane() {
       </button>
       <ul aria-label="Saved memos" className="min-h-0 overflow-y-auto border-t border-hairline pt-3 text-sm">
         {memos.map((m, i) => (
-          <li key={i}>
+          <li key={i} className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => {
                 setTitle(m.title);
                 setBody(m.body);
               }}
-              className="flex w-full justify-between gap-3 py-1.5 text-left hover:text-accent-blue"
+              className="flex min-w-0 flex-1 justify-between gap-3 py-1.5 text-left hover:text-accent-blue"
             >
               <span className="truncate text-ink">{m.title || "(untitled)"}</span>
               <span className="shrink-0 text-ink-muted">{new Date(m.savedAt).toLocaleString()}</span>
             </button>
+            <button
+              type="button"
+              aria-label={`Delete ${m.title || "(untitled)"}`}
+              onClick={() => remove(i)}
+              className="shrink-0 px-1 text-ink-muted hover:text-red-400"
+            >
+              ✕
+            </button>
           </li>
         ))}
       </ul>
-    </aside>
+    </section>
   );
 }
