@@ -13,13 +13,16 @@ import {
 } from "../lib/api";
 
 // SUU-175: 카드 제목 headline(22px/700), 목록 줄 간격, 옆 패널 조문 body 크기.
-// SUU-174: 후보 카드 왼쪽 색 띠(순환) + Checklist는 보라 카드.
-const STRIPES = [
-  "border-gradient-violet",
-  "border-gradient-magenta",
-  "border-gradient-orange",
-  "border-gradient-coral",
+// SUU-180: 카드 제목 줄만 gradient 배경(순환), 본문은 차콜. (SUU-174의 왼쪽 띠·보라 카드 대체)
+const BANDS = [
+  "bg-gradient-violet",
+  "bg-gradient-magenta",
+  "bg-gradient-orange",
+  "bg-gradient-coral",
 ];
+const CARD = "overflow-hidden rounded-lg border border-hairline bg-surface-1";
+const CARD_TITLE = "px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
+const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -96,14 +99,11 @@ export default function Home() {
         )}
 
         {result?.answer?.candidates.map((c, i) => (
-          <section
-            key={c.subpart}
-            className={`rounded-lg border border-hairline border-l-4 bg-surface-1 p-5 ${STRIPES[i % STRIPES.length]}`}
-          >
-            <h2 className="text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink">
+          <section key={c.subpart} className={CARD}>
+            <h2 className={`${CARD_TITLE} ${BANDS[i % BANDS.length]}`}>
               Subpart {c.subpart} — {c.title}
             </h2>
-            <ul className="mt-3 list-disc space-y-3 pl-6 leading-relaxed">
+            <ul className={CARD_LIST}>
               {c.criteria.map((cr, i) => (
                 <li key={i}>
                   {cr.criterion}{" "}
@@ -131,9 +131,9 @@ export default function Home() {
         ))}
 
         {result?.answer && (
-          <section className="rounded-xl bg-gradient-violet p-5 text-ink">
-            <h2 className="text-[22px] font-bold leading-tight tracking-[-0.8px]">Checklist</h2>
-            <ul className="mt-3 list-disc space-y-3 pl-6 leading-relaxed">
+          <section className={CARD}>
+            <h2 className={`${CARD_TITLE} bg-gradient-violet`}>Checklist</h2>
+            <ul className={CARD_LIST}>
               {result.answer.checklist.map((item) => (
                 <li key={item}>{item}</li>
               ))}
