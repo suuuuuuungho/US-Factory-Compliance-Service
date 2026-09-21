@@ -40,6 +40,7 @@ def answer_question(
     rerank: Callable[[str, list[dict]], list[float]],
     llm: Callable[[str], dict],
     chat: Callable[[dict], dict],
+    on_event: Callable[[dict], None] | None = None,  # SUU-177: search → found → answer 진행 알림
 ) -> dict:
     t0 = time.perf_counter()
     tokens = {"prompt": 0, "completion": 0}
@@ -49,6 +50,11 @@ def answer_question(
         tokens["completion"] += r["completion_tokens"]
         return r["text"]
 
+    def emit(e: dict) -> None:
+        if on_event:
+            on_event(e)
+
+    emit({"stage": "search"})
     found = search_sections(
         question,
         embed=embed,
@@ -61,7 +67,10 @@ def answer_question(
         llm=lambda prompt: count(llm(prompt)),
         vector=index.vector,  # SUU-166: pgvector RPC. None이면 메모리 코사인
     )
+    sections = [{"section_key": s["section_key"], "subpart": s["subpart"]} for s in found]
+    emit({"stage": "found", "sections": sections})
     request = build_answer_request(question, [{**s, "text": section_text(index, s)} for s in found])
+    emit({"stage": "answer"})
     text = count(chat(request))
     try:
         answer, issues = parse_answer(text, [s["section_key"] for s in found])
@@ -71,7 +80,7 @@ def answer_question(
     price_in, price_out = PRICE_PER_M[request["model"]]
     return {
         "answer": answer,
-        "sections": [{"section_key": s["section_key"], "subpart": s["subpart"]} for s in found],
+        "sections": sections,
         "issues": issues,
         "tokens": tokens,
         "cost_usd": tokens["prompt"] / 1e6 * price_in + tokens["completion"] / 1e6 * price_out,
