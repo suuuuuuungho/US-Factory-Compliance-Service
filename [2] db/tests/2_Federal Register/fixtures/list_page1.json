@@ -1,0 +1,52 @@
+{
+ "description": "Documents published on or after 01/01/1994 and affecting 40 CFR 63",
+ "count": 5,
+ "total_pages": 3,
+ "next_page_url": "https://www.federalregister.gov/api/v1/documents?conditions%5Bcfr%5D%5Bpart%5D=63&conditions%5Bcfr%5D%5Btitle%5D=40&conditions%5Bpublication_date%5D%5Bgte%5D=1994-01-01&conditions%5Bpublication_date%5D%5Blte%5D=2026-09-21&format=json&order=oldest&per_page=2&page=2&search_after_cursor=WzEwNTQwNzM2MDAwMDAsIjAzLTU1MjEiXQ",
+ "results": [
+  {
+   "title": "Public Meeting on the Rulemaking for the Pulp, Paper, and Paperboard Industry",
+   "type": "Uncategorized Document",
+   "abstract": "The EPA is announcing the first of two public meetings to be held during the 90-day public comment period on the notice of proposed rulemaking for the pulp, paper, and paperboard industry, published on December 17, 1993, at 58 FR 66078. The public meetings are intended to be forums at which the EPA can discuss the status of regulatory development and at which interested parties can provide information and ideas on key technical, scientific, and other issues and can ask clarifying questions about the notice of proposed rulemaking.",
+   "document_number": "94-752",
+   "html_url": "https://www.federalregister.gov/documents/1994/01/11/94-752/public-meeting-on-the-rulemaking-for-the-pulp-paper-and-paperboard-industry",
+   "pdf_url": null,
+   "public_inspection_pdf_url": null,
+   "publication_date": "1994-01-11",
+   "agencies": [
+    {
+     "raw_name": "ENVIRONMENTAL PROTECTION AGENCY",
+     "name": "Environmental Protection Agency",
+     "id": 145,
+     "url": "https://www.federalregister.gov/agencies/environmental-protection-agency",
+     "json_url": "https://www.federalregister.gov/api/v1/agencies/145",
+     "parent_id": null,
+     "slug": "environmental-protection-agency"
+    }
+   ],
+   "excerpts": "The EPA is announcing the first of two public meetings to be held during the 90-day public comment period on the notice of proposed rulemaking for the pulp, paper, and paperboard industry, published on December 17, 1993, at 58 FR 66078. The public..."
+  },
+  {
+   "abstract": null,
+   "agencies": [
+    {
+     "raw_name": "ENVIRONMENTAL PROTECTION AGENCY",
+     "name": "Environmental Protection Agency",
+     "id": 145,
+     "url": "https://www.federalregister.gov/agencies/environmental-protection-agency",
+     "json_url": "https://www.federalregister.gov/api/v1/agencies/145",
+     "parent_id": null,
+     "slug": "environmental-protection-agency"
+    }
+   ],
+   "document_number": "03-5521",
+   "excerpts": null,
+   "html_url": "https://www.federalregister.gov/documents/2003/05/27/03-5521/x",
+   "pdf_url": "https://www.govinfo.gov/content/pkg/FR-2003-05-27/pdf/03-5521.pdf",
+   "public_inspection_pdf_url": null,
+   "publication_date": "2003-05-27",
+   "title": "NESHAP: Engine Test Cells/Stands",
+   "type": "Rule"
+  }
+ ]
+}
