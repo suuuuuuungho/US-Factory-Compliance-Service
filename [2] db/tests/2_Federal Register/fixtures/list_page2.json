@@ -1,0 +1,52 @@
+{
+ "description": "Documents published on or after 01/01/1994 and affecting 40 CFR 63",
+ "count": 5,
+ "total_pages": 3,
+ "next_page_url": "https://www.federalregister.gov/api/v1/documents?conditions%5Bcfr%5D%5Bpart%5D=63&conditions%5Bcfr%5D%5Btitle%5D=40&conditions%5Bpublication_date%5D%5Bgte%5D=1994-01-01&conditions%5Bpublication_date%5D%5Blte%5D=2026-09-21&format=json&order=oldest&per_page=2&page=3&search_after_cursor=WzE3NzE4OTEyMDAwMDAsIjIwMjYtMDM2MzgiXQ",
+ "results": [
+  {
+   "abstract": null,
+   "agencies": [
+    {
+     "raw_name": "ENVIRONMENTAL PROTECTION AGENCY",
+     "name": "Environmental Protection Agency",
+     "id": 145,
+     "url": "https://www.federalregister.gov/agencies/environmental-protection-agency",
+     "json_url": "https://www.federalregister.gov/api/v1/agencies/145",
+     "parent_id": null,
+     "slug": "environmental-protection-agency"
+    }
+   ],
+   "document_number": "03-5521",
+   "excerpts": null,
+   "html_url": "https://www.federalregister.gov/documents/2003/08/28/03-5521/x",
+   "pdf_url": "https://www.govinfo.gov/content/pkg/FR-2003-08-28/pdf/03-5521.pdf",
+   "public_inspection_pdf_url": null,
+   "publication_date": "2003-08-28",
+   "title": "NESHAP: Engine Test Cells/Stands; Correction",
+   "type": "Correction"
+  },
+  {
+   "abstract": null,
+   "agencies": [
+    {
+     "raw_name": "ENVIRONMENTAL PROTECTION AGENCY",
+     "name": "Environmental Protection Agency",
+     "id": 145,
+     "url": "https://www.federalregister.gov/agencies/environmental-protection-agency",
+     "json_url": "https://www.federalregister.gov/api/v1/agencies/145",
+     "parent_id": null,
+     "slug": "environmental-protection-agency"
+    }
+   ],
+   "document_number": "2026-03638",
+   "excerpts": null,
+   "html_url": "https://www.federalregister.gov/documents/2026/02/24/2026-03638/x",
+   "pdf_url": "https://www.govinfo.gov/content/pkg/FR-2026-02-24/pdf/2026-03638.pdf",
+   "public_inspection_pdf_url": null,
+   "publication_date": "2026-02-24",
+   "title": "NESHAP: Coal- and Oil-Fired EGU; Final Repeal",
+   "type": "Rule"
+  }
+ ]
+}

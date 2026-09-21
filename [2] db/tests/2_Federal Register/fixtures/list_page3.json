@@ -1,0 +1,29 @@
+{
+ "description": "Documents published on or after 01/01/1994 and affecting 40 CFR 63",
+ "count": 5,
+ "total_pages": 3,
+ "results": [
+  {
+   "abstract": null,
+   "agencies": [
+    {
+     "raw_name": "ENVIRONMENTAL PROTECTION AGENCY",
+     "name": "Environmental Protection Agency",
+     "id": 145,
+     "url": "https://www.federalregister.gov/agencies/environmental-protection-agency",
+     "json_url": "https://www.federalregister.gov/api/v1/agencies/145",
+     "parent_id": null,
+     "slug": "environmental-protection-agency"
+    }
+   ],
+   "document_number": "2026-09999",
+   "excerpts": null,
+   "html_url": "https://www.federalregister.gov/documents/2026/09/01/2026-09999/x",
+   "pdf_url": "https://www.govinfo.gov/content/pkg/FR-2026-09-01/pdf/2026-09999.pdf",
+   "public_inspection_pdf_url": null,
+   "publication_date": "2026-09-01",
+   "title": "NESHAP: Example Proposal",
+   "type": "Proposed Rule"
+  }
+ ]
+}
