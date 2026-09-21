@@ -1,6 +1,7 @@
 // SUU-193: 2행은 dockview 작업공간. 기본 칸은 Subparts | Checklist, 조문은 인용마다 칸(§63.4481)으로 열려 여러 개를 나란히 둘 수 있다.
 // 끌어서 크기·위치를 바꾸고, 배치는 localStorage에 남는다. SUU-182의 three_columns.test.tsx(고정 3열 grid)를 대체한다.
-// SUU-199: 질문 폼도 Question 칸이 된다. 기본 배치 = 왼쪽 열 Question(위)/Subparts(아래), 오른쪽 Checklist. 저장 키는 workspace-layout-v2.
+// SUU-199: 질문 폼도 Question 칸이 된다. 저장 키는 workspace-layout-v2.
+// SUU-200: 기본 배치 = 왼쪽 열 Question(위)/Subparts(아래) | Memo | Checklist. Memo는 처음부터 열려 있고, 조문은 Subparts 옆에 열린다.
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Home from "../src/app/applicability/page";
@@ -41,10 +42,10 @@ const tabNames = () => screen.getAllByRole("tab").map((t) => t.getAttribute("ari
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.unstubAllGlobals());
 
-it("답이 오면 dockview 안에 끌 수 있는 탭 세 개(Question, Subparts, Checklist)가 있고 조문 칸은 아직 없다", async () => {
+it("답이 오면 dockview 안에 끌 수 있는 탭 네 개(Question, Subparts, Memo, Checklist)가 있고 조문 칸은 아직 없다", async () => {
   await askAndWait();
   expect(document.querySelector(".dv-dockview")).not.toBeNull();
-  expect(tabNames()).toEqual(["Question", "Subparts", "Checklist"]);
+  expect(tabNames()).toEqual(["Question", "Subparts", "Memo", "Checklist"]);
   for (const tab of screen.getAllByRole("tab")) expect(tab.getAttribute("draggable")).toBe("true");
 });
 
@@ -74,7 +75,10 @@ it("인용을 클릭하면 조문이 새 칸(§63.4481)으로 열리고, 다른 
   fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4482" }));
   await screen.findByText("(a) second section");
   // 둘째 조문은 첫 조문 칸에 탭으로 들어간다 (끌어서 옆으로 빼면 나란히 볼 수 있다)
-  expect(tabNames()).toEqual(["Question", "Subparts", "Checklist", "§63.4481", "§63.4482"]);
+  // SUU-200: 조문 칸은 Subparts 옆(같은 열)에 열린다
+  expect(tabNames()).toEqual(["Question", "Subparts", "§63.4481", "§63.4482", "Memo", "Checklist"]);
+  const column = (id: string) => document.querySelector(`[data-panel="${id}"]`)!.closest(".dv-branch-node")!;
+  expect(column("section:section-63.4482")).toBe(column("subparts")); // 활성 탭(둘째 조문)만 그려진다
   expect(screen.getByRole("tab", { name: "§63.4482" }).getAttribute("aria-selected")).toBe("true");
 });
 
@@ -109,22 +113,22 @@ it("Subparts·Checklist 버튼으로 칸을 껐다 켤 수 있다 (aria-pressed)
 it("칸 배치는 localStorage 'workspace-layout-v2'에 저장되고, 닫은 칸은 다시 열어도 닫혀 있다", async () => {
   await askAndWait();
   const saved = () => JSON.parse(localStorage.getItem("workspace-layout-v2")!);
-  expect(Object.keys(saved().panels).sort()).toEqual(["checklist", "question", "subparts"]);
+  expect(Object.keys(saved().panels).sort()).toEqual(["checklist", "memo", "question", "subparts"]);
 
   fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
   await waitFor(() => expect(saved().panels.checklist).toBeUndefined());
 
   cleanup();
   await askAndWait();
-  expect(tabNames()).toEqual(["Question", "Subparts"]);
+  expect(tabNames()).toEqual(["Question", "Subparts", "Memo"]);
 });
 
-it("Reset layout을 누르면 닫았던 칸이 돌아오고 기본(Question/Subparts | Checklist)이 된다", async () => {
+it("Reset layout을 누르면 닫았던 칸이 돌아오고 기본(Question/Subparts | Memo | Checklist)이 된다", async () => {
   await askAndWait();
   fireEvent.click(screen.getByRole("button", { name: "Close Checklist" }));
   await waitFor(() => expect(screen.queryByRole("tab", { name: "Checklist" })).toBeNull());
   fireEvent.click(screen.getByRole("button", { name: "Reset layout" }));
-  expect(tabNames()).toEqual(["Question", "Subparts", "Checklist"]);
+  expect(tabNames()).toEqual(["Question", "Subparts", "Memo", "Checklist"]);
 });
 
 // SUU-194: dockview 루트(.dv-shell)는 height:100%인데, flex로 늘어난 칸 안에서는 브라우저가 0px로 계산한다.

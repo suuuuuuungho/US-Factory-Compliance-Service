@@ -1,5 +1,5 @@
 "use client";
-// SUU-198: 오른쪽 메모 pane. 제목·본문을 쓰고 Save하면 localStorage에 쌓이고, 아래 기록 목록에 제목+시각이 남는다.
+// SUU-198: 메모 pane. (SUU-200: 조문 칸 aside와 구분하려고 section/region) 제목·본문을 쓰고 Save하면 localStorage에 쌓이고, 아래 기록 목록에 제목+시각이 남는다.
 // 기록 항목을 누르면 그 메모가 편집칸에 다시 불려온다. 다시 Save하면 새 기록으로 추가된다.
 import { useState } from "react";
 
@@ -32,7 +32,7 @@ export default function MemoPane() {
   }
 
   return (
-    <aside aria-label="Memo" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
+    <section aria-label="Memo pane" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
       <input className={INPUT} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea
         className={`${INPUT} min-h-40 flex-1 resize-none`}
@@ -64,6 +64,6 @@ export default function MemoPane() {
           </li>
         ))}
       </ul>
-    </aside>
+    </section>
   );
 }
