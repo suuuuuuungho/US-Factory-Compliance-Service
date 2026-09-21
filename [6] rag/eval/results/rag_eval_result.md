@@ -418,3 +418,24 @@ adi-M080034(정답 FFFFF+A, 답 A·EE·YY)는 의도대로 0 유지. 나머지 �
 | 상위 10 + 항상 A | 4,438,364 | 579,912 | 43,513 | $2.27 |
 
 **기준 조합 = 상위 10(프롬프트 v2). 항상 A는 보류.** 점수는 올랐지만(Recall 0.739→0.785) 검색 결과와 상관없이 특정 조문을 고정으로 끼워 넣는 건 "정답을 미리 알고 맞추는" 셈이라 서비스 방식으로 맞는지 확신이 없다. 비용도 $1.79→$2.27, 입력 토큰 27k→44k/건이다.
+
+## SUU-155 답변 합격선 (2026-09-21, $0)
+
+검색 `pass_line.py`(SUU-137)와 같은 모양으로 `answer_pass_line.py`를 만들었다. `answer_runs.jsonl`에서 기준 조합(v2, 상위 10, 항상 A 없음, gpt-5-mini/gpt-5-mini) 최신 run을 골라 네 지표를 합격선과 비교한다. 합격선 = 상위 10(SUU-152) 점수 − 동점 폭(0.03, 심판 0.06).
+
+| 지표 | 상위 10 | 합격선 |
+|---|---|---|
+| subpart | 0.961 | 0.93 |
+| citation_recall | 0.739 | 0.70 |
+| citation_grounded | 0.996 | 0.96 |
+| judge | 1.775 | 1.71 |
+
+검사 방법: `test_answer_pass_line.py`가 pytest(=CI)에서 돈다. 손으로는 `python "[6] rag/eval/answer_pass_line.py"`:
+
+```
+OK   subpart 0.961 >= 0.93
+OK   citation_recall 0.739 >= 0.7
+OK   citation_grounded 0.996 >= 0.96
+OK   judge 1.775 >= 1.71
+run: 2026-09-19_answer_v2_gpt-5-mini_top10
+```
