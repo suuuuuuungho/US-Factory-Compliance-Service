@@ -40,10 +40,6 @@ def test_layout_uses_inter_not_geist():
     assert "Geist" not in src
 
 
-def test_globals_css_has_text_metal_utility():
-    """SUU-176: 히어로용 은색 metal 글자 utility."""
-    css = GLOBALS.read_text(encoding="utf-8")
-    m = re.search(r"@utility text-metal\s*\{(?P<body>[^}]*)\}", css)
-    assert m, "globals.css에 @utility text-metal 없음"
-    assert "background-clip: text" in m.group("body")
-    assert "linear-gradient" in m.group("body")
+def test_globals_css_has_no_text_metal():
+    """SUU-181: 히어로 metal utility 제거."""
+    assert "text-metal" not in GLOBALS.read_text(encoding="utf-8")
