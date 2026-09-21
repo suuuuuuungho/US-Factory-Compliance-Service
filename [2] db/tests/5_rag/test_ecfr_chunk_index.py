@@ -200,7 +200,7 @@ def test_no_claude_left_in_pipeline_or_requirements():
     from pathlib import Path
 
     repo = Path(__file__).resolve().parents[3]
-    files = list((repo / "[2] db" / "pipeline" / "5_rag").glob("*.py"))  # requirements.txt는 임시로 뺌: 백엔드가 Claude를 쓰는 동안
+    files = list((repo / "[2] db" / "pipeline" / "5_rag").glob("*.py")) + [repo / "requirements.txt"]
     for path in files:
         text = path.read_text(encoding="utf-8")
         assert "claude-haiku-4-5" not in text, path
