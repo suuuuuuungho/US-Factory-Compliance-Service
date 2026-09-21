@@ -116,11 +116,10 @@
 
 | | |
 |---|---|
-| 누가 | GitHub Actions + Vercel + Supabase |
+| 누가 | Render + Vercel + Supabase |
 | 언제 | `main`에 합쳐질 때 |
-| 하는 일 | 프론트 → Vercel 자동 배포, DB → Supabase 마이그레이션 적용 |
-| 자동으로 | Slack 배포 성공 / 실패 |
-| 아직 안 정한 것 | 백엔드 스택. 정해지면 `cd.yml`에 추가 |
+| 하는 일 | 백엔드 → Render(`render.yaml`), 프론트 → Vercel, DB → Supabase 마이그레이션 |
+| 자동으로 | Render·Vercel Slack 알림(각 대시보드 연동) |
 
 ## 5. 만들 파일 (9개)
 
@@ -132,7 +131,7 @@
 | `AGENTS.md` (루트) | Codex | Codex가 지킬 규칙 (설계 파일 읽기, 테스트 금지, PR 제목) |
 | `.github/workflows/ci.yml` | CI | pytest 실행 + 규칙 검사 |
 | `pyproject.toml` | 테스트 | pytest 설정 (`[3] backend` 같은 폴더를 import 가능하게) |
-| `.github/workflows/cd.yml` | CD | main merge 시 배포 |
+| `render.yaml` | CD | main merge 시 Render 배포 |
 | `.github/workflows/slack.yml` | 알림 | PR 열림 / CI 실패 / 병합 / 배포 결과 |
 | `.github/pull_request_template.md` | PR | PR 본문 틀 (이슈 번호, 테스트 결과) |
 
@@ -150,6 +149,7 @@
 | GitHub → Settings → Branches → main | PR 필수, CI 통과 필수 | main 직접 push 금지 |
 | GitHub → Settings → General | Squash merge만 허용, 머지 후 브랜치 자동 삭제 | 히스토리 깔끔 |
 | Vercel | GitHub 레포 연결 | main merge 시 자동 배포, PR마다 미리보기 |
+| Render | GitHub 레포 연결(Blueprint) + 환경변수 4개 + Slack 연동 | main merge 시 백엔드 자동 배포 |
 
 > "승인 1명 필수"는 켜지 않는다. GitHub은 자기 PR을 자기가 승인 못 하게 막아서 혼자 개발하면 merge가 안 된다. **Merge 버튼을 누르는 것이 승인**이다.
 
@@ -164,6 +164,7 @@
 | 4 | `slack.yml` | PR 열면 Slack에 메시지 옴 | ✅ SUU-29
 | 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
 | 6 | `cd.yml` + Vercel 연결 | main merge 시 배포 성공 알림 | (SUU-140~143에서 한 번 연결했다가 SUU-144로 프론트 초기화. Vercel Root Directory에 공백 불가 → 폴더는 `[4]frontend`) |
+| 6-b | `render.yaml` + Render 연결 | `/health` 200 | SUU-160 |
 
 ## 8. 결정 기록 (왜 이렇게 했나)
 
