@@ -1,13 +1,37 @@
 "use client";
 // SUU-163: 질문 → POST /ask → 후보 Subpart 카드 + 체크리스트. 디자인 없음.
-import { useState } from "react";
-import { ask, type AskResult } from "../lib/api";
+// SUU-164: 인용 버튼 → GET /section/{key} → 옆 패널(aside)에 조문 전문. 같은 조문은 캐시.
+import { useRef, useState } from "react";
+import {
+  ask,
+  citationToSectionKey,
+  getSection,
+  type AskResult,
+  type Section,
+} from "../lib/api";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [section, setSection] = useState<Section | null>(null);
+  const [sectionError, setSectionError] = useState<string | null>(null);
+  const sectionCache = useRef<Record<string, Section>>({});
+
+  async function openSection(key: string) {
+    setSectionError(null);
+    const cached = sectionCache.current[key];
+    if (cached) return setSection(cached);
+    try {
+      const s = await getSection(key);
+      sectionCache.current[key] = s;
+      setSection(s);
+    } catch (err) {
+      setSection(null);
+      setSectionError(err instanceof Error ? err.message : String(err));
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,55 +48,105 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-      <h1 className="text-2xl font-semibold">US Factory Compliance — 40 CFR Part 63</h1>
-      <form onSubmit={onSubmit} className="flex flex-col gap-2">
-        <textarea
-          className="rounded border p-2"
-          rows={3}
-          placeholder="Describe the process, e.g. we solvent weld plastic parts"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-        />
-        <button type="submit" disabled={loading} className="self-start rounded border px-4 py-2 disabled:opacity-50">
-          Ask
-        </button>
-      </form>
+    <div className="flex flex-1">
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
+        <h1 className="text-2xl font-semibold">
+          US Factory Compliance — 40 CFR Part 63
+        </h1>
+        <form onSubmit={onSubmit} className="flex flex-col gap-2">
+          <textarea
+            className="rounded border p-2"
+            rows={3}
+            placeholder="Describe the process, e.g. we solvent weld plastic parts"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="self-start rounded border px-4 py-2 disabled:opacity-50"
+          >
+            Ask
+          </button>
+        </form>
 
-      {loading && <p role="status">Searching the regulations… (10–20 s)</p>}
-      {error && <p className="text-red-700">{error}</p>}
+        {loading && <p role="status">Searching the regulations… (10–20 s)</p>}
+        {error && <p className="text-red-700">{error}</p>}
 
-      {result && result.answer === null && (
-        <ul className="list-disc pl-6">
-          {result.issues.map((issue) => <li key={issue}>{issue}</li>)}
-        </ul>
-      )}
-
-      {result?.answer?.candidates.map((c) => (
-        <section key={c.subpart} className="rounded border p-4">
-          <h2 className="font-semibold">Subpart {c.subpart} — {c.title}</h2>
+        {result && result.answer === null && (
           <ul className="list-disc pl-6">
-            {c.criteria.map((cr, i) => (
-              <li key={i}>
-                {cr.criterion} <span className="text-sm text-zinc-500">{cr.citations.join(", ")}</span>
-              </li>
+            {result.issues.map((issue) => (
+              <li key={issue}>{issue}</li>
             ))}
           </ul>
-        </section>
-      ))}
+        )}
 
-      {result?.answer && (
-        <section>
-          <h2 className="font-semibold">Checklist</h2>
-          <ul className="list-disc pl-6">
-            {result.answer.checklist.map((item) => <li key={item}>{item}</li>)}
-          </ul>
-        </section>
+        {result?.answer?.candidates.map((c) => (
+          <section key={c.subpart} className="rounded border p-4">
+            <h2 className="font-semibold">
+              Subpart {c.subpart} — {c.title}
+            </h2>
+            <ul className="list-disc pl-6">
+              {c.criteria.map((cr, i) => (
+                <li key={i}>
+                  {cr.criterion}{" "}
+                  {cr.citations.map((cit) => {
+                    const key = citationToSectionKey(cit);
+                    return key ? (
+                      <button
+                        key={cit}
+                        type="button"
+                        onClick={() => openSection(key)}
+                        className="mr-2 text-sm text-blue-700 underline"
+                      >
+                        {cit}
+                      </button>
+                    ) : (
+                      <span key={cit} className="mr-2 text-sm text-zinc-500">
+                        {cit}
+                      </span>
+                    );
+                  })}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+
+        {result?.answer && (
+          <section>
+            <h2 className="font-semibold">Checklist</h2>
+            <ul className="list-disc pl-6">
+              {result.answer.checklist.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <p className="mt-auto text-sm text-zinc-500">
+          This is not a final applicability determination. The plant decides;
+          this page gives the criteria and where to look.
+        </p>
+      </main>
+      {(section || sectionError) && (
+        <aside
+          aria-label="Section text"
+          className="w-full max-w-md border-l p-8"
+        >
+          {section && (
+            <>
+              <h2 className="font-semibold">
+                {section.section_key} (Subpart {section.subpart})
+              </h2>
+              <pre className="whitespace-pre-wrap font-sans text-sm">
+                {section.text}
+              </pre>
+            </>
+          )}
+          {sectionError && <p className="text-red-700">{sectionError}</p>}
+        </aside>
       )}
-
-      <p className="mt-auto text-sm text-zinc-500">
-        This is not a final applicability determination. The plant decides; this page gives the criteria and where to look.
-      </p>
-    </main>
+    </div>
   );
 }
