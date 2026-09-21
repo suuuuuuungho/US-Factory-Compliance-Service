@@ -45,19 +45,18 @@ it("Subpart는 카드 하나 안에 보라 제목 띠가 여러 개다", async (
 it("세 카드 모두 카드 안에서 스크롤된다 (overflow-y-auto + min-h-0)", async () => {
   await askAndWait();
   const subpartCard = screen.getByText(/Subpart PPPP/).closest("section")!;
-  const checklistCard = screen.getByText("Checklist").closest("section")!;
+  const checklistCard = screen.getByRole("heading", { name: "Checklist" }).closest("section")!;
   expect(scrolls(subpartCard)).toBe(true);
   expect(scrolls(checklistCard)).toBe(true);
   fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(a)" }));
   expect(scrolls(await screen.findByRole("complementary"))).toBe(true);
 });
 
-it("2행이 화면 남은 높이를 다 쓴다 (main 고정 높이, grid 1fr, 칸 min-h-0)", async () => {
+// SUU-193: 2행은 Workspace. 그 바깥 상자가 flex-1 + min-h-0로 남은 높이를 다 쓴다.
+it("2행이 화면 남은 높이를 다 쓴다 (main 고정 높이, Workspace flex-1 min-h-0)", async () => {
   await askAndWait();
   expect(screen.getByRole("main").classList.contains("md:h-[calc(100dvh-60px)]")).toBe(true);
-  const grid = screen.getByRole("textbox").closest("form")!.parentElement!;
-  expect(grid.classList.contains("md:grid-rows-[auto_minmax(0,1fr)]")).toBe(true);
-  for (const name of ["Subparts", "Checklist", "Section text column"]) {
-    expect(screen.getByRole("region", { name }).classList.contains("min-h-0")).toBe(true);
-  }
+  const workspace = screen.getByRole("button", { name: "Reset layout" }).parentElement!.parentElement!;
+  expect(workspace.classList.contains("md:flex-1")).toBe(true);
+  expect(workspace.classList.contains("md:min-h-0")).toBe(true);
 });

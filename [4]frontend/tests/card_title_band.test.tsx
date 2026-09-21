@@ -54,7 +54,7 @@ it("후보 카드 본문은 차콜이다 (section에 gradient 클래스 없음 +
 
 it("Checklist는 본문 차콜, 제목 줄만 보라다", async () => {
   await askAndWait();
-  const h2 = screen.getByText("Checklist");
+  const h2 = screen.getByRole("heading", { name: "Checklist" });
   const card = h2.closest("section")!;
   expect(h2.classList.contains("bg-gradient-violet")).toBe(true);
   expect(card.classList.contains("bg-surface-1")).toBe(true);

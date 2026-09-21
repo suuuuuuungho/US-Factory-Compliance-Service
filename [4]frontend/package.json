@@ -10,6 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "dockview": "^8.3.1",
+    "dockview-react": "^8.3.1",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8"
