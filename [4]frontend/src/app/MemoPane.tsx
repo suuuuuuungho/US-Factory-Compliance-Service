@@ -1,7 +1,7 @@
 "use client";
 // SUU-198: 오른쪽 메모 pane. 제목·본문을 쓰고 Save하면 localStorage에 쌓이고, 아래 기록 목록에 제목+시각이 남는다.
 // 기록 항목을 누르면 그 메모가 편집칸에 다시 불려온다. 다시 Save하면 새 기록으로 추가된다.
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 type Memo = { title: string; body: string; savedAt: string };
 
@@ -18,7 +18,8 @@ function load(): Memo[] {
 const INPUT =
   "rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none";
 
-export default function MemoPane() {
+// SUU-199: style로 폭을 받는다(끌어서 바꾼 px). 폰 너비에서는 위·아래로 쌓이므로 w-full.
+export default function MemoPane({ style }: { style?: CSSProperties }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [memos, setMemos] = useState<Memo[]>(load);
@@ -32,7 +33,11 @@ export default function MemoPane() {
   }
 
   return (
-    <aside aria-label="Memo" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
+    <aside
+      aria-label="Memo"
+      style={style}
+      className="flex min-h-0 w-full shrink-0 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4 max-md:w-full!"
+    >
       <input className={INPUT} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea
         className={`${INPUT} min-h-40 flex-1 resize-none`}

@@ -36,6 +36,21 @@ export default function ApplicabilityPage() {
   const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState(false);
   const [memoOpen, setMemoOpen] = useState(false);
+  // SUU-199: Memo pane 폭(px). 왼쪽 열과의 사이 손잡이를 끌면 바뀐다.
+  const [memoWidth, setMemoWidth] = useState(480);
+
+  function onHandleDown(e: React.PointerEvent<HTMLDivElement>) {
+    const startX = e.clientX;
+    const startWidth = memoWidth;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const move = (ev: PointerEvent) => setMemoWidth(Math.max(280, startWidth - (ev.clientX - startX)));
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +97,10 @@ export default function ApplicabilityPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-8 md:h-[calc(100dvh-60px)] md:overflow-hidden">
+    // SUU-199: 메모가 열리면 최대 폭을 풀고 좌우 여백을 줄여 2분할이 화면을 넉넉히 쓴다.
+    <main
+      className={`mx-auto flex w-full flex-1 flex-col gap-6 md:h-[calc(100dvh-60px)] md:overflow-hidden ${memoOpen ? "px-4 py-8" : "max-w-7xl p-8"}`}
+    >
       {!asked && (
         <>
           <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
@@ -240,7 +258,18 @@ export default function ApplicabilityPage() {
           />
         )}
       </div>
-      {memoOpen && <MemoPane />}
+      {memoOpen && (
+        <>
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize memo"
+            onPointerDown={onHandleDown}
+            className="hidden w-1.5 shrink-0 cursor-col-resize rounded-full bg-hairline hover:bg-accent-blue md:block"
+          />
+          <MemoPane style={{ width: memoWidth }} />
+        </>
+      )}
       </div>
 
       <p className="mt-auto text-sm text-ink-muted">

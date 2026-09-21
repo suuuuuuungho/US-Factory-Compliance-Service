@@ -89,3 +89,31 @@ it("Memo를 다시 누르면 pane이 닫힌다", async () => {
   expect(screen.queryByRole("complementary", { name: "Memo" })).toBeNull();
   expect(memoButton().getAttribute("aria-pressed")).toBe("false");
 });
+
+// SUU-199: 메모가 열리면 main의 최대 폭을 풀고 좌우 여백을 줄인다. 왼쪽 열과 pane 사이 손잡이를 끌면 pane 폭이 바뀐다.
+it("Memo가 열리면 main의 최대 폭이 풀리고 좌우 여백이 줄어든다", async () => {
+  await askAndWait();
+  const main = screen.getByRole("main");
+  expect(main.classList.contains("max-w-7xl")).toBe(true);
+  expect(main.classList.contains("p-8")).toBe(true);
+  fireEvent.click(memoButton());
+  expect(main.classList.contains("max-w-7xl")).toBe(false);
+  expect(main.classList.contains("px-4")).toBe(true);
+  fireEvent.click(memoButton());
+  expect(main.classList.contains("max-w-7xl")).toBe(true);
+  expect(main.classList.contains("p-8")).toBe(true);
+});
+
+it("손잡이를 끌면 Memo pane 폭이 바뀐다", async () => {
+  await askAndWait();
+  fireEvent.click(memoButton());
+  const handle = screen.getByRole("separator");
+  expect(handle.getAttribute("aria-orientation")).toBe("vertical");
+  expect(pane().style.width).toBe("480px");
+  fireEvent.pointerDown(handle, { clientX: 700, pointerId: 1 });
+  fireEvent.pointerMove(handle, { clientX: 600, pointerId: 1 }); // 왼쪽으로 100px → pane이 100px 넓어진다
+  fireEvent.pointerUp(handle, { pointerId: 1 });
+  expect(pane().style.width).toBe("580px");
+  // 손잡이가 pane 바로 앞에 있다
+  expect(handle.nextElementSibling).toBe(pane());
+});
