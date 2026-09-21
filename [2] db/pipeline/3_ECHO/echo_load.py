@@ -58,6 +58,8 @@ def load_release(root: Path, as_of: str, release_id: str, code_map_version: str,
     parsed = root / "parsed" / as_of
     counts: dict[str, int] = {}
     with conn.cursor() as cur:
+        cur.execute("set statement_timeout = 0")  # 수백만 행 COPY가 Supabase 기본 2분 제한에 걸리지 않게 (SUU-127)
+        cur.execute("set session_replication_role = replica")  # 행마다 FK 검사를 하면 10배 느리다. 고아 FK는 echo_check가 적재 뒤 검사한다 (SUU-127)
         for table in reversed(TABLES):  # 자식 표부터 지운다 (FK)
             cur.execute(f"delete from {table} where release_id = %s", (release_id,))
         objects = _source_objects(cur, release_id)

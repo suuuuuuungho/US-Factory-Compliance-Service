@@ -199,6 +199,22 @@ def test_loading_the_same_release_twice_does_not_grow_any_table(tmp_path):
     assert any("on conflict" in s.lower() for s, _ in conn.executed if "echo_code_map" in s.lower())
 
 
+def test_session_drops_statement_timeout_and_fk_triggers_before_any_write(tmp_path):
+    """SUU-127 실제 적재: pooler 기본 2분 제한에 COPY가 끊기고, 행마다 FK 검사를 하면 10배 느리다.
+    둘 다 세션 설정으로 끄고 시작한다. 고아 FK는 echo_check가 적재 뒤 검사한다."""
+    put_parsed(tmp_path)
+    conn = FakeConn()
+
+    load_release(tmp_path, AS_OF, RELEASE_ID, CODE_MAP_VERSION, conn=conn)
+
+    statements = [s.lower() for s, _ in conn.executed]
+    assert "set statement_timeout = 0" in statements
+    assert "set session_replication_role = replica" in statements
+    first_write = next(i for i, s in enumerate(statements) if s.startswith(("delete from", "insert into")))
+    assert statements.index("set statement_timeout = 0") < first_write
+    assert statements.index("set session_replication_role = replica") < first_write
+
+
 def test_values_are_copied_in_the_text_form_postgres_needs_for_each_column_type(tmp_path):
     put_parsed(tmp_path)
     conn = FakeConn()
