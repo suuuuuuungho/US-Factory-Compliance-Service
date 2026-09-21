@@ -38,6 +38,27 @@ body {
   font-family: var(--font-sans);
 }
 
+@keyframes smoke-rise {
+  from {
+    opacity: 0.5;
+    transform: translateY(0) scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-160px) scale(1.8);
+  }
+}
+
+.animate-smoke {
+  animation: smoke-rise 7s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-smoke {
+    animation: none;
+  }
+}
+
 /* SUU-193: dockview 칸 색을 DESIGN 토큰에 맞춘다. */
 .dockview-theme-dark {
   --dv-group-view-background-color: var(--color-canvas);
