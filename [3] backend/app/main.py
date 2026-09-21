@@ -1,16 +1,19 @@
 """SUU-158: FastAPI. 켜질 때 색인 한 번(SUU-156), POST /ask → answer_question(SUU-157), GET /health → release_id.
 SUU-159: /ask 한 번마다 rag_answer_log 한 줄.
 SUU-167: 포트를 먼저 열고 색인은 스레드가 뒤에서 올린다. 준비 전엔 /health·/ask 503.
-SUU-161: GET /section/{key} → 메모리 청크를 이어 붙인 조문 전문."""
+SUU-161: GET /section/{key} → 메모리 청크를 이어 붙인 조문 전문.
+SUU-178: POST /ask/stream → 같은 답을 SSE로. stage(search/found/answer) ×3 → result | error."""
 from __future__ import annotations
 
+import json
 import os
+import queue
 import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
 from ecfr_answer import call_openai_chat
@@ -68,6 +71,47 @@ def ask(body: Ask) -> dict:
     if STATE.get("client"):  # 테스트(test_main.py)는 client가 없다 → 저장 건너뜀
         save_answer_log(STATE["client"], answer_log_row(body.question, result, STATE["index"].release_id))
     return result
+
+
+def _sse(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+@app.post("/ask/stream")
+def ask_stream(body: Ask):
+    if STATE["index"] is None:
+        raise HTTPException(503, "index not ready")
+    if not body.question.strip():
+        raise HTTPException(400, "question is empty")
+    index = STATE["index"]
+    q: queue.Queue = queue.Queue()
+
+    # answer_question은 동기라 스레드에서 돌리고, on_event가 큐에 넣은 것을 제너레이터가 흘려보낸다
+    def run():
+        try:
+            result = answer_question(
+                body.question,
+                index=index,
+                embed=call_kanon2_api,
+                rerank=lambda q, chunks: call_isaacus_rerank_api(build_rerank_request(q, chunks))["scores"],
+                llm=call_openai_rerank_api,
+                chat=call_openai_chat,
+                on_event=lambda e: q.put(("stage", e)),
+            )
+            if STATE.get("client"):
+                save_answer_log(STATE["client"], answer_log_row(body.question, result, index.release_id))
+            q.put(("result", result))
+        except Exception as e:  # 헤더는 이미 나갔다. 에러도 이벤트로 보낸다
+            q.put(("error", {"detail": str(e)}))
+        q.put(None)
+
+    threading.Thread(target=run, daemon=True).start()
+
+    def gen():
+        while (item := q.get()) is not None:
+            yield _sse(*item)
+
+    return StreamingResponse(gen(), media_type="text/event-stream")
 
 
 @app.get("/section/{section_key}")
