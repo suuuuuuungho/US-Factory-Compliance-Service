@@ -26,29 +26,36 @@ const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline b
 const CARD_TITLE = "bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
 
+type OpenedSection = { section: Section | null; error: string | null; paragraph: string | null };
+
 export default function ApplicabilityPage() {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [section, setSection] = useState<Section | null>(null);
-  const [sectionError, setSectionError] = useState<string | null>(null);
-  // SUU-189: 인용의 문단 글자("a"). null이면 전체 보기. "Show all" 버튼이 null로 바꾼다
-  const [paragraph, setParagraph] = useState<string | null>(null);
+  // SUU-193: 열린 조문 칸들. key = section_key. paragraph는 SUU-189의 문단 글자("a"), null이면 전체 보기.
+  const [opened, setOpened] = useState<Record<string, OpenedSection>>({});
+  const [activeKey, setActiveKey] = useState<string | null>(null);
   const sectionCache = useRef<Record<string, Section>>({});
 
+  function patchOpened(key: string, patch: Partial<OpenedSection>) {
+    setOpened((o) => (o[key] ? { ...o, [key]: { ...o[key], ...patch } } : o));
+  }
+
   async function openSection(key: string, para: string | null) {
-    setSectionError(null);
-    setParagraph(para);
+    setActiveKey(key);
+    setOpened((o) => ({
+      ...o,
+      [key]: { section: o[key]?.section ?? null, error: null, paragraph: para },
+    }));
     const cached = sectionCache.current[key];
-    if (cached) return setSection(cached);
+    if (cached) return patchOpened(key, { section: cached });
     try {
       const s = await getSection(key);
       sectionCache.current[key] = s;
-      setSection(s);
+      patchOpened(key, { section: s });
     } catch (err) {
-      setSection(null);
-      setSectionError(err instanceof Error ? err.message : String(err));
+      patchOpened(key, { section: null, error: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -57,6 +64,7 @@ export default function ApplicabilityPage() {
     setLoading(true);
     setResult(null);
     setError(null);
+    setOpened({});
     try {
       setResult(await ask(question));
     } catch (err) {
@@ -108,64 +116,77 @@ export default function ApplicabilityPage() {
         {result?.answer && (
           <Workspace
             className="h-[70vh] md:h-auto md:min-h-0 md:flex-1"
+            active={activeKey ? `section:${activeKey}` : undefined}
+            onClose={(id) =>
+              setOpened((o) => Object.fromEntries(Object.entries(o).filter(([k]) => `section:${k}` !== id)))
+            }
             panels={{
-              subparts: (
-                <section className={CARD}>
-                  {result.answer.candidates.map((c) => (
-                    <div key={c.subpart}>
-                      <h2 className={CARD_TITLE}>
-                        Subpart {c.subpart} — {c.title}
-                      </h2>
-                      <ul className={CARD_LIST}>
-                        {c.criteria.map((cr, i) => (
-                          <li key={i}>
-                            {cr.criterion}{" "}
-                            {cr.citations.map((cit) => {
-                              const key = citationToSectionKey(cit);
-                              return key ? (
-                                <button
-                                  key={cit}
-                                  type="button"
-                                  onClick={() => openSection(key, citationToParagraph(cit))}
-                                  className="mt-1 mr-2 block text-sm text-accent-blue underline"
-                                >
-                                  {cit}
-                                </button>
-                              ) : (
-                                <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
-                                  {cit}
-                                </span>
-                              );
-                            })}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </section>
-              ),
-              checklist: (
-                <section className={CARD}>
-                  <h2 className={CARD_TITLE}>Checklist</h2>
-                  <ul className={CARD_LIST}>
-                    {result.answer.checklist.map((item) => (
-                      <li key={item}>{item}</li>
+              subparts: {
+                title: "Subparts",
+                node: (
+                  <section className={CARD}>
+                    {result.answer.candidates.map((c) => (
+                      <div key={c.subpart}>
+                        <h2 className={CARD_TITLE}>
+                          Subpart {c.subpart} — {c.title}
+                        </h2>
+                        <ul className={CARD_LIST}>
+                          {c.criteria.map((cr, i) => (
+                            <li key={i}>
+                              {cr.criterion}{" "}
+                              {cr.citations.map((cit) => {
+                                const key = citationToSectionKey(cit);
+                                return key ? (
+                                  <button
+                                    key={cit}
+                                    type="button"
+                                    onClick={() => openSection(key, citationToParagraph(cit))}
+                                    className="mt-1 mr-2 block text-sm text-accent-blue underline"
+                                  >
+                                    {cit}
+                                  </button>
+                                ) : (
+                                  <span
+                                    key={cit}
+                                    className="mt-1 mr-2 block text-sm text-ink-muted"
+                                  >
+                                    {cit}
+                                  </span>
+                                );
+                              })}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     ))}
-                  </ul>
-                </section>
-              ),
-              section: (
-                <>
-                  {!section && !sectionError && (
-                    <p className="text-sm text-ink-muted">Click a citation to read the section.</p>
-                  )}
-                  {(section || sectionError) && (
-                    <aside aria-label="Section text" className={CARD}>
-                      {section &&
-                        (() => {
-                          // SUU-189: 문단이 있으면 그 문단만. 본문에서 못 찾으면 전체로 떨어진다
-                          const shown = paragraph ? paragraphText(section.text, paragraph) : null;
-                          return (
+                  </section>
+                ),
+              },
+              checklist: {
+                title: "Checklist",
+                node: (
+                  <section className={CARD}>
+                    <h2 className={CARD_TITLE}>Checklist</h2>
+                    <ul className={CARD_LIST}>
+                      {result.answer.checklist.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ),
+              },
+              ...Object.fromEntries(
+                Object.entries(opened).map(([key, { section, error, paragraph }]) => {
+                  // SUU-189: 문단이 있으면 그 문단만. 본문에서 못 찾으면 전체로 떨어진다
+                  const shown =
+                    section && paragraph ? paragraphText(section.text, paragraph) : null;
+                  return [
+                    `section:${key}`,
+                    {
+                      title: `§${key.replace("section-", "")}`,
+                      node: (
+                        <aside aria-label="Section text" className={CARD}>
+                          {section && (
                             <>
                               <h2 className={CARD_TITLE}>
                                 {section.section_key}
@@ -174,7 +195,7 @@ export default function ApplicabilityPage() {
                               {shown && (
                                 <button
                                   type="button"
-                                  onClick={() => setParagraph(null)}
+                                  onClick={() => patchOpened(key, { paragraph: null })}
                                   className="mx-5 mt-4 text-sm text-accent-blue underline"
                                 >
                                   Show all of {section.section_key.replace("section-", "")}
@@ -184,12 +205,13 @@ export default function ApplicabilityPage() {
                                 {shown ?? section.text}
                               </pre>
                             </>
-                          );
-                        })()}
-                      {sectionError && <p className="p-5 text-red-400">{sectionError}</p>}
-                    </aside>
-                  )}
-                </>
+                          )}
+                          {error && <p className="p-5 text-red-400">{error}</p>}
+                        </aside>
+                      ),
+                    },
+                  ];
+                }),
               ),
             }}
           />

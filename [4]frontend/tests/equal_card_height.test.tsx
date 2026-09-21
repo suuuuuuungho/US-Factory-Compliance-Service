@@ -48,7 +48,7 @@ it("세 카드 모두 칸을 꽉 채우고(flex-1 min-h-0) 카드 안에서 스�
 // SUU-193: 칸은 Workspace의 Panel(div[data-panel])이다.
 it("세 칸(열) 자체는 스크롤하지 않는다 (overflow-hidden)", async () => {
   await askAndOpen();
-  for (const name of ["subparts", "checklist", "section"]) {
+  for (const name of ["subparts", "checklist", "section:section-63.4481"]) {
     const col = document.querySelector(`[data-panel="${name}"]`)!.classList;
     expect(col.contains("overflow-hidden"), name).toBe(true);
     expect(col.contains("overflow-y-auto"), name).toBe(false);
