@@ -27,6 +27,8 @@ import Workspace from "../Workspace";
 // 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌어서 크기·위치를 바꾼다. 기본 배치는 Workspace.tsx.
 // SUU-200: 각 칸의 + 메뉴에 답변에 인용된 조문(sections)을 넘겨 그 칸에 열 수 있게 한다.
 import MemoPane from "../MemoPane";
+// SUU-216: 기다리는 동안 안내문 + 진행 단계(Waiting).
+import Waiting from "../Waiting";
 // SUU-214: 질문 칸은 react-bits PromptBar (npx shadcn add @react-bits/PromptBar-TS-CSS). 메뉴는 전부 비우고 Send 만 쓴다.
 import PromptBar from "../../components/PromptBar";
 
@@ -114,7 +116,7 @@ export default function ApplicabilityPage() {
   );
   const status = (
     <>
-      {loading && <p role="status">Searching the regulations… (10–20 s)</p>}
+      {loading && <Waiting />}
       {error && <p className="text-red-400">{error}</p>}
       {result && result.answer === null && (
         <ul className="list-disc pl-6">
