@@ -1,7 +1,7 @@
 // SUU-180: 카드 제목 줄(h2)만 gradient 배경, 본문(section)은 차콜. SUU-183: 띠는 전부 같은 보라, 조문 칸도 같은 띠. SUU-174의 color_cards.test.tsx를 대체한다.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const RESULT = {
   answer: {

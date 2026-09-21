@@ -1,7 +1,7 @@
 // SUU-188: 2행 세 카드가 칸 높이를 꽉 채워 같은 높이가 되고, 스크롤은 칸이 아니라 카드 안에서 된다.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const ASK = {
   answer: {

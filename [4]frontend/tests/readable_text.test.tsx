@@ -1,7 +1,7 @@
 // SUU-175: 카드 제목은 headline(22px/700), 기준 목록은 줄 간격 넓게, 옆 패널 조문은 body 크기. 클래스 이름만 본다.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const ASK = {
   answer: {

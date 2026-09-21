@@ -1,7 +1,7 @@
 // SUU-182: 1행 = 질문 폼(3열 전부), 2행 = Subparts | Checklist | 조문. 각 칸은 overflow-y-auto로 따로 스크롤.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 
 const ASK = {
   answer: {

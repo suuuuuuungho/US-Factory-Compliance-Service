@@ -1,7 +1,7 @@
 // SUU-164: 인용 버튼 클릭 → GET /section/{key} → 옆 패널(aside)에 조문 전문. fetch는 가짜. 같은 조문은 한 번만 부른다.
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import Home from "../src/app/page";
+import Home from "../src/app/applicability/page";
 import { citationToSectionKey } from "../src/lib/api";
 
 const ASK = {
