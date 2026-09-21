@@ -39,6 +39,9 @@ ROWS = [
      "embedding": "[0.1, 0.2]", "context_text": "Subpart PPPP plastic parts", "chunk_text": "solvent welding is coating"},
     {"chunk_key": "ecfr/40/63/subpart-M/section-63.320/0", "node_key": "ecfr/40/63/subpart-M/section-63.320",
      "embedding": [0.3, 0.4], "context_text": "Subpart M dry cleaning", "chunk_text": "perchloroethylene machines"},
+    # BM25는 문서 2개면 점수가 0이 되어 결과가 비니까 3개 이상 둔다
+    {"chunk_key": "ecfr/40/63/subpart-A/section-63.1/0", "node_key": "ecfr/40/63/subpart-A/section-63.1",
+     "embedding": [0.5, 0.6], "context_text": "Subpart A general provisions", "chunk_text": "applicability of this part"},
 ]
 
 
