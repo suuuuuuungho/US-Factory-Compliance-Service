@@ -22,4 +22,4 @@ services:
       - key: ISAACUS_API_KEY
         sync: false
       - key: FRONTEND_ORIGIN
-        value: http://localhost:3000
+        value: "http://localhost:3000,https://us-factory-compliance-service.vercel.app"
