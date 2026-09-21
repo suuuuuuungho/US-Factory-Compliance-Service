@@ -27,6 +27,8 @@ import Workspace from "../Workspace";
 // 네 칸(질문·Subparts·Memo·Checklist)을 전부 끌어서 크기·위치를 바꾼다. 기본 배치는 Workspace.tsx.
 // SUU-200: 각 칸의 + 메뉴에 답변에 인용된 조문(sections)을 넘겨 그 칸에 열 수 있게 한다.
 import MemoPane from "../MemoPane";
+// SUU-214: 질문 칸은 react-bits PromptBar (npx shadcn add @react-bits/PromptBar-TS-CSS). 메뉴는 전부 비우고 Send 만 쓴다.
+import PromptBar from "../../components/PromptBar";
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "sticky top-0 z-10 bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
@@ -35,7 +37,6 @@ const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
 type OpenedSection = { section: Section | null; error: string | null; paragraph: string | null };
 
 export default function ApplicabilityPage() {
-  const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
@@ -66,8 +67,7 @@ export default function ApplicabilityPage() {
     }
   }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function submit(question: string) {
     setAsked(true);
     setLoading(true);
     setResult(null);
@@ -92,22 +92,17 @@ export default function ApplicabilityPage() {
 
   // SUU-199: 폼과 상태 표시는 답이 오기 전엔 제목 아래에, 답이 온 뒤엔 Question 칸 안에 들어간다.
   const form = (
-    <form onSubmit={onSubmit} className="flex flex-row gap-2">
-      <textarea
-        className="flex-1 rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
-        rows={3}
-        placeholder="Describe the process, e.g. we solvent weld plastic parts"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-      />
-      <button
-        type="submit"
-        disabled={loading}
-        className="shrink-0 self-stretch rounded-md bg-primary px-6 text-sm font-medium text-on-primary disabled:opacity-50"
-      >
-        Ask
-      </button>
-    </form>
+    <PromptBar
+      className="w-full"
+      width={9999}
+      placeholder="Describe the process, e.g. we solvent weld plastic parts"
+      sources={[]}
+      commands={[]}
+      models={[]}
+      efforts={[]}
+      busy={loading}
+      onSend={submit}
+    />
   );
   const status = (
     <>

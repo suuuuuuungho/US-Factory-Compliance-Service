@@ -23,7 +23,7 @@ async function askAndWait() {
   vi.stubGlobal("fetch", vi.fn(async (url: string) => (url.endsWith("/ask") ? json(ASK) : json(SECTION))));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
 }
 

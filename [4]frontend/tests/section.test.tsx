@@ -38,7 +38,7 @@ function fakeApi(sectionStatus = 200) {
 async function askAndWait() {
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
 }
 

@@ -23,7 +23,7 @@ async function askAndOpen() {
   vi.stubGlobal("fetch", vi.fn(async (url: string) => (url.endsWith("/ask") ? json(ASK) : json(SECTION))));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
   fireEvent.click(screen.getByRole("button", { name: "40 CFR 63.4481(a)" }));
   await screen.findByRole("complementary");

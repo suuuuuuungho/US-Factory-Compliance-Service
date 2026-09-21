@@ -17,7 +17,7 @@ async function askAndWait() {
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(ASK), { status: 200, headers: { "content-type": "application/json" } })));
   render(<Home />);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
 }
 
@@ -48,7 +48,7 @@ it("Ask 뒤에는 main의 최대 폭이 풀리고 좌우 여백이 줄어든다"
   const main = screen.getByRole("main");
   expect(main.classList.contains("max-w-7xl")).toBe(true);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
-  fireEvent.click(screen.getByRole("button", { name: /ask/i }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText(/Subpart PPPP/);
   expect(main.classList.contains("max-w-7xl")).toBe(false);
   expect(main.classList.contains("px-4")).toBe(true);
