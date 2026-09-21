@@ -14,10 +14,11 @@ import {
 
 // SUU-175: 카드 제목 headline(22px/700), 목록 줄 간격, 옆 패널 조문 body 크기.
 // SUU-180: 카드 제목 줄만 gradient 배경, 본문은 차콜. SUU-183: 세 칸 제목 띠 전부 같은 보라.
-const CARD = "overflow-hidden rounded-lg border border-hairline bg-surface-1";
+// SUU-184: main을 화면 높이(100dvh-상단바 60px)로 고정, 2행이 남은 높이를 다 쓰고 카드 안에서 스크롤.
+const CARD = "min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
 const CARD_TITLE = "bg-gradient-violet px-5 py-3 text-[22px] font-bold leading-tight tracking-[-0.8px] text-ink";
 const CARD_LIST = "list-disc space-y-3 p-5 pl-10 leading-relaxed";
-const COLUMN = "flex flex-col gap-6 overflow-y-auto md:max-h-[calc(100vh-22rem)]";
+const COLUMN = "flex min-h-0 flex-col gap-6 overflow-y-auto";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -57,7 +58,7 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-8 md:h-[calc(100dvh-60px)] md:overflow-hidden">
       <h1 className="whitespace-nowrap text-2xl font-medium leading-none tracking-[-0.04em] text-ink sm:text-4xl md:text-[2.75rem]">
         US Factory Compliance AI Service
       </h1>
@@ -66,7 +67,7 @@ export default function Home() {
       </p>
 
       {/* SUU-182: 1행 = 질문 폼(3열 전부), 2행 = Subparts | Checklist | 조문. 칸마다 스크롤. */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:min-h-0 md:flex-1 md:grid-cols-3 md:grid-rows-[auto_minmax(0,1fr)]">
         <form onSubmit={onSubmit} className="flex flex-col gap-2 md:col-span-3">
           <textarea
             className="rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none"
@@ -98,37 +99,39 @@ export default function Home() {
         {result?.answer && (
           <>
             <section aria-label="Subparts" className={COLUMN}>
-              {result.answer.candidates.map((c) => (
-                <section key={c.subpart} className={CARD}>
-                  <h2 className={CARD_TITLE}>
-                    Subpart {c.subpart} — {c.title}
-                  </h2>
-                  <ul className={CARD_LIST}>
-                    {c.criteria.map((cr, i) => (
-                      <li key={i}>
-                        {cr.criterion}{" "}
-                        {cr.citations.map((cit) => {
-                          const key = citationToSectionKey(cit);
-                          return key ? (
-                            <button
-                              key={cit}
-                              type="button"
-                              onClick={() => openSection(key)}
-                              className="mt-1 mr-2 block text-sm text-accent-blue underline"
-                            >
-                              {cit}
-                            </button>
-                          ) : (
-                            <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
-                              {cit}
-                            </span>
-                          );
-                        })}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
+              <section className={CARD}>
+                {result.answer.candidates.map((c) => (
+                  <div key={c.subpart}>
+                    <h2 className={CARD_TITLE}>
+                      Subpart {c.subpart} — {c.title}
+                    </h2>
+                    <ul className={CARD_LIST}>
+                      {c.criteria.map((cr, i) => (
+                        <li key={i}>
+                          {cr.criterion}{" "}
+                          {cr.citations.map((cit) => {
+                            const key = citationToSectionKey(cit);
+                            return key ? (
+                              <button
+                                key={cit}
+                                type="button"
+                                onClick={() => openSection(key)}
+                                className="mt-1 mr-2 block text-sm text-accent-blue underline"
+                              >
+                                {cit}
+                              </button>
+                            ) : (
+                              <span key={cit} className="mt-1 mr-2 block text-sm text-ink-muted">
+                                {cit}
+                              </span>
+                            );
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </section>
             </section>
 
             <section aria-label="Checklist" className={COLUMN}>

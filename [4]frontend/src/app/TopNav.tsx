@@ -2,7 +2,7 @@
 export default function TopNav() {
   return (
     <header className="flex h-[60px] items-center border-b border-hairline bg-canvas px-6">
-      <span className="font-medium text-ink">Comp.Doc</span>
+      <span className="font-medium text-ink">US Factory Compliance AI Service</span>
     </header>
   );
 }
