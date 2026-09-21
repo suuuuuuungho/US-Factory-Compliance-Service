@@ -96,7 +96,8 @@ it("기록 옆 ✕를 누르면 그 메모가 목록과 localStorage에서 지�
   fireEvent.click(within(pane()).getByRole("button", { name: "Delete A" }));
   const list = within(pane()).getByRole("list", { name: /saved/i });
   expect(within(list).getAllByRole("listitem")).toHaveLength(1);
-  expect(list.textContent).toContain("B");
-  expect(list.textContent).not.toContain("A");
+  within(list).getByRole("button", { name: /^B/ }); // 시각 글자("AM")와 헷갈리지 않게 제목 버튼으로 본다
+  expect(within(list).queryByRole("button", { name: /^A/ })).toBeNull();
+  expect(within(list).queryByRole("button", { name: "Delete A" })).toBeNull();
   expect(JSON.parse(localStorage.getItem("applicability-memos")!)).toHaveLength(1);
 });
