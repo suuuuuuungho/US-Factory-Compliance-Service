@@ -3,6 +3,7 @@
 // SUU-238: 문서를 고르면 목록은 숨기고 diff 만. 뒤로 버튼으로 목록 복귀.
 // SUU-239: 제목 가운데, 뒤로 버튼은 제목과 같은 줄. diff 는 Applicability 처럼 화면 남는 높이를 다 쓴다.
 // SUU-243: 목록은 남는 높이 안에서 스크롤, 10개씩 이전/다음 페이지.
+// SUU-244: 버튼은 Prev/Next. 목록은 넘칠 때만 줄어들고(flex-1 없음) 페이지 바는 표 바로 아래.
 // SUU-241: flex-1 이면 basis 0% 라 내용 크기만큼 main 이 커져 h-[calc] 가 무시됐다 → min-h-0 flex-auto.
 "use client";
 
@@ -65,7 +66,7 @@ export default function FederalRegisterPage() {
         </section>
       ) : (
         <div className="mt-6 flex min-h-0 flex-1 flex-col">
-          <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 flex-1 overflow-y-auto">
+          <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="border-b border-hairline text-ink-muted">
               <tr>
@@ -111,14 +112,14 @@ export default function FederalRegisterPage() {
             </tbody>
           </table>
           </div>
-          <div className="flex items-center justify-center gap-4 py-3 text-sm text-ink-muted">
+          <div data-pager className="mt-3 flex items-center justify-center gap-4 text-sm text-ink-muted">
             <button
               type="button"
               onClick={() => setPage((current) => current - 1)}
               disabled={page === 0}
               className="rounded-full border border-hairline px-3 py-1 text-ink transition-colors hover:bg-surface-1 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              이전
+              Prev
             </button>
             <span>{page + 1} / {pageCount}</span>
             <button
@@ -127,7 +128,7 @@ export default function FederalRegisterPage() {
               disabled={page >= pageCount - 1}
               className="rounded-full border border-hairline px-3 py-1 text-ink transition-colors hover:bg-surface-1 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              다음
+              Next
             </button>
           </div>
         </div>
