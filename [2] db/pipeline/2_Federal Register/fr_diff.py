@@ -83,7 +83,7 @@ def fetch_section(as_of: str, section: str, cache_dir: Path | None = None) -> by
     if path and path.exists():
         return path.read_bytes() or None          # 빈 파일 = 404 기록
     url = f"https://www.ecfr.gov/api/versioner/v1/full/{as_of}/title-40.xml?section={section}"
-    for attempt in range(5):
+    for attempt in range(8):
         try:
             body: bytes | None = fetch(url).body
             break
@@ -91,9 +91,9 @@ def fetch_section(as_of: str, section: str, cache_dir: Path | None = None) -> by
             if error.code == 404:
                 body = None
                 break
-            if error.code != 429 or attempt == 4:
+            if error.code != 429 or attempt == 7:
                 raise
-            time.sleep(5 * 2 ** attempt)        # 429: 5·10·20·40초 쉬고 다시
+            time.sleep(min(60, 5 * 2 ** attempt))   # 429: 5·10·20·40·60…초 쉬고 다시
     if path:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(body or b"")
@@ -155,7 +155,7 @@ def build(fr_root: Path, parsed: Path, ecfr_nodes: Path, out: Path, *, since: st
         after_date = doc["effective_date"]
         todo.append((doc, (date.fromisoformat(after_date) - timedelta(days=1)).isoformat(), after_date))
 
-    # 전/후 섹션 XML 을 한꺼번에 받는다 (eCFR 응답이 건당 ~2초라 4개 동시. 더 늘리면 429).
+    # 전/후 섹션 XML 을 한꺼번에 받는다 (eCFR 응답이 건당 ~2초라 4개 동시. 8개면 429 로 막힌다).
     pairs = sorted({(d, s) for doc, b, a in todo for d in (b, a) for s in doc["amended_sections"]})
     print(f"documents={len(documents)} fetches={len(pairs)}", file=sys.stderr, flush=True)
     cache: dict[tuple[str, str], bytes | None] = {}
