@@ -1,5 +1,5 @@
 // SUU-186: 빈 페이지. 제목만, 내용은 나중에. SUU-218: Amendment → Federal Register.
-// SUU-232: 머리글 영어, Section 열(amended_sections), 제목은 한 줄(truncate).
+// SUU-232: 머리글 영어, 제목은 한 줄(truncate). SUU-234: Section 열은 너무 길어 뺐다.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -45,7 +45,6 @@ export default function FederalRegisterPage() {
               <tr>
                 <th className="px-3 py-3 font-medium">#</th>
                 <th className="px-3 py-3 font-medium">Subpart</th>
-                <th className="px-3 py-3 font-medium">Section</th>
                 <th className="px-3 py-3 font-medium">Title</th>
                 <th className="px-3 py-3 font-medium">Effective</th>
                 <th className="px-3 py-3 font-medium">Changes</th>
@@ -69,7 +68,6 @@ export default function FederalRegisterPage() {
                   >
                     <td className="px-3 py-3">{index + 1}</td>
                     <td className="px-3 py-3 whitespace-nowrap">{subparts}</td>
-                    <td className="px-3 py-3 whitespace-nowrap">{document.amended_sections.join(", ") || "—"}</td>
                     {/* w-full max-w-0: 남는 폭을 제목이 다 쓰고, 넘치면 한 줄로 자른다 */}
                     <td className="w-full max-w-0 px-3 py-3">
                       <button type="button" title={document.title} className="block w-full truncate text-left font-medium">
