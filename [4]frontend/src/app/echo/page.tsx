@@ -14,6 +14,7 @@ import { BarYAxis } from "@/components/charts/bar-y-axis";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 import { UsStateMap } from "@/components/UsStateMap";
+import { YearLineChart } from "@/components/YearLineChart";
 
 type Subpart = {
   code: string;
@@ -158,41 +159,27 @@ export default function EchoPage() {
           </section>
 
           <div className="mt-10 grid gap-8 md:grid-cols-2">
-            <ChartCard title="Violations and penalty actions by year" note="Dark: violations (by first FRV date) · Light: penalty actions">
-              <div data-chart="yearly">
-                <BarChart data={stats.yearly} xDataKey="year" aspectRatio="2 / 1">
-                  <Grid horizontal vertical={false} />
-                  <BarXAxis />
-                  <Bar dataKey="violations" fill="var(--chart-1)" />
-                  <Bar dataKey="penalties" fill="var(--chart-3)" />
-                  <ChartTooltip />
-                </BarChart>
+            <ChartCard title="Violations and penalty actions by year" note="Violations by first FRV date · penalty actions by action date · hover for values">
+              <div data-chart="yearly" className="text-ink">
+                <YearLineChart
+                  data={stats.yearly}
+                  series={[
+                    { key: "violations", label: "Violations", color: "var(--chart-5)" },
+                    { key: "penalties", label: "Penalty actions", color: "var(--chart-3)" },
+                  ]}
+                />
               </div>
             </ChartCard>
 
             <ChartCard title="Penalty dollars by year" note={`Sum of penalties assessed each year · ${stats.yearly.at(-1)?.year ?? ""} is year to date`}>
-              <div data-chart="yearly-usd">
-                <BarChart data={stats.yearly} xDataKey="year" aspectRatio="2 / 1">
-                  <Grid horizontal vertical={false} />
-                  <BarXAxis />
-                  <Bar dataKey="penalty_usd" fill="var(--chart-2)" />
-                  <ChartTooltip rows={(point) => [{ color: "var(--chart-2)", label: "Penalties", value: usdShort(point.penalty_usd as number) }]} />
-                </BarChart>
+              <div data-chart="yearly-usd" className="text-ink">
+                <YearLineChart data={stats.yearly} series={[{ key: "penalty_usd", label: "Penalties", color: "var(--chart-5)" }]} format={(v) => usdShort(v)} />
               </div>
             </ChartCard>
 
             <ChartCard title="Top 10 Subparts by penalty dollars" note="Total penalties since 2015, by Part 63 Subpart">
               <div data-chart="top-subparts">
                 <HBar data={topSubparts} />
-              </div>
-            </ChartCard>
-
-            <ChartCard title="Penalty dollars by state" note="Total penalties since 2015, by facility state · brighter = more · hover a state">
-              <div data-chart="state-map">
-                <UsStateMap
-                  name="Penalty dollars by state"
-                  values={stats.states.map((s) => ({ state: s.state, value: s.penalty_total_usd, label: `${usdShort(s.penalty_total_usd)} · ${num(s.facilities)} facilities` }))}
-                />
               </div>
             </ChartCard>
 
@@ -204,6 +191,15 @@ export default function EchoPage() {
                   <Bar dataKey="count" fill="var(--chart-2)" />
                   <ChartTooltip />
                 </BarChart>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Penalty dollars by state" className="md:col-span-2" note="Total penalties since 2015, by facility state · brighter = more · hover a state">
+              <div data-chart="state-map">
+                <UsStateMap
+                  name="Penalty dollars by state"
+                  values={stats.states.map((s) => ({ state: s.state, value: s.penalty_total_usd, label: `${usdShort(s.penalty_total_usd)} · ${num(s.facilities)} facilities` }))}
+                />
               </div>
             </ChartCard>
           </div>
@@ -284,9 +280,9 @@ function top10<T extends { penalty_total_usd: number }>(items: T[], name: (item:
     .map((item) => ({ name: name(item), usd: item.penalty_total_usd }));
 }
 
-function ChartCard({ title, note, children }: { title: string; note: string; children: React.ReactNode }) {
+function ChartCard({ title, note, className, children }: { title: string; note: string; className?: string; children: React.ReactNode }) {
   return (
-    <section>
+    <section className={className}>
       <h2 className="text-lg font-semibold text-ink">{title}</h2>
       <div className="mt-3">{children}</div>
       <p className="mt-1 text-xs text-ink-muted">{note}</p>
