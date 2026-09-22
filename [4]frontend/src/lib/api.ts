@@ -57,3 +57,27 @@ export async function getSection(key: string): Promise<Section> {
   if (!r.ok) throw new Error(`Section not found (${r.status})`);
   return r.json();
 }
+
+// SUU-258: 공장 설명 → POST /letters/similar. 응답 모양은 [3] backend/app/letters.py (점수 내림차순, 최대 5건)
+export type SimilarLetter = {
+  source_key: string;
+  facility_name: string | null;
+  title: string;
+  subparts: string[];
+  date: string | null;
+  pdf_url: string | null;
+  score: number;
+  snippet: string;
+};
+
+export async function similarLetters(description: string): Promise<SimilarLetter[]> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+  const r = await fetch(`${base}/letters/similar`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ description }),
+  });
+  if (!r.ok) throw new Error(`Server error (${r.status})`);
+  const payload = (await r.json()) as { letters: SimilarLetter[] };
+  return payload.letters;
+}
