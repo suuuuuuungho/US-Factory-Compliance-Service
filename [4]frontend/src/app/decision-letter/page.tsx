@@ -21,6 +21,13 @@ type LettersPayload = {
 
 const PAGE_SIZE = 10;
 
+// SUU-260: 열 순서 #, Facility, Title, Subpart, Date, PDF. 초기 너비(px). 손잡이로 끌면 바뀐다.
+const HEADERS = ["#", "Facility", "Title", "Subpart", "Date", "PDF"];
+const INITIAL_WIDTHS = [48, 180, 360, 110, 100, 80];
+const MIN_WIDTH = 60;
+// SUU-258: 검색 모드에서만 # 다음에 끼는 Score 열. 너비 고정, 손잡이 없음
+const SCORE_WIDTH = 70;
+
 const NO_MATCH_TEXT =
   "No similar cases found. Letters with weak similarity are not recommended, to keep results trustworthy. Try describing your process, fuel, or equipment.";
 
@@ -31,13 +38,34 @@ export default function DecisionLetterPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
   const [error, setError] = useState(false);
   const [page, setPage] = useState(0);
+  const [widths, setWidths] = useState(INITIAL_WIDTHS);
   const [description, setDescription] = useState("");
   const [results, setResults] = useState<SimilarLetter[] | null>(null); // null = 검색 안 한 상태 → 전체 목록
   const [loading, setLoading] = useState(false);
+
+  function startResize(index: number, event: React.MouseEvent) {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = widths[index];
+    const onMove = (e: MouseEvent) =>
+      setWidths((prev) => prev.map((w, i) => (i === index ? Math.max(MIN_WIDTH, startWidth + e.clientX - startX) : w)));
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }
+
   const pageCount = Math.max(1, Math.ceil(letters.length / PAGE_SIZE));
   const pageLetters = letters.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const searching = results !== null;
   const rows: (Letter | SimilarLetter)[] = results ?? pageLetters;
+  const headers = searching ? [HEADERS[0], "Score", ...HEADERS.slice(1)] : HEADERS;
+  const colWidths = searching ? [widths[0], SCORE_WIDTH, ...widths.slice(1)] : widths;
+  const isScoreColumn = (index: number) => searching && index === 1;
+  // 화면 열 번호 → widths 번호. Score 열 뒤는 하나씩 밀린다
+  const widthIndex = (index: number) => (searching && index > 1 ? index - 1 : index);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,20 +125,31 @@ export default function DecisionLetterPage() {
       </div>
       {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
       <div className="mt-6 flex min-h-0 flex-1 flex-col">
-        <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 overflow-y-auto">
+        <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 overflow-auto">
           {searching && results.length === 0 ? (
             <p className="px-3 py-6 text-center text-sm text-ink-muted">{NO_MATCH_TEXT}</p>
           ) : (
-          <table className="w-full border-collapse text-left text-sm">
+          /* table-fixed: 셀 너비는 colgroup 이 정한다 */
+          <table className="w-full table-fixed border-collapse text-left text-sm">
+            <colgroup>
+              {colWidths.map((width, index) => (
+                <col key={index} style={{ width: `${width}px` }} />
+              ))}
+            </colgroup>
             <thead className="border-b border-hairline text-ink-muted">
               <tr>
-                <th className="px-3 py-3 font-medium">#</th>
-                {searching ? <th className="px-3 py-3 font-medium">Score</th> : null}
-                <th className="px-3 py-3 font-medium">Facility</th>
-                <th className="px-3 py-3 font-medium">Title</th>
-                <th className="px-3 py-3 font-medium">Subpart</th>
-                <th className="px-3 py-3 font-medium">Date</th>
-                <th className="px-3 py-3 font-medium">PDF</th>
+                {headers.map((header, index) => (
+                  <th key={header} className="relative px-3 py-3 font-medium">
+                    {header}
+                    {isScoreColumn(index) ? null : (
+                      <span
+                        data-resize-handle
+                        onMouseDown={(event) => startResize(widthIndex(index), event)}
+                        className="absolute top-0 right-0 h-full w-1.5 cursor-col-resize select-none hover:bg-hairline"
+                      />
+                    )}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -133,9 +172,9 @@ export default function DecisionLetterPage() {
                       <span className="mt-1 block text-xs text-ink-muted">{letter.snippet}</span>
                     ) : null}
                   </td>
-                  <td className="px-3 py-3 whitespace-nowrap">{letter.subparts.join(", ") || "—"}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">{letter.date ?? "—"}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">{letter.subparts.join(", ") || "—"}</td>
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">{letter.date ?? "—"}</td>
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">
                     {letter.pdf_url ? (
                       <a
                         href={letter.pdf_url}
