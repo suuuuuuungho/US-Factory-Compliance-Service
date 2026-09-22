@@ -198,3 +198,20 @@ def test_main_prints_report_and_returns_exit_code(tmp_path, make_pdf, capsys):
     assert printed["status"] == "succeeded"
     assert printed["entries"] == 275
     assert (out_dir(root) / "quality_report.json").exists()
+
+
+def test_same_pdf_collected_twice_under_one_control_number_is_linked_once(tmp_path, make_pdf):
+    """SUU-225: 실수집에서 PDF 5개가 adi_letters/raw 와 shard_* 에 두 번 받아졌다(같은 이름·URL·sha256).
+    같은 (source_system, source_key, sha256) 는 한 번만 세어 adi_entry_document 에 중복 행이 생기지 않아야 한다."""
+    root = tmp_path / "adi"
+    put_all(root, make_pdf)
+    m170010 = next((root / "adi_letters" / "shard_1").glob(f"raw/{RAW_AS_OF.isoformat()}/*/M170010.pdf")).read_bytes()
+    _save(root / "adi_letters", "M170010.pdf", m170010, "https://cfpub.epa.gov/adi/index.cfm?fuseaction=home.dsp_show_file_contents&id=M170010")
+
+    report = parse_all(root, AS_OF, raw_as_of=RAW_AS_OF.isoformat())
+
+    links = read_jsonl(root, "adi_entry_document")
+    keys = [(l["source_system"], l["source_key"], l["version_id"]) for l in links]
+    assert len(keys) == len(set(keys)) == 3
+    assert len(read_jsonl(root, "adi_document_version")) == 2
+    assert report["files"] == 4  # 1800013 + M170010 + King + Westvaco. 두 번 받은 파일은 하나로 센다

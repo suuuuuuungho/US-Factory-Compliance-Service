@@ -12,6 +12,8 @@ from adi_parse import TABLES as PARSE_TABLES
 TABLES = PARSE_TABLES + ENRICH_TABLES
 RELEASE_TABLES = {"adi_source_entry", "adi_entry_document"}
 JSONB_COLUMNS = {"categories"}
+# jsonl에 None으로 들어 있지만 적재기가 채우는 열. jsonl 키로는 넣지 않고 아래에서 덧붙인다.
+REFERENCE_LINK_COLUMNS = ("historical_ecfr_release_id", "historical_node_key", "current_ecfr_release_id", "current_node_key")
 
 
 def _jsonl(path: Path):
@@ -66,11 +68,12 @@ def load_release(root: Path, as_of: str, release_id: str, *, conn: Any) -> dict[
             counts[table] = len(rows)
             if not rows:
                 continue
-            keys = tuple(key for key in rows[0] if not (table == "adi_source_entry" and key == "text_status"))
+            keys = tuple(key for key in rows[0] if not (table == "adi_source_entry" and key == "text_status")
+                         and not (table == "adi_cfr_reference" and key in REFERENCE_LINK_COLUMNS))
             columns = (("release_id",) if table in RELEASE_TABLES else ()) + keys
             if table == "adi_source_entry": columns += ("source_object_id",)
             elif table == "adi_document_version": columns += ("object_id",)
-            elif table == "adi_cfr_reference": columns += ("historical_ecfr_release_id", "historical_node_key", "current_ecfr_release_id", "current_node_key")
+            elif table == "adi_cfr_reference": columns += REFERENCE_LINK_COLUMNS
             elif table == "adi_facility_candidate": columns += ("echo_release_id",)
             with cur.copy(f"COPY {table} ({', '.join(columns)}) FROM STDIN") as copy:
                 for row in rows:

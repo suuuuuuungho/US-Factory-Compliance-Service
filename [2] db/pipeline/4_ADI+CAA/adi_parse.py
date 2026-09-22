@@ -42,6 +42,7 @@ def _list_input(root: Path, relative_root: str, raw_as_of: str, name: str) -> tu
 
 def _manifest_files(root: Path, relative_root: str, raw_as_of: str, source_system: str) -> list[dict[str, Any]]:
     files: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
     for manifest in sorted((root / relative_root).glob(f"**/raw/{raw_as_of}/manifest.json")):
         base = manifest.parent
         dataset_root = base.parents[1]
@@ -52,6 +53,10 @@ def _manifest_files(root: Path, relative_root: str, raw_as_of: str, source_syste
                 source_key = entry["name"][:-4]
             else:
                 source_key = entry.get("source_url") or entry.get("final_url")
+            # 같은 파일이 두 manifest에 있으면(수집을 두 번 한 경우) 한 번만 센다.
+            if (source_key, entry["sha256"]) in seen:
+                continue
+            seen.add((source_key, entry["sha256"]))
             files.append({
                 "source_system": source_system, "source_key": source_key, "sha256": entry["sha256"],
                 "path": dataset_root / entry["path"] if "path" in entry else base / entry["sha256"] / entry["name"],

@@ -1,6 +1,6 @@
 # ADI + CAA Dashboard DB 구축 계획
 
-[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 운영 수집·파싱·DB 적재는 미실행이다.
+[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 2026-09-17 수집본을 2026-09-22에 파싱·적재·공개했다(SUU-225).
 
 ## [1] Step.1 수집
 
@@ -98,11 +98,15 @@
    - 텍스트형 ADI, PDF형 ADI, 디지털 PDF, 스캔 PDF, 여러 Subpart, 날짜 불일치, 부정 답변, 수정·철회 문서를 검증 표본에 넣는다.
    - 표본에서 질문과 답의 뒤바뀜, 부정어·조건·수치의 누락은 불합격이다. OCR된 중요 값은 원본 페이지로 확인한다.
    - 동일 PDF가 두 목록에 나타나도 원본 출처 둘은 유지하고, 중복 근거 노출을 줄일 수 있어야 한다.
-   - 운영 파서 합격 시험은 미실행이다. M200005의 상세 요약과 원문 형식만 확인했다.
+   - 2026-09-22 실행(SUU-225): 목록 4,061행(ADI 3,825 + Dashboard 236) 전부가 성공 4,056 또는 held 5에 대응했다. held 5는 전부 ADI PDF의 pypdf 예외다: M960008 `list indices must be integers or slices, not str`, 0100025·0200082·0400028·0400032 `AssertionError`. 목록에는 `text_status=text_failed`로 남는다.
+   - 원문 없는 항목: ADI `text_missing` 3,348(2005년 이전 미수집 등), Dashboard 7(링크 없음 6 + 404 1). 글자 없는 버전(`no_text`) 10, 일부 페이지만 글자 있는 버전(`partial`) 8. OCR은 하지 않았다.
+   - 표본 검증(질문·답 뒤바뀜, 부정어·조건 누락)은 SUU-222의 fixture 테스트로만 확인했다. 실데이터 표본 검토는 아직 하지 않았다.
 
 5) 2-5. 파서 결과
-   - 예정 산출물: `source_entries.jsonl`, `documents.jsonl`, `pages.jsonl`, `blocks.jsonl`, `references.jsonl`, `relations.jsonl`, `quality_report.json`.
-   - 본문 추출 상태, OCR 사용 여부, 검토 상태, 원문 페이지를 포함한다. 실제 산출 파일은 아직 없다.
+   - 산출물: `[2] db/4) ADI+CAA/parsed/2026-09-22/` 아래 표 이름 그대로 jsonl 9개 + `quality_report.json`(SUU-221) + `enrich_report.json`(SUU-222).
+   - 2026-09-22 실행 행 수: source_entry 4,061 · document 701 · document_version 701 · entry_document 701 · page 2,333(ok 2,292 · empty 41) · block 1,960(body 692 · signature 617 · question 237 · answer 234 · header 171 · condition 9) · cfr_reference 7,342 · document_relation 0 · facility_candidate 31(문서 23건). 파싱 72초, 강화 5초.
+   - 인용 7,342 중 Part 63 5,181(현재 eCFR 노드 연결 5,140, 미해결 41: `��63.67`처럼 §가 깨진 것, 없는 조문, Subpart 오타), Part 60 1,608 · 61 297 · 62 251은 index 밖이라 전부 미해결로 남긴다(2-1의 "Part 60 AAAA ≠ Part 63 AAAA").
+   - 관계 0건: 철회·대체 문구가 든 블록 116개(문서 101건) 중 같은 문장에 Control Number가 있는 것은 자기 언급이거나 상대 PDF가 없는 2005년 문서뿐이다. 같은 파일(sha256)이 ADI·Dashboard 양쪽에 실린 경우도 0건이다.
 
 6) 2-6. 파서 한계
    - 스캔이 흐리거나 첨부가 빠지면 핵심 사실을 확정할 수 없다. 검토 전 상태를 유지한다.
@@ -124,12 +128,18 @@
    - 특정 문서의 법적 유효 여부가 확인되지 않았으면 `unknown`을 유지한다.
 
 3) 3-3. DB 적재 시 마주한 문제와 해결
-   - 실제 DB 적재 미실행. 예상 중복은 ‘원본 목록 항목’과 ‘회신 문서’를 분리해 해결한다.
+   - 중복은 ‘원본 목록 항목’(`adi_source_entry`)과 ‘회신 문서’(`adi_document_version`)를 분리해 해결한다.
+   - 2026-09-22 실행(SUU-225)에서 만난 문제 2건: (1) 수집 때 ADI PDF 5건이 `adi_letters/raw`와 `shard_*`에 두 번 받아져 manifest에 같은 파일이 2번 있었다 → `adi_entry_document`·`common_release_object` PK 충돌. 파서·등록기가 같은 (source_key/URL, sha256)를 한 번만 세게 고쳤다. (2) `adi_load`가 `adi_cfr_reference`의 FK 열 4개를 COPY 열에 두 번 넣어 실 DB가 거부했다(가짜 DB 테스트는 못 잡았다). jsonl 키에서 빼고 한 번만 붙이게 고쳤다.
    - 서명일을 확정할 수 없으면 원본 날짜 문자열과 날짜 출처를 보존한다. NULL을 임의 날짜로 바꾸지 않는다.
    - 과거 Subpart가 현재 목차에 없으면 과거 참조로 남긴다. 현재 조문에 억지로 연결하지 않는다.
 
 4) 3-4. DB 적재 실행 결과
-   - 미실행. 전체 목록 수와 항목 수 일치, 원문·페이지·참조 연결 성공, 중복 출처 보존, 같은 자료 재실행 중복 0을 확인해야 한다.
+   - 2026-09-22 실행(SUU-225, 14초): release `5cc370d0-c513-4376-981f-2d910b39ae6b` published, `common_dataset_current(adi, adi+caa_dashboard)`가 가리킨다.
+   - 목록 수: `adi_source_entry` 4,061 = ADI 3,825 + Dashboard 236. `scope_status`: ADI part63_candidate 995 · out_of_scope 2,830, Dashboard 132 · 104.
+   - 원문 수: 원본 708개 등록(목록 HTML 2 + PDF 706). `adi_document_version` 701(모두 `object_id`로 원본에 연결), 페이지 없는 버전 0.
+   - 페이지 2,333 · 블록 1,960 · 인용 7,342(현재 eCFR 노드 연결 5,140) · 시설 후보 31 · 관계 0. 표 9개 행 수 = jsonl, 고아 FK 0(검사 통과).
+   - held 5(2-4절), 같은 파일 중복 출처 0. 같은 자료 재실행은 같은 `manifest_hash`의 release를 재사용하고 자식부터 지우고 다시 넣는다(1차 실패 후 재실행에서 확인, release 1개).
+   - DB 용량 3,124 MB → 3,144 MB (+20 MB). `adi_*` 표 합계 20 MB.
 
 5) 3-5. 테이블 스키마
    - 아래 UUID·source_key·review_status는 새로 만드는 설계 필드다. 원본 예시는 위 목록·상세 응답에서 확인했다.
