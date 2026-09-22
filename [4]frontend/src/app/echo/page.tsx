@@ -1,5 +1,6 @@
 // SUU-218: 빈 페이지. 제목만, 내용은 나중에.
 // SUU-237: public/echo-stats.json 을 읽어 타일 4개 · Subpart 표(정렬·제조업 필터) · 연도별 차트.
+// SUU-245: deviation 설명은 타일 바로 아래, 타일 글자 가운데.
 // SUU-242: 글자 전부 영어. 벌금은 중앙값 대신 총액·최대(크게). 표는 10줄씩, 정렬은 ↓/↑ 토글. BarYAxis 는 가로 막대용이라 연도가 왼쪽에 또 찍혀서 뺐다.
 "use client";
 
@@ -127,10 +128,25 @@ export default function EchoPage() {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
             <Tile id="facilities" label="Part 63 facilities" value={num(stats.summary.facilities)} />
             <Tile id="violation-pct" label="Facilities with violations" value={pct(stats.summary.violation_facility_pct)} />
-            <Tile id="penalty-total" label={`Total penalties since 2015 (${num(stats.summary.penalty_count)} actions)`} value={usdShort(stats.summary.penalty_total_usd)} />
+            <Tile id="penalty-total" label="Total penalties since 2015" value={usdShort(stats.summary.penalty_total_usd)} />
             <Tile id="penalty-max" label="Largest single penalty" value={usdShort(stats.summary.penalty_max_usd)} />
             <Tile id="deviation-pct" label="Title V deviation %" value={pct(stats.summary.deviation_y_pct)} />
           </div>
+
+          <section data-testid="deviation-note" className="mt-4 rounded-xl border border-hairline p-5 text-sm leading-6 text-ink-muted">
+            <h2 className="text-base font-semibold text-ink">What is a Title V deviation?</h2>
+            <p className="mt-2">
+              A Title V (major source) operating permit lists every Clean Air Act requirement a facility must follow. At least once a
+              year the facility must certify, signed by a responsible official, whether it complied with each permit condition.
+              Any period when a condition was not met — a missed monitoring run, an emission limit exceeded, a late report — is
+              a <span className="text-ink">deviation</span> and must be disclosed in that certification.
+            </p>
+            <p className="mt-2">
+              <span className="text-ink">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
+              where the facility reported at least one deviation. A deviation is self-reported and is not automatically a violation,
+              but it is the first thing regulators look at when deciding whom to inspect.
+            </p>
+          </section>
 
           <section className="mt-10">
             <h2 className="text-lg font-semibold text-ink">Violations and penalty actions by year</h2>
@@ -209,20 +225,6 @@ export default function EchoPage() {
             </div>
           </section>
 
-          <section data-testid="deviation-note" className="mt-10 rounded-xl border border-hairline p-5 text-sm leading-6 text-ink-muted">
-            <h2 className="text-base font-semibold text-ink">What is a Title V deviation?</h2>
-            <p className="mt-2">
-              A Title V (major source) operating permit lists every Clean Air Act requirement a facility must follow. At least once a
-              year the facility must certify, signed by a responsible official, whether it complied with each permit condition.
-              Any period when a condition was not met — a missed monitoring run, an emission limit exceeded, a late report — is
-              a <span className="text-ink">deviation</span> and must be disclosed in that certification.
-            </p>
-            <p className="mt-2">
-              <span className="text-ink">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
-              where the facility reported at least one deviation. A deviation is self-reported and is not automatically a violation,
-              but it is the first thing regulators look at when deciding whom to inspect.
-            </p>
-          </section>
         </div>
       ) : null}
     </main>
@@ -231,7 +233,7 @@ export default function EchoPage() {
 
 function Tile({ id, label, value }: { id: string; label: string; value: string }) {
   return (
-    <div data-testid={`tile-${id}`} className="rounded-xl border border-hairline p-4">
+    <div data-testid={`tile-${id}`} className="rounded-xl border border-hairline p-4 text-center">
       <div className="text-sm text-ink-muted">{label}</div>
       <div className="mt-1 text-2xl font-bold text-ink tabular-nums">{value}</div>
     </div>
