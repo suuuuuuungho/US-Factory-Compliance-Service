@@ -53,7 +53,7 @@ export default function FederalRegisterPage() {
       </div>
       {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
       {selectedDocument ? (
-        <section data-pane="diff" aria-live="polite" className="mt-4 flex min-h-0 flex-1 flex-col">
+        <section data-pane="diff" aria-live="polite" className="mx-auto mt-4 flex w-full max-w-6xl min-h-0 flex-1 flex-col">
           <FrDiff document={selectedDocument} />
         </section>
       ) : (
