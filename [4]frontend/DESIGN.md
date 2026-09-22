@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Framer-design-analysis
-description: "A confident dark-canvas builder marketing site that treats the page like a working artboard — pure black surfaces, white display type set in GT Walsheim Medium with aggressive negative tracking, and a single confident blue (#0099ff) reserved for hyperlinks and selection states. The page rhythm is broken by oversized vibrant gradient atmosphere panels — magenta, violet, orange spotlights — that act as living showcase tiles, not decoration. Every CTA is a white pill on dark; every card is a translucent or charcoal surface; every section title pulls letter-spacing tight enough to feel like a poster."
+description: "A confident dark-canvas builder marketing site that treats the page like a working artboard — pure black surfaces, white display type set in New York (serif) with aggressive negative tracking, body in SF Pro, and a single confident blue (#0099ff) reserved for hyperlinks and selection states. The page rhythm is broken by oversized vibrant gradient atmosphere panels — magenta, violet, orange spotlights — that act as living showcase tiles, not decoration. Every CTA is a white pill on dark; every card is a translucent or charcoal surface; every section title pulls letter-spacing tight enough to feel like a poster."
 
 colors:
   primary: "#ffffff"
@@ -24,87 +24,77 @@ colors:
 
 typography:
   display-xxl:
-    fontFamily: GT Walsheim Framer Medium
+    fontFamily: New York
     fontSize: 110px
     fontWeight: 500
     lineHeight: 0.85
     letterSpacing: -5.5px
   display-xl:
-    fontFamily: GT Walsheim Medium
+    fontFamily: New York
     fontSize: 85px
     fontWeight: 500
     lineHeight: 0.95
     letterSpacing: -4.25px
-    fontFeature: ss02
   display-lg:
-    fontFamily: GT Walsheim Medium
+    fontFamily: New York
     fontSize: 62px
     fontWeight: 500
     lineHeight: 1.00
     letterSpacing: -3.1px
-    fontFeature: ss02
   display-md:
-    fontFamily: GT Walsheim Medium
+    fontFamily: New York
     fontSize: 32px
     fontWeight: 500
     lineHeight: 1.13
     letterSpacing: -1.0px
   headline:
-    fontFamily: Inter
+    fontFamily: SF Pro
     fontSize: 22px
     fontWeight: 700
     lineHeight: 1.20
     letterSpacing: -0.8px
-    fontFeature: cv05
   subhead:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 24px
     fontWeight: 400
     lineHeight: 1.30
     letterSpacing: -0.01px
-    fontFeature: cv11
   body-lg:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 18px
     fontWeight: 400
     lineHeight: 1.30
     letterSpacing: -0.18px
-    fontFeature: cv11
   body:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 15px
     fontWeight: 400
     lineHeight: 1.30
     letterSpacing: -0.15px
-    fontFeature: cv11
   body-sm:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.40
     letterSpacing: -0.14px
-    fontFeature: cv11
   caption:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 13px
     fontWeight: 500
     lineHeight: 1.20
     letterSpacing: -0.13px
-    fontFeature: cv11
   micro:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 12px
     fontWeight: 400
     lineHeight: 1.20
     letterSpacing: -0.12px
-    fontFeature: cv11
   button:
-    fontFamily: Inter Variable
+    fontFamily: SF Pro
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.0
     letterSpacing: -0.14px
-    fontFeature: cv11
 
 rounded:
   xs: 4px
@@ -255,18 +245,18 @@ components:
 
 ## Overview
 
-Framer's marketing canvas is a near-pure black artboard. The dominant surface is `{colors.canvas}` — almost pure black with a faint warmth — and on top of it sits oversized white display type set in **GT Walsheim Medium** with letter-spacing pulled to extreme negative values (-5.5px on the 110px display, -4.25px on the 85px hero). The page reads like a poster: one assertive statement per band, generous breathing room above and below.
+Framer's marketing canvas is a near-pure black artboard. The dominant surface is `{colors.canvas}` — almost pure black with a faint warmth — and on top of it sits oversized white display type set in **New York** with letter-spacing pulled to extreme negative values (-5.5px on the 110px display, -4.25px on the 85px hero). The page reads like a poster: one assertive statement per band, generous breathing room above and below.
 
 The single accent is `{colors.accent-blue}` — used scarcely, mostly for hyperlinks, selection halos, and a subtle blue-tinted shadow ring on focused inputs. The brand chrome itself is monochrome: white pill buttons, charcoal cards, gray secondary text. What makes Framer distinctive is the rhythm break — every few sections the page drops in a **vibrant gradient atmosphere card**: a magenta-violet spotlight, a sunset-orange wash, a coral-pink panel. These aren't section backgrounds; they're individual cards arranged in a card grid, each one a small living poster that shows what Framer can produce.
 
-Body type is **Inter Variable**, with Framer leaning hard into Inter's character variants (`cv01`, `cv05`, `cv09`, `cv11`, `ss03`, `ss07`, `dlig`) — the result is a body voice that feels custom-tuned, with single-storey "a", straight-leg "l", and tabular figures. There's no light mode on the marketing site; the brand IS dark.
+Body type is **SF Pro** — the two fonts (SF Pro for body/UI, New York for display) are fixed for this project. There's no light mode on the marketing site; the brand IS dark.
 
 **Key Characteristics:**
 - Black-canvas marketing system: `{colors.canvas}` is the surface for hero, body, pricing, FAQ, and footer alike — no light interludes.
 - Massive negative letter-spacing on display sizes (-5.5px / -4.25px / -3.1px) creates a poster-grade headline cadence.
 - White pill (`{components.button-primary}`) is the only primary CTA shape across the site; secondary actions live as charcoal pills (`{components.button-secondary}`) or text links.
 - Oversized **gradient spotlight cards** (violet, magenta, orange, coral) act as showcase tiles inside the dark grid; they are individual cards, not section backgrounds.
-- Inter Variable with bespoke OpenType character variants (`cv01/05/09/11`, `ss03/ss07`, `dlig`) used everywhere body type appears — the typographic voice is unmistakable.
+- SF Pro everywhere body type appears, New York on display headings — two fixed fonts, nothing else.
 - Border radius scale runs from 4px utility chips up to 100px pills and full circles, with 15–20px the default for cards and 30px for atmospheric gradient cards.
 - A single chromatic accent `{colors.accent-blue}` reserved for hyperlinks, focus, and selection — never decorative.
 
@@ -305,9 +295,11 @@ These four sit as oversized atmospheric tiles inside otherwise monochrome card g
 
 ### Font Family
 
-- **GT Walsheim Framer Medium** / **GT Walsheim Medium** — Framer's display typeface. Geometric, slightly humanist, very confident at large sizes with extreme negative tracking. Fallbacks: `GT Walsheim Medium Placeholder` system font.
-- **Inter Variable** — System body typeface. Used with extensive OpenType character variants: `cv01` (alternate "1"), `cv05` (alternate "g"), `cv09` (alternate "i" / "l"), `cv11` (alternate "0"), `ss03` / `ss07` stylistic sets, `dlig` discretionary ligatures, and `tnum` for numerics in tabular contexts. The result is a body voice that feels bespoke without commissioning a custom face.
-- **Inter** — Used selectively for `{typography.headline}` (the 22px / 20px tier). The non-variable cut catches small tracking targets that the variable file rounds.
+**고정 폰트. 바꾸지 않는다.** 두 글꼴만 쓴다. 둘 다 `[4]frontend/src/app/fonts/`의 로컬 woff2로 싣고(`layout.tsx`), CSS 변수 `--font-sans` / `--font-serif`로만 참조한다.
+
+- **SF Pro** (`--font-sans`, Tailwind `font-sans`) — 기본 글꼴. 본문, UI, 버튼, 표, 캡션 등 아래 표의 `headline` 이하 모든 티어. `body`에 기본으로 걸려 있으므로 따로 클래스를 붙이지 않는다.
+- **New York** (`--font-serif`, Tailwind `font-serif`) — 디스플레이 세리프. 아래 표의 `display-*` 티어와 페이지 제목(h1/h2), 인용구, 강조 숫자에만 쓴다. 본문에는 쓰지 않는다.
+- 그 외 글꼴(Inter, GT Walsheim, Geist, Google Fonts 등)은 **추가하지 않는다.** 외부 폰트 CDN도 쓰지 않는다.
 
 ### Hierarchy
 
@@ -329,13 +321,12 @@ These four sit as oversized atmospheric tiles inside otherwise monochrome card g
 ### Principles
 
 - **Letter-spacing scales with size, hard.** Display-xxl pulls -5.5px (5% of size); body sticks to about -1% (-0.15px on 15px). The result: posters at the top, comfortable reading at body.
-- **OpenType character variants are the brand voice.** Switching off `cv11`, `ss03`, etc. visibly changes the body voice — the brand depends on them.
 - **Weight stays in a narrow band.** Display sits at 500, body at 400, body-sm/caption at 500. Hierarchy is carried by size + tracking, not by 700/900 ramps.
 - **Tight line-heights everywhere.** Even body runs at 1.30 — Framer's editorial tone is denser than typical SaaS marketing.
 
 ### Note on Font Substitutes
 
-If implementing without GT Walsheim Medium, suitable open-source substitutes include **Mona Sans**, **Geist**, or **Inter** at weight 600–700 with manually tightened tracking. Mona Sans's hairline weights at 100–300 are particularly close to Framer's cleaner section openers. Inter Variable is open-source — keep it as-is and preserve the documented OpenType variants.
+대체 폰트는 없다. SF Pro와 New York은 고정이며, 새 화면·컴포넌트도 이 둘만 쓴다. 폰트를 바꿔야 할 이유가 생기면 코드가 아니라 이 문서를 먼저 고친다.
 
 ## Layout
 
@@ -484,7 +475,7 @@ The defining decorative surface of Framer's marketing — oversized atmospheric 
 - Use `{colors.accent-blue}` only for hyperlinks, focus rings, and selected indicators. Never as a background or button fill.
 - Drop one or two `gradient-spotlight-card` variants into a card grid; they are the brand's atmosphere device. Don't overdo it — three or more in the same viewport reads as a moodboard, not a system.
 - Compose every CTA as a pill (`{rounded.pill}`); secondary actions live as charcoal pills, never as bordered ghost buttons.
-- Keep body type Inter Variable with character variants `cv01`, `cv05`, `cv09`, `cv11`, `ss03`, `ss07` enabled — the brand voice depends on them.
+- Keep body type SF Pro (`font-sans`, the default) and reserve New York (`font-serif`) for display headings, quotes, and emphasized numerals. These two fonts are fixed — do not add a third.
 - Use surface lift (canvas → surface-1 → surface-2) to mark hierarchy on dark, not opacity changes on white type.
 
 ### Don't
