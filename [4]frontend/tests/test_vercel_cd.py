@@ -40,3 +40,13 @@ def test_slack_notifies_vercel_production_deployment_status():
 def test_workflow_doc_marks_vercel_done():
     row = re.search(r"^\| 6 \|.*$", WORKFLOW.read_text(encoding="utf-8"), re.M).group(0)
     assert "✅" in row and "SUU-165" in row
+
+
+# SUU-220: Hobby 한도(24시간 100배포)를 PR 미리보기가 다 써서, main 외 브랜치는 배포를 만들지 않는다
+def test_vercel_json_deploys_only_main():
+    import json
+
+    cfg = json.loads((ROOT / "[4]frontend" / "vercel.json").read_text(encoding="utf-8"))
+    enabled = cfg["git"]["deploymentEnabled"]
+    assert enabled["main"] is True
+    assert enabled["**"] is False
