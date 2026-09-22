@@ -150,10 +150,10 @@ export default function EchoPage() {
               A Title V (major source) operating permit lists every Clean Air Act requirement a facility must follow. At least once a
               year the facility must certify, signed by a responsible official, whether it complied with each permit condition.
               Any period when a condition was not met — a missed monitoring run, an emission limit exceeded, a late report — is
-              a <span className="text-gradient-violet">deviation</span> and must be disclosed in that certification.
+              a <span className="font-semibold text-ink">deviation</span> and must be disclosed in that certification.
             </p>
             <p className="mt-2">
-              <span className="text-gradient-violet">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
+              <span className="font-semibold text-ink">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
               where the facility reported at least one deviation. A deviation is self-reported and is not automatically a violation,
               but it is the first thing regulators look at when deciding whom to inspect.
             </p>
