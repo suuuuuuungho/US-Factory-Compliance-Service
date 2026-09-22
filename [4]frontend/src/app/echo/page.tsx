@@ -1,6 +1,7 @@
 // SUU-218: 빈 페이지. 제목만, 내용은 나중에.
 // SUU-237: public/echo-stats.json 을 읽어 타일 4개 · Subpart 표(정렬·제조업 필터) · 연도별 차트.
 // SUU-245: deviation 설명은 타일 바로 아래, 타일 글자 가운데.
+// SUU-246: 차트 5개 (연도별 건수·연도별 $·Subpart Top10·주 Top10·벌금 크기 분포) 2열 그리드.
 // SUU-242: 글자 전부 영어. 벌금은 중앙값 대신 총액·최대(크게). 표는 10줄씩, 정렬은 ↓/↑ 토글. BarYAxis 는 가로 막대용이라 연도가 왼쪽에 또 찍혀서 뺐다.
 "use client";
 
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Bar } from "@/components/charts/bar";
 import { BarChart } from "@/components/charts/bar-chart";
 import { BarXAxis } from "@/components/charts/bar-x-axis";
+import { BarYAxis } from "@/components/charts/bar-y-axis";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 
@@ -36,7 +38,9 @@ type EchoStats = {
     deviation_y_pct: number;
   };
   subparts: Subpart[];
-  yearly: { year: number; violations: number; penalties: number }[];
+  yearly: { year: number; violations: number; penalties: number; penalty_usd: number }[];
+  states: ({ state: string } & Omit<Subpart, "code" | "desc">)[];
+  penalty_buckets: { bucket: string; count: number }[];
 };
 
 type NumericKey = Exclude<keyof Subpart, "code" | "desc">;
@@ -118,6 +122,10 @@ export default function EchoPage() {
     setPage(0);
   };
 
+  // 가로 막대용: 벌금 총액 큰 순 10개
+  const topSubparts = top10(stats?.subparts ?? [], (s) => s.code);
+  const topStates = top10(stats?.states ?? [], (s) => s.state);
+
   return (
     <main className="flex flex-1 flex-col px-6 py-6">
       <h1 className="text-center text-[28px] font-bold text-ink">EPA ECHO</h1>
@@ -148,19 +156,53 @@ export default function EchoPage() {
             </p>
           </section>
 
-          <section className="mt-10">
-            <h2 className="text-lg font-semibold text-ink">Violations and penalty actions by year</h2>
-            <div data-chart="yearly" className="mt-3">
-              <BarChart data={stats.yearly} xDataKey="year" aspectRatio="3 / 1">
-                <Grid horizontal vertical={false} />
-                <BarXAxis />
-                <Bar dataKey="violations" fill="var(--chart-1)" />
-                <Bar dataKey="penalties" fill="var(--chart-3)" />
-                <ChartTooltip />
-              </BarChart>
-            </div>
-            <p className="mt-1 text-xs text-ink-muted">Dark: violations (by first FRV date) · Light: penalty actions</p>
-          </section>
+          <div className="mt-10 grid gap-8 md:grid-cols-2">
+            <ChartCard title="Violations and penalty actions by year" note="Dark: violations (by first FRV date) · Light: penalty actions">
+              <div data-chart="yearly">
+                <BarChart data={stats.yearly} xDataKey="year" aspectRatio="2 / 1">
+                  <Grid horizontal vertical={false} />
+                  <BarXAxis />
+                  <Bar dataKey="violations" fill="var(--chart-1)" />
+                  <Bar dataKey="penalties" fill="var(--chart-3)" />
+                  <ChartTooltip />
+                </BarChart>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Penalty dollars by year" note={`Sum of penalties assessed each year · ${stats.yearly.at(-1)?.year ?? ""} is year to date`}>
+              <div data-chart="yearly-usd">
+                <BarChart data={stats.yearly} xDataKey="year" aspectRatio="2 / 1">
+                  <Grid horizontal vertical={false} />
+                  <BarXAxis />
+                  <Bar dataKey="penalty_usd" fill="var(--chart-2)" />
+                  <ChartTooltip rows={(point) => [{ color: "var(--chart-2)", label: "Penalties", value: usdShort(point.penalty_usd as number) }]} />
+                </BarChart>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Top 10 Subparts by penalty dollars" note="Total penalties since 2015, by Part 63 Subpart">
+              <div data-chart="top-subparts">
+                <HBar data={topSubparts} />
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Top 10 states by penalty dollars" note="Total penalties since 2015, by facility state">
+              <div data-chart="top-states">
+                <HBar data={topStates} />
+              </div>
+            </ChartCard>
+
+            <ChartCard title="How big is one penalty?" note={`${num(stats.summary.penalty_count)} penalty actions since 2015, by amount`}>
+              <div data-chart="buckets">
+                <BarChart data={stats.penalty_buckets} xDataKey="bucket" aspectRatio="2 / 1">
+                  <Grid horizontal vertical={false} />
+                  <BarXAxis />
+                  <Bar dataKey="count" fill="var(--chart-2)" />
+                  <ChartTooltip />
+                </BarChart>
+              </div>
+            </ChartCard>
+          </div>
 
           <section className="mt-10">
             <div className="flex items-center justify-between">
@@ -228,6 +270,35 @@ export default function EchoPage() {
         </div>
       ) : null}
     </main>
+  );
+}
+
+function top10<T extends { penalty_total_usd: number }>(items: T[], name: (item: T) => string) {
+  return [...items]
+    .sort((a, b) => b.penalty_total_usd - a.penalty_total_usd)
+    .slice(0, 10)
+    .map((item) => ({ name: name(item), usd: item.penalty_total_usd }));
+}
+
+function ChartCard({ title, note, children }: { title: string; note: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="text-lg font-semibold text-ink">{title}</h2>
+      <div className="mt-3">{children}</div>
+      <p className="mt-1 text-xs text-ink-muted">{note}</p>
+    </section>
+  );
+}
+
+// 가로 막대. BarYAxis 가 왼쪽에 이름(Subpart·주)을 찍는다 (세로 차트에선 연도가 겹쳐 뺐던 그 부품)
+function HBar({ data }: { data: { name: string; usd: number }[] }) {
+  return (
+    <BarChart data={data} xDataKey="name" orientation="horizontal" aspectRatio="2 / 1" margin={{ left: 64 }}>
+      <Grid horizontal={false} vertical />
+      <BarYAxis />
+      <Bar dataKey="usd" fill="var(--chart-2)" />
+      <ChartTooltip rows={(point) => [{ color: "var(--chart-2)", label: String(point.name), value: usdShort(point.usd as number) }]} />
+    </BarChart>
   );
 }
 
