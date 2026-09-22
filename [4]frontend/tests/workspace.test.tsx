@@ -173,3 +173,10 @@ it("dockview 상자는 relative이고 dockview 루트를 absolute inset-0으로 
   expect(box.className).toContain("[&>div]:absolute");
   expect(box.className).toContain("[&>div]:inset-0");
 });
+
+// SUU-247: 부모가 items-center(SUU-215)라 w-full이 없으면 폭이 0으로 줄어 세로선 하나만 보인다.
+it("dockview 상자는 w-full이다 (items-center 부모 안에서 폭 0 방지)", async () => {
+  await askAndWait();
+  const box = document.querySelector(".dockview-theme-dark")!.parentElement!.parentElement!;
+  expect(box.className.split(" ")).toContain("w-full");
+});

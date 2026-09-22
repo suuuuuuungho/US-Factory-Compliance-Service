@@ -206,7 +206,8 @@ export default function Workspace({
     <PanelContent.Provider value={panels}>
       <MenuCtx.Provider value={menu}>
         {/* SUU-194: dockview 루트는 height:100%인데 flex로 늘어난 칸에서는 0이 된다 → absolute로 꽉 채운다 */}
-        <div className={`relative min-h-0 overflow-hidden rounded-lg border border-hairline [&>div]:absolute [&>div]:inset-0 ${className}`}>
+        {/* SUU-247: 부모가 items-center라 w-full이 없으면 폭이 0으로 줄어 안 보인다. */}
+        <div className={`relative w-full min-h-0 overflow-hidden rounded-lg border border-hairline [&>div]:absolute [&>div]:inset-0 ${className}`}>
           <DockviewReact
             theme={themeDark}
             components={components}
