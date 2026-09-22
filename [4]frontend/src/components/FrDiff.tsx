@@ -1,4 +1,8 @@
 // SUU-233: 줄마다 Before(원문) | After(개정문) 두 칸으로 나란히. 바뀐 줄은 왼쪽에 빠진 단어, 오른쪽에 새 단어만 mark.
+// SUU-238: 섹션 카드 대신 스크롤 영역 하나. 고정 머리글이 지금 보는 조항(§)으로 바뀐다.
+"use client";
+
+import { useRef, useState } from "react";
 import { diffWords } from "diff";
 
 type DiffRow = {
@@ -100,30 +104,59 @@ function Row({ row }: { row: DiffRow }) {
 }
 
 export function FrDiff({ document }: { document: FrDiffDocument }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   if (document.reason || document.sections.length === 0) {
     return <p className="text-sm text-ink-muted">변경 본문 없음</p>;
   }
 
+  // 머리글 아래를 지난 마지막 섹션이 "지금 보는 조항"
+  const handleScroll = () => {
+    const scroll = scrollRef.current;
+    const header = headerRef.current;
+    if (!scroll || !header) return;
+    const limit = header.getBoundingClientRect().bottom + 1;
+    const sections = Array.from(scroll.querySelectorAll<HTMLElement>("[data-diff-section]"));
+    let index = 0;
+    sections.forEach((section, i) => {
+      if (section.getBoundingClientRect().top <= limit) index = i;
+    });
+    setCurrentIndex(index);
+  };
+
+  const current = document.sections[Math.min(currentIndex, document.sections.length - 1)];
+
   return (
-    <article className="space-y-6">
+    <article>
       <header>
         <p className="text-sm text-ink-muted">{document.citation}</p>
         <h2 className="mt-1 text-xl font-semibold text-ink">{document.title}</h2>
       </header>
-      {document.sections.map((section) => (
-        <section key={section.node_key} className="rounded-md border border-hairline bg-surface-1 p-4">
-          <h3 className="font-medium text-ink">§ {section.section}</h3>
-          <div className="mt-3 grid grid-cols-2 gap-px border-b border-hairline pb-1 text-xs text-ink-muted">
-            <div className="px-2">Before ({section.before_date})</div>
-            <div className="px-2">After ({section.after_date})</div>
+      <div
+        ref={scrollRef}
+        data-diff-scroll
+        onScroll={handleScroll}
+        className="mt-4 max-h-[calc(100vh-14rem)] overflow-y-auto rounded-md border border-hairline bg-surface-1"
+      >
+        <div ref={headerRef} data-diff-current className="sticky top-0 z-10 border-b border-hairline bg-surface-1 px-4 pt-3 pb-2">
+          <h3 className="font-medium text-ink">§ {current.section}</h3>
+          <div className="mt-2 grid grid-cols-2 gap-px text-xs text-ink-muted">
+            <div className="px-2">Before ({current.before_date})</div>
+            <div className="px-2">After ({current.after_date})</div>
           </div>
-          <div className="mt-1 space-y-1 text-sm leading-6">
-            {section.rows.map((row, index) => (
-              <Row key={index} row={row} />
-            ))}
-          </div>
-        </section>
-      ))}
+        </div>
+        <div className="px-4 pb-4 text-sm leading-6">
+          {document.sections.map((section) => (
+            <div key={section.node_key} data-diff-section className="space-y-1 pt-3">
+              {section.rows.map((row, index) => (
+                <Row key={index} row={row} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
     </article>
   );
 }
