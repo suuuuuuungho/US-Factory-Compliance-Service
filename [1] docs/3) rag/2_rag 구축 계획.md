@@ -1,12 +1,14 @@
 # RAG 구축 계획
 
-이 문서는 [DB 구축 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>)이 만든 자료를 "찾아주는" 계획이다. 
-
-설계 원칙은 [Anthropic Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval)을 따르고, 
-
-임베딩은 법률 특화 모델 [Kanon 2 Embedder](https://isaacus.com/blog/introducing-kanon-2-embedder)를 쓴다. 
-
-지금은 **v1.5(eCFR 적재·시범 색인 완료, 전체 색인 진행 중)**이다. 2026-09-17 기준: eCFR Part 63 적재 완료(SUU-72), Subpart XXXXXX 시범 색인 완료(SUU-76), Part 63 전체 색인(SUU-80)과 32건 평가(SUU-81)는 진행 중이다. 실측이 남은 숫자는 `실측 후 기입`으로 남겨 두었다. 각 절의 "구현 상태" 줄이 티켓과 코드의 현재 모습이다.
+- 이 문서는 [DB 구축 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>)이 만든 자료를 "찾아주는" 계획이다. 
+- 설계 원칙은 [Anthropic Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval)을 따르고, 
+- 임베딩은 법률 특화 모델 [Kanon 2 Embedder](https://isaacus.com/blog/introducing-kanon-2-embedder)를 쓴다. 
+- 5살도 보고 이해할 수 있게 아주 쉽게 설명한다. 
+- 간결하게 작성한다. 
+- 아래 형식을 맞추되 너무 얽매이지는 않는다. 아래 형식을 뼈대 삼되 필요하면 새로운 카테고리를 형성해도 된다. 
+- 표 형태로 작성하지 않는다. 넘버링하여 전개한다. 
+- 넘버링 규칙. 넘버링할 때 들여쓰기 간격 일정하게 유지한다. 
+  [1] -> 1) -> "-" 
 
 ## [0] 이 문서를 지금 쓰는 이유와 두 번에 나눠 쓰는 방법
 

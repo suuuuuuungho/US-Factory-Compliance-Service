@@ -22,3 +22,6 @@ __pycache__/
 
 # 로컬 임베딩 캐시 (SUU-133)
 /[[]6] rag/eval/cache/
+
+# eCFR 섹션 XML 캐시 (fr_diff.py가 다시 받는다)
+/[[]2] db/2) Federal Register/ecfr_sections/
