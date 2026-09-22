@@ -1,0 +1,1459 @@
+{
+  "summary": {
+    "facilities": 49618,
+    "mfg_facilities": 11884,
+    "violation_facility_pct": 27.9,
+    "penalty_count": 9998,
+    "penalty_median_usd": 9098.5,
+    "deviation_y_pct": 18.5
+  },
+  "subparts": [
+    {
+      "code": "ZZZZ",
+      "desc": "MACT Part 63 - Subpart ZZZZ - STATIONARY RECIPROCATING INTERNAL COMBUSTION ENGINES (RICE)",
+      "facilities": 28174,
+      "mfg_facilities": 3335,
+      "violation_facility_pct": 26.0,
+      "penalty_count": 5227,
+      "penalty_median_usd": 11250,
+      "deviation_y_pct": 21.7
+    },
+    {
+      "code": "M",
+      "desc": "MACT Part 63 - Subpart M - DRY CLEANERS PERCHLOROETHYLENE",
+      "facilities": 8772,
+      "mfg_facilities": 26,
+      "violation_facility_pct": 7.0,
+      "penalty_count": 29,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 10.0
+    },
+    {
+      "code": "A",
+      "desc": "MACT Part 63 - Subpart A - GENERAL PROVISIONS",
+      "facilities": 5074,
+      "mfg_facilities": 2684,
+      "violation_facility_pct": 49.2,
+      "penalty_count": 2635,
+      "penalty_median_usd": 9360,
+      "deviation_y_pct": 20.8
+    },
+    {
+      "code": "HH",
+      "desc": "MACT Part 63 - Subpart HH - OIL AND NATURAL GAS PRODUCTION FACILITIES",
+      "facilities": 3959,
+      "mfg_facilities": 39,
+      "violation_facility_pct": 29.2,
+      "penalty_count": 613,
+      "penalty_median_usd": 11700,
+      "deviation_y_pct": 24.4
+    },
+    {
+      "code": "DDDDD",
+      "desc": "MACT Part 63 - Subpart DDDDD - MAJOR SOURCES: INDUSTRIAL/COMMERCIAL/INSTITUTIONAL BOILERS & PROCESS HEATER",
+      "facilities": 2769,
+      "mfg_facilities": 1841,
+      "violation_facility_pct": 75.7,
+      "penalty_count": 2705,
+      "penalty_median_usd": 13125,
+      "deviation_y_pct": 26.4
+    },
+    {
+      "code": "T",
+      "desc": "MACT Part 63 - Subpart T - HALOGENATED SOLVENT CLEANING",
+      "facilities": 1249,
+      "mfg_facilities": 1021,
+      "violation_facility_pct": 35.8,
+      "penalty_count": 114,
+      "penalty_median_usd": 3745,
+      "deviation_y_pct": 10.3
+    },
+    {
+      "code": "N",
+      "desc": "MACT Part 63 - Subpart N - CHROMIUM ELECTROPLATING",
+      "facilities": 1181,
+      "mfg_facilities": 1085,
+      "violation_facility_pct": 28.3,
+      "penalty_count": 90,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 16.2
+    },
+    {
+      "code": "AAAA",
+      "desc": "MACT Part 63 - Subpart AAAA - MUNICIPAL SOLID WASTE LANDFILLS",
+      "facilities": 756,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 55.4,
+      "penalty_count": 178,
+      "penalty_median_usd": 5250,
+      "deviation_y_pct": 18.0
+    },
+    {
+      "code": "WWWW",
+      "desc": "MACT Part 63 - Subpart WWWW - REINFORCED PLASTIC COMPOSITES PRODUCTION",
+      "facilities": 738,
+      "mfg_facilities": 682,
+      "violation_facility_pct": 64.0,
+      "penalty_count": 222,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 9.0
+    },
+    {
+      "code": "JJJJJJ",
+      "desc": "MACT Part 63 - Subpart JJJJJJ - INDUSTRIAL, COMMERCIAL, AND INSTITUTIONAL BOILERS AREA SOURCES",
+      "facilities": 711,
+      "mfg_facilities": 416,
+      "violation_facility_pct": 40.1,
+      "penalty_count": 168,
+      "penalty_median_usd": 5752,
+      "deviation_y_pct": 16.5
+    },
+    {
+      "code": "MMMM",
+      "desc": "MACT Part 63 - Subpart MMMM - SURFACE COATING OF MISC. METAL PARTS AND PRODUCTS",
+      "facilities": 710,
+      "mfg_facilities": 625,
+      "violation_facility_pct": 71.3,
+      "penalty_count": 244,
+      "penalty_median_usd": 6002.25,
+      "deviation_y_pct": 14.1
+    },
+    {
+      "code": "R",
+      "desc": "MACT Part 63 - Subpart R - GASOLINE DISTRIBUTION",
+      "facilities": 558,
+      "mfg_facilities": 54,
+      "violation_facility_pct": 49.8,
+      "penalty_count": 463,
+      "penalty_median_usd": 7500,
+      "deviation_y_pct": 12.8
+    },
+    {
+      "code": "JJ",
+      "desc": "MACT Part 63 - Subpart JJ - WOOD FURNITURE MANUFACTURING OPERATIONS",
+      "facilities": 522,
+      "mfg_facilities": 487,
+      "violation_facility_pct": 60.2,
+      "penalty_count": 172,
+      "penalty_median_usd": 4259.5,
+      "deviation_y_pct": 13.2
+    },
+    {
+      "code": "PPPP",
+      "desc": "MACT Part 63 - Subpart PPPP - SURFACE COATING OF PLASTIC PARTS AND PRODUCTS",
+      "facilities": 403,
+      "mfg_facilities": 349,
+      "violation_facility_pct": 68.0,
+      "penalty_count": 133,
+      "penalty_median_usd": 6620,
+      "deviation_y_pct": 12.7
+    },
+    {
+      "code": "FFFF",
+      "desc": "MACT Part 63 - Subpart FFFF - MISCELLANEOUS ORGANIC CHEMICAL MANUFACTURING (MON)",
+      "facilities": 396,
+      "mfg_facilities": 383,
+      "violation_facility_pct": 81.8,
+      "penalty_count": 761,
+      "penalty_median_usd": 16250,
+      "deviation_y_pct": 40.8
+    },
+    {
+      "code": "KK",
+      "desc": "MACT Part 63 - Subpart KK - PRINTING & PUBLISHING",
+      "facilities": 396,
+      "mfg_facilities": 376,
+      "violation_facility_pct": 54.5,
+      "penalty_count": 98,
+      "penalty_median_usd": 7290,
+      "deviation_y_pct": 14.3
+    },
+    {
+      "code": "DDDD",
+      "desc": "MACT Part 63 - Subpart DDDD - PLYWOOD AND COMPOSITE WOOD PRODUCTS",
+      "facilities": 394,
+      "mfg_facilities": 383,
+      "violation_facility_pct": 75.4,
+      "penalty_count": 228,
+      "penalty_median_usd": 7831.5,
+      "deviation_y_pct": 17.5
+    },
+    {
+      "code": "RRR",
+      "desc": "MACT Part 63 - Subpart RRR - SECONDARY ALUMINUM PRODUCTION",
+      "facilities": 354,
+      "mfg_facilities": 271,
+      "violation_facility_pct": 49.4,
+      "penalty_count": 189,
+      "penalty_median_usd": 10500,
+      "deviation_y_pct": 17.4
+    },
+    {
+      "code": "H",
+      "desc": "MACT Part 63 - Subpart H - EQUIPMENT LEAKS OF HAZARDOUS ORGANICS",
+      "facilities": 340,
+      "mfg_facilities": 313,
+      "violation_facility_pct": 80.6,
+      "penalty_count": 1050,
+      "penalty_median_usd": 15000,
+      "deviation_y_pct": 43.5
+    },
+    {
+      "code": "JJJJ",
+      "desc": "MACT Part 63 - Subpart JJJJ - PAPER & OTHER WEB COATINGS",
+      "facilities": 331,
+      "mfg_facilities": 257,
+      "violation_facility_pct": 64.4,
+      "penalty_count": 180,
+      "penalty_median_usd": 8227.76,
+      "deviation_y_pct": 20.5
+    },
+    {
+      "code": "EEEE",
+      "desc": "MACT Part 63 - Subpart EEEE - ORGANIC LIQUIDS DISTRIBUTION (NON-GASOLINE)",
+      "facilities": 314,
+      "mfg_facilities": 238,
+      "violation_facility_pct": 79.6,
+      "penalty_count": 942,
+      "penalty_median_usd": 14031.5,
+      "deviation_y_pct": 39.4
+    },
+    {
+      "code": "G",
+      "desc": "MACT Part 63 - Subpart G - SOCMI PROCESS VENTS, STORAGE VESSELS, TRANSFER OPERATIONS, WASTEWATER",
+      "facilities": 305,
+      "mfg_facilities": 288,
+      "violation_facility_pct": 82.0,
+      "penalty_count": 870,
+      "penalty_median_usd": 21431.5,
+      "deviation_y_pct": 44.7
+    },
+    {
+      "code": "YYYY",
+      "desc": "MACT Part 63 - Subpart YYYY - STATIONARY COMBUSTION TURBINES",
+      "facilities": 278,
+      "mfg_facilities": 40,
+      "violation_facility_pct": 61.2,
+      "penalty_count": 387,
+      "penalty_median_usd": 10287,
+      "deviation_y_pct": 22.4
+    },
+    {
+      "code": "F",
+      "desc": "MACT Part 63 - Subpart F - SYNTHETIC HAZARDOUS ORGANICS (SOCMI) STANDARDS",
+      "facilities": 271,
+      "mfg_facilities": 262,
+      "violation_facility_pct": 84.1,
+      "penalty_count": 1122,
+      "penalty_median_usd": 15000,
+      "deviation_y_pct": 43.7
+    },
+    {
+      "code": "UUUUU",
+      "desc": "MACT Part 63 - Subpart UUUUU - COAL & OIL-FIRED EUSGU'S",
+      "facilities": 250,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 82.0,
+      "penalty_count": 171,
+      "penalty_median_usd": 6913,
+      "deviation_y_pct": 25.0
+    },
+    {
+      "code": "VVVV",
+      "desc": "MACT Part 63 - Subpart VVVV - BOAT MANUFACTURING",
+      "facilities": 245,
+      "mfg_facilities": 227,
+      "violation_facility_pct": 67.8,
+      "penalty_count": 120,
+      "penalty_median_usd": 4000,
+      "deviation_y_pct": 5.7
+    },
+    {
+      "code": "WWWWWW",
+      "desc": "MACT Part 63 - Subpart WWWWWW - AREA SOURCE: PLATING AND POLISHING OPERATIONS",
+      "facilities": 206,
+      "mfg_facilities": 198,
+      "violation_facility_pct": 25.2,
+      "penalty_count": 23,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 9.5
+    },
+    {
+      "code": "CC",
+      "desc": "MACT Part 63 - Subpart CC - PETROLEUM REFINERIES",
+      "facilities": 201,
+      "mfg_facilities": 173,
+      "violation_facility_pct": 89.1,
+      "penalty_count": 2062,
+      "penalty_median_usd": 9600,
+      "deviation_y_pct": 41.9
+    },
+    {
+      "code": "XXXXXX",
+      "desc": "MACT Part 63 - Subpart XXXXXX - AREA SOURCE: NINE METAL FABRICATION AND FINISHING SOURCE CATEGORIES",
+      "facilities": 199,
+      "mfg_facilities": 193,
+      "violation_facility_pct": 33.2,
+      "penalty_count": 21,
+      "penalty_median_usd": 2000,
+      "deviation_y_pct": 4.4
+    },
+    {
+      "code": "HHHHH",
+      "desc": "MACT Part 63 - Subpart HHHHH - MISCELLANEOUS COATING MANUFACTURING",
+      "facilities": 181,
+      "mfg_facilities": 110,
+      "violation_facility_pct": 42.0,
+      "penalty_count": 33,
+      "penalty_median_usd": 20000,
+      "deviation_y_pct": 27.8
+    },
+    {
+      "code": "Y",
+      "desc": "MACT Part 63 - Subpart Y - MARINE TANK VESSEL LOADING & UNLOADING OPERATIONS",
+      "facilities": 179,
+      "mfg_facilities": 89,
+      "violation_facility_pct": 72.6,
+      "penalty_count": 755,
+      "penalty_median_usd": 12300,
+      "deviation_y_pct": 41.9
+    },
+    {
+      "code": "GG",
+      "desc": "MACT Part 63 - Subpart GG - AEROSPACE MFG. & REWORK",
+      "facilities": 159,
+      "mfg_facilities": 102,
+      "violation_facility_pct": 67.3,
+      "penalty_count": 80,
+      "penalty_median_usd": 3675,
+      "deviation_y_pct": 13.4
+    },
+    {
+      "code": "GGGGG",
+      "desc": "MACT Part 63 - Subpart GGGGG - SITE REMEDIATION",
+      "facilities": 156,
+      "mfg_facilities": 127,
+      "violation_facility_pct": 86.5,
+      "penalty_count": 747,
+      "penalty_median_usd": 10000,
+      "deviation_y_pct": 37.3
+    },
+    {
+      "code": "EEE",
+      "desc": "MACT Part 63 - Subpart EEE - HAZARDOUS WASTE COMBUSTORS",
+      "facilities": 144,
+      "mfg_facilities": 111,
+      "violation_facility_pct": 85.4,
+      "penalty_count": 500,
+      "penalty_median_usd": 15000,
+      "deviation_y_pct": 41.1
+    },
+    {
+      "code": "ZZZZZ",
+      "desc": "MACT Part 63 - Subpart ZZZZZ - IRON AND STEEL FOUNDRIES AREA SOURCES",
+      "facilities": 140,
+      "mfg_facilities": 140,
+      "violation_facility_pct": 55.7,
+      "penalty_count": 62,
+      "penalty_median_usd": 7212.5,
+      "deviation_y_pct": 17.1
+    },
+    {
+      "code": "S",
+      "desc": "MACT Part 63 - Subpart S - PULP AND PAPER",
+      "facilities": 134,
+      "mfg_facilities": 131,
+      "violation_facility_pct": 91.8,
+      "penalty_count": 151,
+      "penalty_median_usd": 9360,
+      "deviation_y_pct": 34.1
+    },
+    {
+      "code": "IIII",
+      "desc": "MACT Part 63 - Subpart IIII - SURFACE COATING OF AUTO AND LIGHT DUTY TRUCKS",
+      "facilities": 126,
+      "mfg_facilities": 90,
+      "violation_facility_pct": 53.2,
+      "penalty_count": 46,
+      "penalty_median_usd": 8332.5,
+      "deviation_y_pct": 23.1
+    },
+    {
+      "code": "UUU",
+      "desc": "MACT Part 63 - Subpart UUU - PETROLEUM REFINERIES: CCU'S, CRU'S & SRU'S",
+      "facilities": 124,
+      "mfg_facilities": 118,
+      "violation_facility_pct": 96.8,
+      "penalty_count": 1881,
+      "penalty_median_usd": 9000,
+      "deviation_y_pct": 40.0
+    },
+    {
+      "code": "LLL",
+      "desc": "MACT Part 63 - Subpart LLL - PORTLAND CEMENT PLANTS",
+      "facilities": 123,
+      "mfg_facilities": 120,
+      "violation_facility_pct": 91.9,
+      "penalty_count": 258,
+      "penalty_median_usd": 19397.5,
+      "deviation_y_pct": 28.4
+    },
+    {
+      "code": "DDDDDDD",
+      "desc": "MACT Part 63 - Subpart DDDDDDD - AREA SOURCE: PREPARED FEEDS MFG",
+      "facilities": 122,
+      "mfg_facilities": 117,
+      "violation_facility_pct": 34.4,
+      "penalty_count": 19,
+      "penalty_median_usd": 5420.17,
+      "deviation_y_pct": 10.9
+    },
+    {
+      "code": "MM",
+      "desc": "MACT Part 63 - Subpart MM - CHEMICAL RECOVERY COMBUSTION SOURCES AT PULP MILLS",
+      "facilities": 117,
+      "mfg_facilities": 116,
+      "violation_facility_pct": 93.2,
+      "penalty_count": 148,
+      "penalty_median_usd": 9234.5,
+      "deviation_y_pct": 34.6
+    },
+    {
+      "code": "Q",
+      "desc": "MACT Part 63 - Subpart Q - INDUSTRIAL PROCESS COOLING TOWERS",
+      "facilities": 114,
+      "mfg_facilities": 92,
+      "violation_facility_pct": 84.2,
+      "penalty_count": 1521,
+      "penalty_median_usd": 7000,
+      "deviation_y_pct": 27.9
+    },
+    {
+      "code": "O",
+      "desc": "MACT Part 63 - Subpart O - ETHYLENE OXIDE STERILIZERS",
+      "facilities": 113,
+      "mfg_facilities": 66,
+      "violation_facility_pct": 37.2,
+      "penalty_count": 21,
+      "penalty_median_usd": 6750,
+      "deviation_y_pct": 2.5
+    },
+    {
+      "code": "HHH",
+      "desc": "MACT Part 63 - Subpart HHH - NATURAL GAS TRANSMISSION & STORAGE FACILITIES",
+      "facilities": 108,
+      "mfg_facilities": 2,
+      "violation_facility_pct": 46.3,
+      "penalty_count": 25,
+      "penalty_median_usd": 13800,
+      "deviation_y_pct": 12.5
+    },
+    {
+      "code": "GGGG",
+      "desc": "MACT Part 63 - Subpart GGGG - SOLVENT EXTRACTION FOR VEGETABLE OIL PRODUCTION",
+      "facilities": 107,
+      "mfg_facilities": 102,
+      "violation_facility_pct": 84.1,
+      "penalty_count": 68,
+      "penalty_median_usd": 10000,
+      "deviation_y_pct": 22.1
+    },
+    {
+      "code": "WWWWW",
+      "desc": "MACT Part 63 - Subpart WWWWW - HOSPITAL ETHYLENE OXIDE STERILIZERS",
+      "facilities": 105,
+      "mfg_facilities": 8,
+      "violation_facility_pct": 40.0,
+      "penalty_count": 18,
+      "penalty_median_usd": 1500,
+      "deviation_y_pct": 18.9
+    },
+    {
+      "code": "SS",
+      "desc": "MACT Part 63 - Subpart SS - CLOSED VENT SYS/CTRL DEVICES, RECOVERY DEVICES, ROUTING TO FUEL GAS SYS/PROC",
+      "facilities": 103,
+      "mfg_facilities": 95,
+      "violation_facility_pct": 79.6,
+      "penalty_count": 168,
+      "penalty_median_usd": 15610,
+      "deviation_y_pct": 34.0
+    },
+    {
+      "code": "OOOO",
+      "desc": "MACT Part 63 - Subpart OOOO - PRINTING, COATING AND DYEING OF FABRICS AND OTHER TEXTILES",
+      "facilities": 99,
+      "mfg_facilities": 91,
+      "violation_facility_pct": 62.6,
+      "penalty_count": 26,
+      "penalty_median_usd": 5500,
+      "deviation_y_pct": 11.6
+    },
+    {
+      "code": "II",
+      "desc": "MACT Part 63 - Subpart II - SHIPBUILDING & SHIP REPAIR",
+      "facilities": 97,
+      "mfg_facilities": 84,
+      "violation_facility_pct": 71.1,
+      "penalty_count": 68,
+      "penalty_median_usd": 5326.665,
+      "deviation_y_pct": 16.8
+    },
+    {
+      "code": "JJJJJ",
+      "desc": "MACT Part 63 - Subpart JJJJJ - BRICK & STRUCTURAL CLAY PRODUCTS MANUFACTURING",
+      "facilities": 96,
+      "mfg_facilities": 85,
+      "violation_facility_pct": 60.4,
+      "penalty_count": 25,
+      "penalty_median_usd": 8000,
+      "deviation_y_pct": 9.9
+    },
+    {
+      "code": "DD",
+      "desc": "MACT Part 63 - Subpart DD - OFF-SITE WASTE AND RECOVERY OPERATIONS",
+      "facilities": 95,
+      "mfg_facilities": 52,
+      "violation_facility_pct": 85.3,
+      "penalty_count": 205,
+      "penalty_median_usd": 12500,
+      "deviation_y_pct": 39.8
+    },
+    {
+      "code": "EEEEE",
+      "desc": "MACT Part 63 - Subpart EEEEE - IRON AND STEEL FOUNDRIES",
+      "facilities": 89,
+      "mfg_facilities": 88,
+      "violation_facility_pct": 86.5,
+      "penalty_count": 54,
+      "penalty_median_usd": 17800,
+      "deviation_y_pct": 28.7
+    },
+    {
+      "code": "UU",
+      "desc": "MACT Part 63 - Subpart UU - EQUIP LEAKS-CONTROL LEVEL 2",
+      "facilities": 88,
+      "mfg_facilities": 84,
+      "violation_facility_pct": 78.4,
+      "penalty_count": 146,
+      "penalty_median_usd": 10438,
+      "deviation_y_pct": 32.1
+    },
+    {
+      "code": "YY",
+      "desc": "MACT Part 63 - Subpart YY - GENERIC MACT STANDARDS",
+      "facilities": 87,
+      "mfg_facilities": 84,
+      "violation_facility_pct": 87.4,
+      "penalty_count": 363,
+      "penalty_median_usd": 22500,
+      "deviation_y_pct": 47.5
+    },
+    {
+      "code": "MMM",
+      "desc": "MACT Part 63 - Subpart MMM - PESTICIDE ACTIVE INGREDIENT PRODUCTION",
+      "facilities": 86,
+      "mfg_facilities": 84,
+      "violation_facility_pct": 91.9,
+      "penalty_count": 87,
+      "penalty_median_usd": 9400,
+      "deviation_y_pct": 15.0
+    },
+    {
+      "code": "B",
+      "desc": "MACT Part 63 - Subpart B - REQ FOR CONTROL TECHNOLOGY DETERMINATIONS FOR MAJOR SOURCES",
+      "facilities": 85,
+      "mfg_facilities": 60,
+      "violation_facility_pct": 64.7,
+      "penalty_count": 358,
+      "penalty_median_usd": 6000,
+      "deviation_y_pct": 23.0
+    },
+    {
+      "code": "QQQQ",
+      "desc": "MACT Part 63 - Subpart QQQQ - SURFACE COATING OF WOOD BUILDING PRODUCTS",
+      "facilities": 78,
+      "mfg_facilities": 73,
+      "violation_facility_pct": 78.2,
+      "penalty_count": 28,
+      "penalty_median_usd": 5074,
+      "deviation_y_pct": 20.1
+    },
+    {
+      "code": "GGG",
+      "desc": "MACT Part 63 - Subpart GGG - PHARMACEUTICAL MANUFACTURING",
+      "facilities": 76,
+      "mfg_facilities": 69,
+      "violation_facility_pct": 65.8,
+      "penalty_count": 140,
+      "penalty_median_usd": 10641,
+      "deviation_y_pct": 22.6
+    },
+    {
+      "code": "VVVVVV",
+      "desc": "MACT Part 63 - Subpart VVVVVV -  CHEMICAL MANUFACTURING AREA SOURCES",
+      "facilities": 71,
+      "mfg_facilities": 70,
+      "violation_facility_pct": 50.7,
+      "penalty_count": 33,
+      "penalty_median_usd": 9280,
+      "deviation_y_pct": 40.0
+    },
+    {
+      "code": "JJJ",
+      "desc": "MACT Part 63 - Subpart JJJ - GROUP IV POLYMERS AND RESINS",
+      "facilities": 64,
+      "mfg_facilities": 58,
+      "violation_facility_pct": 78.1,
+      "penalty_count": 109,
+      "penalty_median_usd": 8438,
+      "deviation_y_pct": 36.2
+    },
+    {
+      "code": "SSSS",
+      "desc": "MACT Part 63 - Subpart SSSS - SURFACE COATING OF METAL COIL",
+      "facilities": 63,
+      "mfg_facilities": 62,
+      "violation_facility_pct": 85.7,
+      "penalty_count": 50,
+      "penalty_median_usd": 10317.12,
+      "deviation_y_pct": 14.7
+    },
+    {
+      "code": "KKKK",
+      "desc": "MACT Part 63 - Subpart KKKK - SURFACE COATING OF METAL CANS",
+      "facilities": 60,
+      "mfg_facilities": 56,
+      "violation_facility_pct": 65.0,
+      "penalty_count": 39,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 6.5
+    },
+    {
+      "code": "WW",
+      "desc": "MACT Part 63 - Subpart WW - STORAGE VESSELS (TANKS)- CONTROL LEVEL 2",
+      "facilities": 58,
+      "mfg_facilities": 34,
+      "violation_facility_pct": 74.1,
+      "penalty_count": 79,
+      "penalty_median_usd": 32900,
+      "deviation_y_pct": 40.2
+    },
+    {
+      "code": "CCC",
+      "desc": "MACT Part 63 - Subpart CCC - STEEL PICKLING-HCI PROCESS FACILITIES AND HCI REG PLANTS",
+      "facilities": 50,
+      "mfg_facilities": 48,
+      "violation_facility_pct": 86.0,
+      "penalty_count": 100,
+      "penalty_median_usd": 19875,
+      "deviation_y_pct": 23.9
+    },
+    {
+      "code": "AAAAA",
+      "desc": "MACT Part 63 - Subpart AAAAA - LIME MANUFACTURING PLANTS",
+      "facilities": 47,
+      "mfg_facilities": 42,
+      "violation_facility_pct": 89.4,
+      "penalty_count": 69,
+      "penalty_median_usd": 14610,
+      "deviation_y_pct": 24.9
+    },
+    {
+      "code": "BBBBB",
+      "desc": "MACT Part 63 - Subpart BBBBB - SEMICONDUCTOR MANUFACTURING",
+      "facilities": 46,
+      "mfg_facilities": 6,
+      "violation_facility_pct": 54.3,
+      "penalty_count": 8,
+      "penalty_median_usd": 46644.5,
+      "deviation_y_pct": 24.6
+    },
+    {
+      "code": "I",
+      "desc": "MACT Part 63 - Subpart I - NEGOTIATED REGS: EQUIP LEAKS, HAZ-ORGNCS",
+      "facilities": 45,
+      "mfg_facilities": 41,
+      "violation_facility_pct": 62.2,
+      "penalty_count": 21,
+      "penalty_median_usd": 40950,
+      "deviation_y_pct": 34.3
+    },
+    {
+      "code": "YYYYY",
+      "desc": "MACT Part 63 - Subpart YYYYY - AREA SOURCE: ELECTRIC ARC FURNACE STEELMAKING FACILITIES",
+      "facilities": 44,
+      "mfg_facilities": 42,
+      "violation_facility_pct": 81.8,
+      "penalty_count": 51,
+      "penalty_median_usd": 9627,
+      "deviation_y_pct": 19.4
+    },
+    {
+      "code": "OOO",
+      "desc": "MACT Part 63 - Subpart OOO - MANUFACTURE OF AMINO/PHENOLIC RESINS",
+      "facilities": 41,
+      "mfg_facilities": 31,
+      "violation_facility_pct": 65.9,
+      "penalty_count": 36,
+      "penalty_median_usd": 8500,
+      "deviation_y_pct": 32.0
+    },
+    {
+      "code": "III",
+      "desc": "MACT Part 63 - Subpart III - FLEXIBLE POLYURETHANE FOAM PRODUCTION",
+      "facilities": 40,
+      "mfg_facilities": 36,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 29,
+      "penalty_median_usd": 5500,
+      "deviation_y_pct": 9.6
+    },
+    {
+      "code": "CCCCCCC",
+      "desc": "MACT Part 63 - Subpart CCCCCCC - AREA SOURCE: PAINT AND ALLIED PRODUCTS MANUFACTURING",
+      "facilities": 39,
+      "mfg_facilities": 37,
+      "violation_facility_pct": 48.7,
+      "penalty_count": 11,
+      "penalty_median_usd": 1725,
+      "deviation_y_pct": 6.0
+    },
+    {
+      "code": "OOOOOO",
+      "desc": "MACT Part 63 - Subpart OOOOOO - FLEXIBLE POLYURETHANE FOAM PROD & FAB AREA SOURCES",
+      "facilities": 39,
+      "mfg_facilities": 38,
+      "violation_facility_pct": 48.7,
+      "penalty_count": 5,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 6.5
+    },
+    {
+      "code": "QQQQQQ",
+      "desc": "MACT Part 63 - Subpart QQQQQQ - WOOD PERSERVING AREA SOURCES",
+      "facilities": 37,
+      "mfg_facilities": 34,
+      "violation_facility_pct": 13.5,
+      "penalty_count": 3,
+      "penalty_median_usd": 7800,
+      "deviation_y_pct": 18.3
+    },
+    {
+      "code": "AAAAAAA",
+      "desc": "MACT Part 63 - Subpart AAAAAAA - AREA SOURCE: ASPHALT PROCESSING AND ASPHALT ROOFING MANUFACTURING",
+      "facilities": 34,
+      "mfg_facilities": 31,
+      "violation_facility_pct": 38.2,
+      "penalty_count": 13,
+      "penalty_median_usd": 7000,
+      "deviation_y_pct": 19.6
+    },
+    {
+      "code": "XXXX",
+      "desc": "MACT Part 63 - Subpart XXXX - RUBBER TIRE MANUFACTURING",
+      "facilities": 32,
+      "mfg_facilities": 31,
+      "violation_facility_pct": 84.4,
+      "penalty_count": 20,
+      "penalty_median_usd": 8926.335,
+      "deviation_y_pct": 17.1
+    },
+    {
+      "code": "PPP",
+      "desc": "MACT Part 63 - Subpart PPP - POLYETHER POLYOLS PRODUCTION",
+      "facilities": 31,
+      "mfg_facilities": 30,
+      "violation_facility_pct": 87.1,
+      "penalty_count": 192,
+      "penalty_median_usd": 10575,
+      "deviation_y_pct": 35.4
+    },
+    {
+      "code": "NNNNN",
+      "desc": "MACT Part 63 - Subpart NNNNN - HYDROCHLORIC ACID PRODUCTION",
+      "facilities": 30,
+      "mfg_facilities": 29,
+      "violation_facility_pct": 93.3,
+      "penalty_count": 56,
+      "penalty_median_usd": 29000,
+      "deviation_y_pct": 45.7
+    },
+    {
+      "code": "PPPPP",
+      "desc": "MACT Part 63 - Subpart PPPPP - ENGINE TEST CELLS/STANDS",
+      "facilities": 30,
+      "mfg_facilities": 22,
+      "violation_facility_pct": 66.7,
+      "penalty_count": 28,
+      "penalty_median_usd": 7625,
+      "deviation_y_pct": 22.2
+    },
+    {
+      "code": "RRRR",
+      "desc": "MACT Part 63 - Subpart RRRR - SURFACE COATING OF METAL FURNITURE",
+      "facilities": 29,
+      "mfg_facilities": 26,
+      "violation_facility_pct": 75.9,
+      "penalty_count": 10,
+      "penalty_median_usd": 7573,
+      "deviation_y_pct": 11.1
+    },
+    {
+      "code": "L",
+      "desc": "MACT Part 63 - Subpart L - COKE OVEN BATTERIES",
+      "facilities": 28,
+      "mfg_facilities": 25,
+      "violation_facility_pct": 92.9,
+      "penalty_count": 116,
+      "penalty_median_usd": 49350,
+      "deviation_y_pct": 31.5
+    },
+    {
+      "code": "PPPPPP",
+      "desc": "MACT Part 63 - Subpart PPPPPP - LEAD ACID BATTERY MANUFACTURING AREA SOURCES",
+      "facilities": 28,
+      "mfg_facilities": 28,
+      "violation_facility_pct": 53.6,
+      "penalty_count": 19,
+      "penalty_median_usd": 6550,
+      "deviation_y_pct": 4.0
+    },
+    {
+      "code": "CCCCC",
+      "desc": "MACT Part 63 - Subpart CCCCC - COKE OVENS: PUSHING, QUENCHING AND BATTERY STACKS",
+      "facilities": 26,
+      "mfg_facilities": 21,
+      "violation_facility_pct": 84.6,
+      "penalty_count": 43,
+      "penalty_median_usd": 64250,
+      "deviation_y_pct": 31.5
+    },
+    {
+      "code": "U",
+      "desc": "MACT Part 63 - Subpart U - GROUP 1 POLYMERS AND RESINS",
+      "facilities": 25,
+      "mfg_facilities": 23,
+      "violation_facility_pct": 72.0,
+      "penalty_count": 38,
+      "penalty_median_usd": 14004.5,
+      "deviation_y_pct": 35.1
+    },
+    {
+      "code": "HHHHHHH",
+      "desc": "MACT Part 63 - Subpart HHHHHHH - POLYVINYL CHLORIDE AND COPOLYMERS PRODUCTION",
+      "facilities": 24,
+      "mfg_facilities": 20,
+      "violation_facility_pct": 58.3,
+      "penalty_count": 40,
+      "penalty_median_usd": 36300,
+      "deviation_y_pct": 43.1
+    },
+    {
+      "code": "NNN",
+      "desc": "MACT Part 63 - Subpart NNN - WOOL FIBERGLASS MANUFACTURING",
+      "facilities": 24,
+      "mfg_facilities": 22,
+      "violation_facility_pct": 70.8,
+      "penalty_count": 144,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 26.1
+    },
+    {
+      "code": "XX",
+      "desc": "MACT Part 63 - Subpart XX - ETHYLENE MPF: HEAT EXCHANGE SYSTEMS & WASTE OPERATIONS",
+      "facilities": 24,
+      "mfg_facilities": 19,
+      "violation_facility_pct": 79.2,
+      "penalty_count": 44,
+      "penalty_median_usd": 38250,
+      "deviation_y_pct": 36.4
+    },
+    {
+      "code": "ZZZZZZ",
+      "desc": "MACT Part 63 - Subpart ZZZZZZ - AREA SOURCE: ALUMINUM, COPPER & OTHER NONFERROUS FOUNDRIES",
+      "facilities": 23,
+      "mfg_facilities": 21,
+      "violation_facility_pct": 47.8,
+      "penalty_count": 11,
+      "penalty_median_usd": 3900,
+      "deviation_y_pct": 1.0
+    },
+    {
+      "code": "FFFFF",
+      "desc": "MACT Part 63 - Subpart FFFFF - INTEGRATED IRON AND STEEL MANUFACTURING FACILITIES",
+      "facilities": 22,
+      "mfg_facilities": 19,
+      "violation_facility_pct": 86.4,
+      "penalty_count": 51,
+      "penalty_median_usd": 49000,
+      "deviation_y_pct": 26.3
+    },
+    {
+      "code": "RR",
+      "desc": "MACT Part 63 - Subpart RR - INDIVIDUAL DRAIN SYSTEMS",
+      "facilities": 21,
+      "mfg_facilities": 20,
+      "violation_facility_pct": 95.2,
+      "penalty_count": 21,
+      "penalty_median_usd": 10520,
+      "deviation_y_pct": 32.7
+    },
+    {
+      "code": "X",
+      "desc": "MACT Part 63 - Subpart X - SECONDARY LEAD SMELTERS",
+      "facilities": 21,
+      "mfg_facilities": 20,
+      "violation_facility_pct": 76.2,
+      "penalty_count": 19,
+      "penalty_median_usd": 20190,
+      "deviation_y_pct": 17.8
+    },
+    {
+      "code": "LLLLL",
+      "desc": "MACT Part 63 - Subpart LLLLL - ASPHALT PROCESSING AND ASPHALT ROOFING MANUFACTURING",
+      "facilities": 20,
+      "mfg_facilities": 19,
+      "violation_facility_pct": 90.0,
+      "penalty_count": 27,
+      "penalty_median_usd": 16220,
+      "deviation_y_pct": 37.1
+    },
+    {
+      "code": "NNNN",
+      "desc": "MACT Part 63 - Subpart NNNN - SURFACE COATING OF LARGE APPLIANCES",
+      "facilities": 19,
+      "mfg_facilities": 15,
+      "violation_facility_pct": 57.9,
+      "penalty_count": 8,
+      "penalty_median_usd": 3662,
+      "deviation_y_pct": 14.2
+    },
+    {
+      "code": "LL",
+      "desc": "MACT Part 63 - Subpart LL - PRIMARY ALUMINUM REDUCTION PLANTS",
+      "facilities": 18,
+      "mfg_facilities": 18,
+      "violation_facility_pct": 88.9,
+      "penalty_count": 29,
+      "penalty_median_usd": 8750,
+      "deviation_y_pct": 21.1
+    },
+    {
+      "code": "VVV",
+      "desc": "MACT Part 63 - Subpart VVV - PUBLICLY OWNED TREATMENT WORKS",
+      "facilities": 18,
+      "mfg_facilities": 2,
+      "violation_facility_pct": 88.9,
+      "penalty_count": 11,
+      "penalty_median_usd": 20000,
+      "deviation_y_pct": 24.2
+    },
+    {
+      "code": "PP",
+      "desc": "MACT Part 63 - Subpart PP - CONTAINER STANDARDS",
+      "facilities": 17,
+      "mfg_facilities": 6,
+      "violation_facility_pct": 88.2,
+      "penalty_count": 23,
+      "penalty_median_usd": 15000,
+      "deviation_y_pct": 36.8
+    },
+    {
+      "code": "OO",
+      "desc": "MACT Part 63 - Subpart OO - TANK STANDARDS - LEVEL 1",
+      "facilities": 16,
+      "mfg_facilities": 7,
+      "violation_facility_pct": 68.8,
+      "penalty_count": 16,
+      "penalty_median_usd": 12900,
+      "deviation_y_pct": 31.5
+    },
+    {
+      "code": "UUUU",
+      "desc": "MACT Part 63 - Subpart UUUU - CELLULOSE PRODUCT MANUFACTURING",
+      "facilities": 16,
+      "mfg_facilities": 14,
+      "violation_facility_pct": 87.5,
+      "penalty_count": 9,
+      "penalty_median_usd": 38500,
+      "deviation_y_pct": 32.1
+    },
+    {
+      "code": "VV",
+      "desc": "MACT Part 63 - Subpart VV - OIL-WATER & ORGANIC-WATER SEPARATORS",
+      "facilities": 16,
+      "mfg_facilities": 10,
+      "violation_facility_pct": 75.0,
+      "penalty_count": 238,
+      "penalty_median_usd": 5000,
+      "deviation_y_pct": 34.9
+    },
+    {
+      "code": "AA",
+      "desc": "MACT Part 63 - Subpart AA - PHOSPERIC ACID MANUFACTURING PLANTS",
+      "facilities": 15,
+      "mfg_facilities": 13,
+      "violation_facility_pct": 80.0,
+      "penalty_count": 23,
+      "penalty_median_usd": 13563.11,
+      "deviation_y_pct": 28.6
+    },
+    {
+      "code": "BB",
+      "desc": "MACT Part 63 - Subpart BB - PHOSPHATE FERTILIZERS",
+      "facilities": 15,
+      "mfg_facilities": 15,
+      "violation_facility_pct": 93.3,
+      "penalty_count": 33,
+      "penalty_median_usd": 17230,
+      "deviation_y_pct": 35.1
+    },
+    {
+      "code": "TT",
+      "desc": "MACT Part 63 - Subpart TT - EQUIPMENT LEAKS - CONTROL LEVEL 1",
+      "facilities": 15,
+      "mfg_facilities": 10,
+      "violation_facility_pct": 66.7,
+      "penalty_count": 19,
+      "penalty_median_usd": 23568.54,
+      "deviation_y_pct": 33.3
+    },
+    {
+      "code": "DDD",
+      "desc": "MACT Part 63 - Subpart DDD - MINERAL WOOL PRODUCTION",
+      "facilities": 14,
+      "mfg_facilities": 14,
+      "violation_facility_pct": 85.7,
+      "penalty_count": 8,
+      "penalty_median_usd": 26687.5,
+      "deviation_y_pct": 19.8
+    },
+    {
+      "code": "SSSSSS",
+      "desc": "MACT Part 63 - Subpart SSSSSS - GLASS MFG AREA SOURCES",
+      "facilities": 14,
+      "mfg_facilities": 14,
+      "violation_facility_pct": 78.6,
+      "penalty_count": 28,
+      "penalty_median_usd": 15600,
+      "deviation_y_pct": 28.5
+    },
+    {
+      "code": "TTTT",
+      "desc": "MACT Part 63 - Subpart TTTT - LEATHER FINISHING OPERATIONS",
+      "facilities": 14,
+      "mfg_facilities": 13,
+      "violation_facility_pct": 57.1,
+      "penalty_count": 1,
+      "penalty_median_usd": 3500,
+      "deviation_y_pct": 5.9
+    },
+    {
+      "code": "IIIII",
+      "desc": "MACT Part 63 - Subpart IIIII - MERCURY EMISSIONS FROM MERCURY CELL CHLOR-ALKALI PLANTS",
+      "facilities": 13,
+      "mfg_facilities": 7,
+      "violation_facility_pct": 46.2,
+      "penalty_count": 2,
+      "penalty_median_usd": 18500,
+      "deviation_y_pct": 23.1
+    },
+    {
+      "code": "EE",
+      "desc": "MACT Part 63 - Subpart EE - MAGNETIC TAPE MFG. OPERATIONS",
+      "facilities": 11,
+      "mfg_facilities": 9,
+      "violation_facility_pct": 36.4,
+      "penalty_count": 1,
+      "penalty_median_usd": 3200,
+      "deviation_y_pct": 15.2
+    },
+    {
+      "code": "W",
+      "desc": "MACT Part 63 - Subpart W - EPOXY RESINS & NON-NYLON POLYAMIDES PRODUCTION",
+      "facilities": 11,
+      "mfg_facilities": 10,
+      "violation_facility_pct": 72.7,
+      "penalty_count": 12,
+      "penalty_median_usd": 15681.5,
+      "deviation_y_pct": 42.3
+    },
+    {
+      "code": "TTTTTT",
+      "desc": "MACT Part 63 - Subpart TTTTTT - SECONDARY NONFERROUS METALS PROCESSING AREA SOURCES",
+      "facilities": 10,
+      "mfg_facilities": 10,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 1,
+      "penalty_median_usd": 40000,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "J",
+      "desc": "MACT Part 63 - Subpart J - POLYVINYL CHLORIDE AND COPOLYMERS PRODUCTION",
+      "facilities": 9,
+      "mfg_facilities": 5,
+      "violation_facility_pct": 55.6,
+      "penalty_count": 5,
+      "penalty_median_usd": 50000,
+      "deviation_y_pct": 23.5
+    },
+    {
+      "code": "MMMMM",
+      "desc": "MACT Part 63 - Subpart MMMMM - FLEXIBLE POLYURETHANE FOAM FABRICATION OPERATIONS",
+      "facilities": 9,
+      "mfg_facilities": 9,
+      "violation_facility_pct": 55.6,
+      "penalty_count": 3,
+      "penalty_median_usd": 500,
+      "deviation_y_pct": 4.4
+    },
+    {
+      "code": "HHHH",
+      "desc": "MACT Part 63 - Subpart HHHH - WET FORMED FIBERGLASS MAT PRODUCTION",
+      "facilities": 8,
+      "mfg_facilities": 8,
+      "violation_facility_pct": 87.5,
+      "penalty_count": 4,
+      "penalty_median_usd": 5750,
+      "deviation_y_pct": 36.4
+    },
+    {
+      "code": "KKKKK",
+      "desc": "MACT Part 63 - Subpart KKKKK - CLAY CERAMICS MANUFACTURING",
+      "facilities": 8,
+      "mfg_facilities": 8,
+      "violation_facility_pct": 75.0,
+      "penalty_count": 3,
+      "penalty_median_usd": 10000,
+      "deviation_y_pct": 17.9
+    },
+    {
+      "code": "CCCC",
+      "desc": "MACT Part 63 - Subpart CCCC - MANUFACTURING OF NUTRITIONAL YEAST",
+      "facilities": 7,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 85.7,
+      "penalty_count": 8,
+      "penalty_median_usd": 11734.5,
+      "deviation_y_pct": 28.3
+    },
+    {
+      "code": "D",
+      "desc": "MACT Part 63 - Subpart D - COMPLIANCE EXTENSION, EARLY HAP REDUCTN",
+      "facilities": 5,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 1,
+      "penalty_median_usd": 50000,
+      "deviation_y_pct": 17.4
+    },
+    {
+      "code": "RRRRR",
+      "desc": "MACT Part 63 - Subpart RRRRR - TACONITE IRON ORE PROCESSING",
+      "facilities": 5,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 4,
+      "penalty_median_usd": 49000,
+      "deviation_y_pct": 24.0
+    },
+    {
+      "code": "TTTTT",
+      "desc": "MACT Part 63 - Subpart TTTTT - PRIMARY MAGNESIUM REFINING",
+      "facilities": 5,
+      "mfg_facilities": 5,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 5,
+      "penalty_median_usd": 25000,
+      "deviation_y_pct": 29.3
+    },
+    {
+      "code": "XXX",
+      "desc": "MACT Part 63 - Subpart XXX - FERROALLOY PRODUCTION",
+      "facilities": 5,
+      "mfg_facilities": 3,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 5,
+      "penalty_median_usd": 75000,
+      "deviation_y_pct": 32.0
+    },
+    {
+      "code": "YYYYYY",
+      "desc": "MACT Part 63 - Subpart YYYYYY - AREA SOURCE: FERROALLOYS PRODUCTION FACILITIES",
+      "facilities": 5,
+      "mfg_facilities": 5,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 3,
+      "penalty_median_usd": 40000,
+      "deviation_y_pct": 34.0
+    },
+    {
+      "code": "RRRRRR",
+      "desc": "MACT Part 63 - Subpart RRRRRR - CLAY CERAMICS MFG AREA SOURCES",
+      "facilities": 4,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 50.0,
+      "penalty_count": 2,
+      "penalty_median_usd": 12500,
+      "deviation_y_pct": 16.7
+    },
+    {
+      "code": "SSSSS",
+      "desc": "MACT Part 63 - Subpart SSSSS - REFRACTORY PRODUCTS MANUFACTURING",
+      "facilities": 4,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 75.0,
+      "penalty_count": 1,
+      "penalty_median_usd": 2212.48,
+      "deviation_y_pct": 42.0
+    },
+    {
+      "code": "BBBBBBB",
+      "desc": "MACT Part 63 - Subpart BBBBBBB - AREA SOURCE: CHEMICAL PREPARATIONS INDUSTRY",
+      "facilities": 3,
+      "mfg_facilities": 1,
+      "violation_facility_pct": 0.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "EEEEEEE",
+      "desc": "MACT Part 63 - Subpart EEEEEEE - AREA SOURCE: GOLD MINE ORE PROCESSING AND PRODUCTION",
+      "facilities": 3,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 66.7,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 2.4
+    },
+    {
+      "code": "MMMMMM",
+      "desc": "MACT Part 63 - Subpart MMMMMM - CARBON BLACK PRODUCTION AREA SOURCES",
+      "facilities": 3,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 0.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "NNNNNN",
+      "desc": "MACT Part 63 - Subpart NNNNNN - CHEMICAL MANUFACTURING AREA SOURCES: CHROMIUM COMPOUNDS",
+      "facilities": 3,
+      "mfg_facilities": 3,
+      "violation_facility_pct": 33.3,
+      "penalty_count": 2,
+      "penalty_median_usd": 367700,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "QQQQQ",
+      "desc": "MACT Part 63 - Subpart QQQQQ - FRICTION MATERIALS MANUFACTURING FACILITIES",
+      "facilities": 3,
+      "mfg_facilities": 3,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 4,
+      "penalty_median_usd": 87128.1,
+      "deviation_y_pct": 18.3
+    },
+    {
+      "code": "ZZZ",
+      "desc": "MACT Part 63 - Subpart ZZZ - CHEMICAL SECTOR RULE",
+      "facilities": 3,
+      "mfg_facilities": 1,
+      "violation_facility_pct": 33.3,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 6.1
+    },
+    {
+      "code": "LLLLLL",
+      "desc": "MACT Part 63 - Subpart LLLLLL - ACRYLIC AND MODACRYLIC FIBERS PRODUCTION AREA SOURCES",
+      "facilities": 2,
+      "mfg_facilities": 2,
+      "violation_facility_pct": 50.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 40.6
+    },
+    {
+      "code": "QQ",
+      "desc": "MACT Part 63 - Subpart QQ - SURFACE IMPOUNDMENT",
+      "facilities": 2,
+      "mfg_facilities": 2,
+      "violation_facility_pct": 50.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "TTT",
+      "desc": "MACT Part 63 - Subpart TTT - PRIMARY LEAD SMELTING",
+      "facilities": 2,
+      "mfg_facilities": 2,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 17.6
+    },
+    {
+      "code": "C",
+      "desc": "MACT Part 63 - Subpart C - DELISTINGS OF HAPS",
+      "facilities": 1,
+      "mfg_facilities": 1,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "code": "E",
+      "desc": "MACT Part 63 - Subpart E - APPROVAL OF STATE PROGRAMS &  DELEGATION OF AUTHORITY",
+      "facilities": 1,
+      "mfg_facilities": 1,
+      "violation_facility_pct": 100.0,
+      "penalty_count": 2,
+      "penalty_median_usd": 6412,
+      "deviation_y_pct": 3.1
+    }
+  ],
+  "yearly": [
+    {
+      "year": 2000,
+      "violations": 184,
+      "penalties": 657
+    },
+    {
+      "year": 2001,
+      "violations": 205,
+      "penalties": 1052
+    },
+    {
+      "year": 2002,
+      "violations": 215,
+      "penalties": 1227
+    },
+    {
+      "year": 2003,
+      "violations": 230,
+      "penalties": 1380
+    },
+    {
+      "year": 2004,
+      "violations": 334,
+      "penalties": 1127
+    },
+    {
+      "year": 2005,
+      "violations": 282,
+      "penalties": 1305
+    },
+    {
+      "year": 2006,
+      "violations": 410,
+      "penalties": 1360
+    },
+    {
+      "year": 2007,
+      "violations": 540,
+      "penalties": 1311
+    },
+    {
+      "year": 2008,
+      "violations": 566,
+      "penalties": 1578
+    },
+    {
+      "year": 2009,
+      "violations": 702,
+      "penalties": 1657
+    },
+    {
+      "year": 2010,
+      "violations": 668,
+      "penalties": 1349
+    },
+    {
+      "year": 2011,
+      "violations": 651,
+      "penalties": 1354
+    },
+    {
+      "year": 2012,
+      "violations": 554,
+      "penalties": 1134
+    },
+    {
+      "year": 2013,
+      "violations": 554,
+      "penalties": 1175
+    },
+    {
+      "year": 2014,
+      "violations": 969,
+      "penalties": 1145
+    },
+    {
+      "year": 2015,
+      "violations": 1591,
+      "penalties": 960
+    },
+    {
+      "year": 2016,
+      "violations": 1886,
+      "penalties": 1054
+    },
+    {
+      "year": 2017,
+      "violations": 1949,
+      "penalties": 752
+    },
+    {
+      "year": 2018,
+      "violations": 2203,
+      "penalties": 964
+    },
+    {
+      "year": 2019,
+      "violations": 2286,
+      "penalties": 926
+    },
+    {
+      "year": 2020,
+      "violations": 1929,
+      "penalties": 835
+    },
+    {
+      "year": 2021,
+      "violations": 2524,
+      "penalties": 693
+    },
+    {
+      "year": 2022,
+      "violations": 2298,
+      "penalties": 835
+    },
+    {
+      "year": 2023,
+      "violations": 2855,
+      "penalties": 864
+    },
+    {
+      "year": 2024,
+      "violations": 2470,
+      "penalties": 778
+    },
+    {
+      "year": 2025,
+      "violations": 2279,
+      "penalties": 687
+    },
+    {
+      "year": 2026,
+      "violations": 1286,
+      "penalties": 650
+    }
+  ]
+}

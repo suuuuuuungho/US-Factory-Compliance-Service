@@ -38,12 +38,12 @@ def base_rows() -> dict[str, list[dict]]:
             {"pgm_sys_id": "F3", "code_system": "NAICS", "code": "325199"},
         ],
         "echo_program_subpart": [
-            {"pgm_sys_id": "F1", "subpart_code": "ZZZZ", "subpart_desc": "Stationary RICE", "cfr_part": "63", "mapping_status": "mapped"},
-            {"pgm_sys_id": "F1", "subpart_code": "DDDDD", "subpart_desc": "Industrial Boilers", "cfr_part": "63", "mapping_status": "mapped"},
-            {"pgm_sys_id": "F2", "subpart_code": "ZZZZ", "subpart_desc": "Stationary RICE", "cfr_part": "63", "mapping_status": "mapped"},
-            {"pgm_sys_id": "F3", "subpart_code": "DDDDD", "subpart_desc": "Industrial Boilers", "cfr_part": "63", "mapping_status": "mapped"},
-            {"pgm_sys_id": "F3", "subpart_code": "XXXX", "subpart_desc": "Unknown", "cfr_part": "63", "mapping_status": "unmapped"},
-            {"pgm_sys_id": "F3", "subpart_code": "Dc", "subpart_desc": "Small Boilers", "cfr_part": "60", "mapping_status": "mapped"},
+            {"pgm_sys_id": "F1", "subpart_code": "CAAMACTZZZZ", "cfr_subpart": "ZZZZ", "subpart_desc": "Stationary RICE", "cfr_part": "63", "mapping_status": "mapped"},
+            {"pgm_sys_id": "F1", "subpart_code": "CAAMACTDDDDD", "cfr_subpart": "DDDDD", "subpart_desc": "Industrial Boilers", "cfr_part": "63", "mapping_status": "mapped"},
+            {"pgm_sys_id": "F2", "subpart_code": "CAAMACTZZZZ", "cfr_subpart": "ZZZZ", "subpart_desc": "Stationary RICE", "cfr_part": "63", "mapping_status": "mapped"},
+            {"pgm_sys_id": "F3", "subpart_code": "CAAMACTDDDDD", "cfr_subpart": "DDDDD", "subpart_desc": "Industrial Boilers", "cfr_part": "63", "mapping_status": "mapped"},
+            {"pgm_sys_id": "F3", "subpart_code": "CAAMACTXXXX", "cfr_subpart": None, "subpart_desc": "Unknown", "cfr_part": "63", "mapping_status": "unmapped"},
+            {"pgm_sys_id": "F3", "subpart_code": "CAANSPSDc", "cfr_subpart": "Dc", "subpart_desc": "Small Boilers", "cfr_part": "60", "mapping_status": "mapped"},
         ],
         "echo_violation": [
             {"violation_id": "V1", "first_frv_date": date(2016, 3, 1)},
