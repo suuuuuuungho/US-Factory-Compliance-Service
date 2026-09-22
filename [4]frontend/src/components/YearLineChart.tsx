@@ -1,8 +1,9 @@
+// SUU-251: 선 아래 같은 색 그라디언트 면.
 // SUU-249: 연도별 꺾은선. Bklit AreaChart 는 날짜(월/일) 전용이라 연도 라벨이 안 나와서 @visx/shape·scale 로 직접 그린다.
 "use client";
 
 import { useState } from "react";
-import { LinePath } from "@visx/shape";
+import { AreaClosed, LinePath } from "@visx/shape";
 import { curveMonotoneX } from "@visx/curve";
 import { scaleLinear } from "@visx/scale";
 
@@ -64,6 +65,25 @@ export function YearLineChart({ data, series, format = (v) => v.toLocaleString("
           <text key={yr} x={x(yr)} y={H - 8} textAnchor="middle" fontSize={11} fill="currentColor" fillOpacity={0.6}>
             {yr}
           </text>
+        ))}
+        <defs>
+          {series.map((s) => (
+            <linearGradient key={s.key} id={`yl-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={s.color} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={s.color} stopOpacity={0} />
+            </linearGradient>
+          ))}
+        </defs>
+        {series.map((s) => (
+          <AreaClosed<Record<string, number>>
+            key={`area-${s.key}`}
+            data={data}
+            x={(d) => x(d.year)}
+            y={(d) => y(d[s.key] ?? 0)}
+            yScale={y}
+            curve={curveMonotoneX}
+            fill={`url(#yl-${s.key})`}
+          />
         ))}
         {series.map((s) => (
           <LinePath<Record<string, number>>

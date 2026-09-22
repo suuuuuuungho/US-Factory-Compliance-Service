@@ -1,4 +1,5 @@
 // SUU-248: 주(State)별 벌금 총액을 미국 지도 색으로. us-atlas(states-10m) + @visx/geo AlbersUsa.
+// SUU-251: 색은 보라(brand accent) 램프. 금액이 클수록 진하게(연보라 → 짙은 보라). 아래 범례 막대.
 "use client";
 
 import { useState } from "react";
@@ -29,16 +30,26 @@ const HEIGHT = 610;
 
 export type StateValue = { state: string; value: number; label: string };
 
+// 금액이 클수록 진하게: 연보라 → 브랜드 보라 → 짙은 보라. 데이터 없는 주는 surface 회색. 사이는 oklch 로 섞는다
+export const NONE = "#1c1c1c";
+export const RAMP = ["#e6e1ff", "#6a4cf5", "#3418b8"];
+export function rampColor(level: number) {
+  const t = Math.max(0, Math.min(1, level));
+  if (t === 0) return NONE;
+  if (t < 0.5) return `color-mix(in oklch, ${RAMP[1]} ${Math.round((t / 0.5) * 100)}%, ${RAMP[0]})`;
+  return `color-mix(in oklch, ${RAMP[2]} ${Math.round(((t - 0.5) / 0.5) * 100)}%, ${RAMP[1]})`;
+}
+
 export function UsStateMap({ values, name }: { values: StateValue[]; name: string }) {
   const [hover, setHover] = useState<StateValue | null>(null);
   const byState = new Map(values.map((v) => [v.state, v]));
   const max = Math.max(0, ...values.map((v) => v.value));
 
-  // 큰 값일수록 밝게. 제곱근이라 1등 하나가 나머지를 다 어둡게 만들지 않는다
-  const fillFor = (code: string | undefined) => {
+  // 0~1 단계. 제곱근이라 1등 하나가 나머지를 다 어둡게 만들지 않는다
+  const levelFor = (code: string | undefined) => {
     const v = code ? byState.get(code) : undefined;
-    if (!v || !max || v.value <= 0) return "rgba(255,255,255,0.06)";
-    return `rgba(255,255,255,${(0.12 + 0.78 * Math.sqrt(v.value / max)).toFixed(3)})`;
+    if (!v || !max || v.value <= 0) return 0;
+    return Math.sqrt(v.value / max);
   };
 
   return (
@@ -54,9 +65,11 @@ export function UsStateMap({ values, name }: { values: StateValue[]; name: strin
                   key={f.id}
                   d={path ?? ""}
                   data-state={code}
-                  fill={fillFor(code)}
+                  data-level={levelFor(code).toFixed(2)}
+                  fill={rampColor(levelFor(code))}
                   stroke="var(--color-canvas, #090909)"
                   strokeWidth={1}
+                  className="transition-[fill] duration-200 hover:brightness-125"
                   onMouseEnter={() => setHover(v ?? { state: code ?? f.properties.name, value: 0, label: "—" })}
                   onMouseLeave={() => setHover(null)}
                 >
@@ -67,9 +80,16 @@ export function UsStateMap({ values, name }: { values: StateValue[]; name: strin
           }
         </AlbersUsa>
       </svg>
-      <p data-testid="map-hover" className="mt-1 h-5 text-center text-sm text-ink tabular-nums">
-        {hover ? `${hover.state} · ${hover.label}` : " "}
-      </p>
+      <div className="mt-2 flex items-center justify-between gap-4">
+        <div data-testid="map-legend" className="flex items-center gap-2 text-xs text-ink-muted">
+          <span>Less</span>
+          <span className="h-2 w-32 rounded-full" style={{ background: `linear-gradient(90deg, ${RAMP.join(", ")})` }} />
+          <span>{values.reduce((best, v) => (v.value > best.value ? v : best), values[0])?.label.split(" · ")[0] ?? ""}</span>
+        </div>
+        <p data-testid="map-hover" className="h-5 text-sm text-ink tabular-nums">
+          {hover ? `${hover.state} · ${hover.label}` : " "}
+        </p>
+      </div>
     </div>
   );
 }
