@@ -150,20 +150,32 @@ it("표 셀의 돈은 $622.1M · $48K 처럼 짧게", async () => {
   expect(screen.getAllByTestId("subpart-row")[1].textContent).toContain("$48K");
 });
 
-it("연도별 차트 SVG 가 그려지고, 왼쪽에 연도 라벨(BarYAxis)이 없다", async () => {
+it("연도별 두 차트는 꺾은선: 선 path 2개·1개, 연도 눈금, hover 하면 값", async () => {
   const container = await openPage();
-  await waitFor(() => expect(container.querySelector("[data-chart='yearly'] svg")).not.toBeNull());
-  const chart = container.querySelector("[data-chart='yearly']")!;
-  // BarYAxis 는 연도를 <span> 으로 찍는다. BarXAxis 도 span 이라 "2023" 이 1번만 나와야 한다
-  const yearSpans = Array.from(chart.querySelectorAll("span")).filter((el) => el.textContent === "2023");
-  expect(yearSpans.length).toBeLessThanOrEqual(1);
+  const yearly = container.querySelector("[data-chart='yearly']")!;
+  expect(yearly.querySelectorAll("path[data-series]").length).toBe(2);
+  expect(container.querySelector("[data-chart='yearly-usd']")!.querySelectorAll("path[data-series]").length).toBe(1);
+  expect(yearly.textContent).toContain("2025"); // 5의 배수 연도 눈금
+  expect(yearly.querySelectorAll("rect").length).toBe(0); // 막대 없음
+  expect(within(yearly as HTMLElement).getByTestId("line-legend").textContent).toBe("ViolationsPenalty actions");
+  expect(container.querySelector("[data-chart='yearly-usd'] [data-testid='line-legend']")).toBeNull(); // 선 하나면 범례 없음
+  const svg = yearly.querySelector("svg")!;
+  svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 600, height: 300, right: 600, bottom: 300, x: 0, y: 0, toJSON() {} }) as DOMRect;
+  fireEvent.mouseMove(svg, { clientX: 590, clientY: 100 }); // 오른쪽 끝 = 마지막 해
+  expect(within(yearly as HTMLElement).getByTestId("line-hover").textContent).toBe("2025 · Violations 2,279 · Penalty actions 687");
 });
 
-it("차트 5개가 모두 SVG 로 그려진다", async () => {
+it("차트 5개가 모두 SVG 로 그려지고, 지도는 맨 아래 2열 폭", async () => {
   const container = await openPage();
-  for (const id of ["yearly", "yearly-usd", "top-subparts", "state-map", "buckets"]) {
+  for (const id of ["yearly", "yearly-usd", "top-subparts", "buckets", "state-map"]) {
     await waitFor(() => expect(container.querySelector(`[data-chart='${id}'] svg`), id).not.toBeNull());
   }
+  const cards = Array.from(container.querySelectorAll("[data-chart]")).map((el) => el.getAttribute("data-chart"));
+  expect(cards.at(-1)).toBe("state-map");
+  const mapCard = container.querySelector("[data-chart='state-map']")!.closest("section")!;
+  expect(mapCard.className).toContain("md:col-span-2");
+  expect(mapCard.querySelector("[data-chart='buckets']")).toBeNull(); // 다른 카드 안에 들어가 있지 않다
+  expect(container.querySelector("[data-chart='buckets']")!.closest("section")!.contains(mapCard)).toBe(false);
 });
 
 it("가로 막대는 벌금 총액 큰 순 10개, 왼쪽에 이름이 보인다", async () => {
