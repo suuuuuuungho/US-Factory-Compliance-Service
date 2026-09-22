@@ -107,11 +107,12 @@ it("선택 전: diff 영역이 없고 목록이 가운데(mx-auto)", async () =>
   expect(container.querySelector("[data-pane='list']")!.className).toMatch(/mx-auto/);
 });
 
-it("행 클릭: 목록이 왼쪽으로 가고(mx-auto 제거) 오른쪽 diff 영역에 본문이 붙는다", async () => {
+// SUU-238: 선택하면 목록은 사라지고 diff 만 남는다 (뒤로가기는 fr_diff_scroll.test.tsx)
+it("행 클릭: 목록이 사라지고 diff 영역에 본문이 붙는다", async () => {
   const { container } = await renderPage();
   fireEvent.click(screen.getByRole("button", { name: /Halogenated Solvent Cleaning/ }));
   const diff = container.querySelector("[data-pane='diff']");
   expect(diff).not.toBeNull();
   await within(diff as HTMLElement).findByText(/Old paragraph is gone/);
-  expect(container.querySelector("[data-pane='list']")!.className).not.toMatch(/mx-auto/);
+  expect(container.querySelector("[data-pane='list']")).toBeNull();
 });
