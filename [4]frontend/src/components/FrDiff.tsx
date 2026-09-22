@@ -2,6 +2,7 @@
 // SUU-238: 섹션 카드 대신 스크롤 영역 하나. 고정 머리글이 지금 보는 조항(§)으로 바뀐다.
 // SUU-239: Applicability 카드(CARD/CARD_TITLE)와 같은 모양. 문서 제목·인용도 머리글 안에.
 // SUU-240: 머리글 배경색 없이, 제목은 § 바로 옆. scheme-dark 로 스크롤바도 어둡게.
+// SUU-241: Before/After 머리글 가운데 정렬, 두 칸 사이 세로 구분선.
 "use client";
 
 import { useRef, useState } from "react";
@@ -144,12 +145,14 @@ export function FrDiff({ document }: { document: FrDiffDocument }) {
             {document.citation} · {document.title}
           </p>
         </div>
-        <div className="mt-2 grid grid-cols-2 gap-px text-xs text-ink-muted">
+        <div className="mt-2 grid grid-cols-2 gap-px text-center text-xs text-ink-muted">
           <div className="px-2">Before ({current.before_date})</div>
-          <div className="px-2">After ({current.after_date})</div>
+          <div className="border-l border-hairline px-2">After ({current.after_date})</div>
         </div>
       </div>
-      <div className="px-5 pb-5 text-sm leading-6">
+      <div className="relative px-5 pb-5 text-sm leading-6">
+        {/* 두 칸 사이 세로 구분선 (줄 간격에 끊기지 않게 통째로 하나) */}
+        <div data-diff-divider aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-1/2 border-l border-hairline" />
         {document.sections.map((section) => (
           <div key={section.node_key} data-diff-section className="space-y-1 pt-3">
             {section.rows.map((row, index) => (
