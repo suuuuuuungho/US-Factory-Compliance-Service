@@ -1,4 +1,7 @@
-"""SUU-236: 현재 ECHO release를 세어 대시보드용 echo-stats.json(summary·subparts·yearly)을 만든다."""
+"""SUU-236: 현재 ECHO release를 세어 대시보드용 echo-stats.json(summary·subparts·yearly)을 만든다.
+
+SUU-242: 벌금 총액(penalty_total_usd)·최대 1건(penalty_max_usd)도 같이 센다.
+"""
 
 from __future__ import annotations
 
@@ -81,6 +84,8 @@ def _stats_for(
         "violation_facility_pct": _pct(len(facilities & violated), len(facilities)),
         "penalty_count": len(amounts),
         "penalty_median_usd": _number(median(amounts)) if amounts else None,
+        "penalty_total_usd": _number(sum(amounts)) if amounts else 0,
+        "penalty_max_usd": _number(max(amounts)) if amounts else None,
         "deviation_y_pct": _pct(sum(flag == "Y" for flag in linked_certs), len(linked_certs)),
     }
 
