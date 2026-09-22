@@ -130,7 +130,7 @@ export default function EchoPage() {
 
   return (
     <main className="flex flex-1 flex-col px-6 py-6">
-      <h1 className="text-center text-[28px] font-bold text-ink">EPA ECHO</h1>
+      <h1 className="text-center font-serif text-[28px] font-bold text-ink">EPA ECHO</h1>
       <p className="mt-1 text-center text-sm text-ink-muted">Violations and penalties at facilities subject to Part 63 (NESHAP)</p>
       {error ? <p className="mt-4 text-center text-sm text-ink-muted">Failed to load.</p> : null}
       {stats ? (
