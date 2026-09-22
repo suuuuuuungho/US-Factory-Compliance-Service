@@ -7,10 +7,13 @@ import { LetterPdf } from "../src/app/applicability/LetterPdf";
 
 vi.mock("@react-pdf/renderer", () => {
   const flat = (s: unknown) => Object.assign({}, ...(Array.isArray(s) ? s : [s]).filter(Boolean));
-  const fake = (kind: string) =>
-    ({ style, children }: { style?: unknown; children?: React.ReactNode }) => (
+  const fake = (kind: string) => {
+    const C = ({ style, children }: { style?: unknown; children?: React.ReactNode }) => (
       <div data-pdf={kind} data-style={JSON.stringify(flat(style))}>{children}</div>
     );
+    C.displayName = kind;
+    return C;
+  };
   return {
     Document: fake("document"),
     Page: fake("page"),
