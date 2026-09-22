@@ -80,6 +80,7 @@ it("스크롤하면 머리글이 지금 보이는 조항으로 바뀐다", async
 });
 
 // SUU-239: Applicability 카드와 같은 모양. 제목은 가운데, 뒤로 버튼은 제목과 같은 줄.
+// SUU-240: 머리글은 색 없이. 문서 제목은 § 바로 옆. 스크롤바 어둡게. 카드 좌우 여백.
 it("Applicability 카드와 같은 디자인, 제목 가운데, 뒤로 버튼은 제목과 같은 줄", async () => {
   const container = await openDiff();
   const h1 = screen.getByRole("heading", { level: 1, name: "Federal Register" });
@@ -90,8 +91,18 @@ it("Applicability 카드와 같은 디자인, 제목 가운데, 뒤로 버튼은
   expect(scroll.className).toMatch(/rounded-lg/);
   const header = container.querySelector("[data-diff-current]") as HTMLElement;
   expect(header.className).toMatch(/sticky/);
-  expect(header.className).toMatch(/bg-gradient-violet/);
-  // 문서 제목·인용은 머리글 안에
-  expect(header.textContent).toMatch(/90 FR 1000/);
-  expect(header.textContent).toMatch(/Halogenated Solvent Cleaning/);
+});
+
+it("머리글은 색 없이 § 옆에 제목, 스크롤바 어둡게, 카드 좌우 여백", async () => {
+  const container = await openDiff();
+  const header = container.querySelector("[data-diff-current]") as HTMLElement;
+  expect(header.className).not.toMatch(/gradient/);
+  const h3 = header.querySelector("h3")!;
+  const title = h3.nextElementSibling!;
+  expect(title.textContent).toMatch(/90 FR 1000 · NESHAP/);
+  expect(h3.parentElement!.className).not.toMatch(/justify-between/);
+
+  const scroll = container.querySelector("[data-diff-scroll]") as HTMLElement;
+  expect(scroll.className).toMatch(/scheme-dark/);
+  expect(container.querySelector("[data-pane='diff']")!.className).toMatch(/max-w-6xl/);
 });
