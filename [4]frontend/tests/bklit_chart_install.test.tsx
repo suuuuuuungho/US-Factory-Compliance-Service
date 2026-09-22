@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it } from "vitest";
+import { Bar } from "../src/components/charts/bar";
+import { BarChart } from "../src/components/charts/bar-chart";
 
 const ROOT = join(__dirname, "..");
 const CHARTS = join(ROOT, "src", "components", "charts");
@@ -40,10 +42,6 @@ afterEach(() => {
 });
 
 it("샘플 데이터 3개로 BarChart를 렌더하면 SVG가 그려진다", async () => {
-  // 파일이 아직 없을 때 앞의 두 테스트까지 못 돌게 되지 않도록 동적 import
-  const dir = "../src/components/charts/";
-  const { BarChart } = await import(/* @vite-ignore */ `${dir}bar-chart`);
-  const { Bar } = await import(/* @vite-ignore */ `${dir}bar`);
   const data = [
     { year: "2023", violations: 10 },
     { year: "2024", violations: 25 },
