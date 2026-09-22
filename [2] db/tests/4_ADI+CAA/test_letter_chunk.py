@@ -119,8 +119,9 @@ def test_fixture_letters_give_chunks_with_source_key_and_text_not_cut_at_page_br
     chunks = [c for key in pages for c in build_letter_chunks(key, pages[key])]
 
     assert chunks and all(c["source_key"] and c["chunk_text"].strip() for c in chunks)
-    joined = " ".join(c["chunk_text"] for c in chunks if c["source_key"] == "aaaa")
-    assert "continues on the next page without a break." in joined  # 1쪽 끝 + 2쪽 첫 줄이 한 문장으로
+    aaaa = [c["chunk_text"] for c in chunks if c["source_key"] == "aaaa"]
+    assert len(aaaa) == 1  # 짧은 서한은 청크 하나
+    assert "continues on the next page without a break." in " ".join(aaaa[0].split())  # 1쪽 끝 + 2쪽 첫 줄이 한 문장으로
     assert any(c["chunk_text"] == "Cement kiln determination." for c in chunks if c["source_key"] == "bbbb")
 
 
