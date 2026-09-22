@@ -19,10 +19,30 @@ type LettersPayload = {
 
 const PAGE_SIZE = 10;
 
+// SUU-260: 열 순서 #, Facility, Title, Subpart, Date, PDF. 초기 너비(px). 손잡이로 끌면 바뀐다.
+const HEADERS = ["#", "Facility", "Title", "Subpart", "Date", "PDF"];
+const INITIAL_WIDTHS = [48, 180, 360, 110, 100, 80];
+const MIN_WIDTH = 60;
+
 export default function DecisionLetterPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
   const [error, setError] = useState(false);
   const [page, setPage] = useState(0);
+  const [widths, setWidths] = useState(INITIAL_WIDTHS);
+
+  function startResize(index: number, event: React.MouseEvent) {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = widths[index];
+    const onMove = (e: MouseEvent) =>
+      setWidths((prev) => prev.map((w, i) => (i === index ? Math.max(MIN_WIDTH, startWidth + e.clientX - startX) : w)));
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }
   const pageCount = Math.max(1, Math.ceil(letters.length / PAGE_SIZE));
   const pageLetters = letters.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
@@ -48,16 +68,26 @@ export default function DecisionLetterPage() {
       <h1 className="text-center font-serif text-[28px] font-bold text-ink">EPA Decision Letter</h1>
       {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
       <div className="mt-6 flex min-h-0 flex-1 flex-col">
-        <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 overflow-y-auto">
-          <table className="w-full border-collapse text-left text-sm">
+        <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 overflow-auto">
+          {/* table-fixed: 셀 너비는 colgroup 이 정한다 */}
+          <table className="w-full table-fixed border-collapse text-left text-sm">
+            <colgroup>
+              {widths.map((width, index) => (
+                <col key={index} style={{ width: `${width}px` }} />
+              ))}
+            </colgroup>
             <thead className="border-b border-hairline text-ink-muted">
               <tr>
-                <th className="px-3 py-3 font-medium">#</th>
-                <th className="px-3 py-3 font-medium">Facility</th>
-                <th className="px-3 py-3 font-medium">Title</th>
-                <th className="px-3 py-3 font-medium">Subpart</th>
-                <th className="px-3 py-3 font-medium">Date</th>
-                <th className="px-3 py-3 font-medium">PDF</th>
+                {HEADERS.map((header, index) => (
+                  <th key={header} className="relative px-3 py-3 font-medium">
+                    {header}
+                    <span
+                      data-resize-handle
+                      onMouseDown={(event) => startResize(index, event)}
+                      className="absolute top-0 right-0 h-full w-1.5 cursor-col-resize select-none hover:bg-hairline"
+                    />
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -76,9 +106,9 @@ export default function DecisionLetterPage() {
                       {letter.title}
                     </span>
                   </td>
-                  <td className="px-3 py-3 whitespace-nowrap">{letter.subparts.join(", ") || "—"}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">{letter.date ?? "—"}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">{letter.subparts.join(", ") || "—"}</td>
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">{letter.date ?? "—"}</td>
+                  <td className="overflow-hidden px-3 py-3 whitespace-nowrap">
                     {letter.pdf_url ? (
                       <a
                         href={letter.pdf_url}
