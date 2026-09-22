@@ -1,5 +1,5 @@
 // SUU-229: /federal-register 가 /fr-diff.json 을 읽어 목록을 그리고, 규칙을 펼치면 바뀐 문단만 빨강·초록으로 보인다.
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import FederalRegisterPage from "../src/app/federal-register/page";
 
@@ -84,10 +84,12 @@ it("changed 문단은 바뀐 단어만 <mark>로 감싼다", async () => {
   for (const m of marks) expect(m).not.toMatch(/Owners/);
 });
 
-it("안 바뀐 섹션(63.461)은 DOM에 없고 바뀐 섹션(63.460)만 있다", async () => {
-  await renderAndOpen();
-  screen.getByText(/63\.460/);
-  expect(screen.queryByText(/63\.461/)).toBeNull();
+// SUU-232: 목록의 Section 열에는 63.461 이 보이므로 diff 영역 안만 본다
+it("안 바뀐 섹션(63.461)은 diff 영역에 없고 바뀐 섹션(63.460)만 있다", async () => {
+  const { container } = await renderAndOpen();
+  const diff = within(container.querySelector("[data-pane='diff']") as HTMLElement);
+  diff.getByText(/63\.460/);
+  expect(diff.queryByText(/63\.461/)).toBeNull();
 });
 
 it("diff 없는 문서는 '변경 본문 없음' 을 보인다", async () => {
