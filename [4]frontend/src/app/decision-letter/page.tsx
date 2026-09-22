@@ -64,7 +64,12 @@ export default function DecisionLetterPage() {
               {pageLetters.map((letter, index) => (
                 <tr key={letter.source_key} className="border-b border-hairline text-ink">
                   <td className="px-3 py-3">{page * PAGE_SIZE + index + 1}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">{letter.facility_name ?? "—"}</td>
+                  {/* SUU-259: max-w 로 좁히고 넘치면 ... 으로 자른다. 전체 이름은 title 로 */}
+                  <td className="max-w-[180px] px-3 py-3">
+                    <span title={letter.facility_name ?? undefined} className="block truncate">
+                      {letter.facility_name ?? "—"}
+                    </span>
+                  </td>
                   {/* w-full max-w-0: 남는 폭을 제목이 다 쓰고, 넘치면 한 줄로 자른다 */}
                   <td className="w-full max-w-0 px-3 py-3">
                     <span title={letter.title} className="block w-full truncate font-medium">
