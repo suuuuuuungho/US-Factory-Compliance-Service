@@ -1,0 +1,1330 @@
+{
+  "letters": [
+    {
+      "source_key": "ce814c7924dce44b",
+      "facility_name": "Domtar AW LLC-Ashdown AR",
+      "title": "Applicability Determination for Kraft Pulp Mills",
+      "subparts": [
+        "S"
+      ],
+      "date": "2025-03-10",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/domtar-a.w.-ashdown-mill-response_3-10-25.pdf"
+    },
+    {
+      "source_key": "8a40994837b78e34",
+      "facility_name": "Foley Cellulose, LLC",
+      "title": "Alternative Monitoring for Industrial, Commercial, and Institutional Boilers and Process Heaters",
+      "subparts": [
+        "DDDDD"
+      ],
+      "date": "2021-03-19",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Foley%20Cellulose%20LLC%20Response_03-19-21.pdf"
+    },
+    {
+      "source_key": "62fa404d15244d54",
+      "facility_name": "Battery Builders Inc",
+      "title": "Performance Test Waiver for Lead Acid Batter Manufacturing Area Sources",
+      "subparts": [
+        "PPPPPP"
+      ],
+      "date": "2021-11-29",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Battery%20Builders%20LLC%20Response_11-29-21.pdf"
+    },
+    {
+      "source_key": "90efaf20f5d37f70",
+      "facility_name": "BP Cherry Point",
+      "title": "Regulatory Interpretation of Equipment Leaks of VOC in the Synthetic Organic Chemicals Manufacturing Industry",
+      "subparts": [
+        "CC"
+      ],
+      "date": "2021-06-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/BP%20Cherry%20Point%20Refinery%20Response_06-07-21.pdf"
+    },
+    {
+      "source_key": "436015d16ed21a38",
+      "facility_name": "CEMEX Construction Materials Atlantic, Knoxville Cement Plant",
+      "title": "Applicability Determination for Coal Preparation Plants",
+      "subparts": [
+        "LLL"
+      ],
+      "date": "2021-04-30",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/CEMEX%20Knoxville%20Response_4-30-21.pdf"
+    },
+    {
+      "source_key": "6430f9b9a2f8cb9a",
+      "facility_name": "East Carolina Regional Solid Waste Landfill",
+      "title": "Other Request-Well Decommissioning",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2022-07-26",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/East%20Carolina%20Regional%20Solid%20Waste%20Landfill%20Response_7-26-22_0.pdf"
+    },
+    {
+      "source_key": "745c97dcbb129894",
+      "facility_name": "North Dade Landfill",
+      "title": "Alternative Monitoring for Municipal Solid Waste Landfills",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2022-01-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/North%20Dade%20Landfill-West%20Cell%20Response_01-07-22.pdf"
+    },
+    {
+      "source_key": "95d58221e8f9dbb0",
+      "facility_name": "Palmetto Landfill and Recycling Center",
+      "title": "Regulatory Interpretation for Municipal Solid Waste Landfills",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2022-02-03",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Palmetto%20Landfill%20Response_02-02-22.pdf"
+    },
+    {
+      "source_key": "ebff9264a1553a23",
+      "facility_name": "Hanes Mill Road Landfill",
+      "title": "Other Request-Well Decommissioning",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2023-03-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Hanes%20Mill%20Road%20Landfill_03-23-2023.pdf"
+    },
+    {
+      "source_key": "4d9bdc3bd19298ed",
+      "facility_name": "East Carolina Regional Landfill",
+      "title": "Other Request-Well Decommissioning",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2023-03-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Republic%20Services%20East%20Carolina%20Landfill_03-23-2023.pdf"
+    },
+    {
+      "source_key": "c8ccb39f8c97bc12",
+      "facility_name": "South Wake Landfill",
+      "title": "Other Request-Well Decommissioning",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2023-03-03",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/South%20Wake%20Landfill_03-03-2023%20_0.pdf"
+    },
+    {
+      "source_key": "233dae1ce6bbdf6c",
+      "facility_name": "East Carolina Regional Solid Waste Landfill",
+      "title": "Other Request: Well Decommissioning",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2023-09-12",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/East%20Carolina%20SWL%20Response_09-12-23.pdf"
+    },
+    {
+      "source_key": "08af098f5f27d93b",
+      "facility_name": "North Wake Landfill",
+      "title": "Alternative Landfill Gas Flowrate Calculation Procedures for NSWL",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2024-07-02",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/north-wake-co-municipal-solid-waste-landfill-response_7-2-24.pdf"
+    },
+    {
+      "source_key": "4fbde32bc4a0aade",
+      "facility_name": "Petro Nova Parish Holdings CAPTURE PLANT",
+      "title": "Performance Test Extension for Stationary Gas Turbines",
+      "subparts": [
+        "A",
+        "YYYY"
+      ],
+      "date": "2023-02-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Petra%20Nova%20Capture%20Plant_02-16-2023.pdf"
+    },
+    {
+      "source_key": "25d8a52a7bfd4a6c",
+      "facility_name": "Cottonwood Hills RDF",
+      "title": "Other Request for MSW Landfills",
+      "subparts": [
+        "AAAA"
+      ],
+      "date": "2023-10-31",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/cottonwood-hills-rdf-response_10-31-23.pdf"
+    },
+    {
+      "source_key": "9e846f1f3f8ab300",
+      "facility_name": "Westvaco Facility",
+      "title": "Applicability Determination for Lime Manufacturing Plants",
+      "subparts": [
+        "AAAAA"
+      ],
+      "date": "2021-01-15",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-01/genesis-alkali-westvaco_40-cfr-60-subpart-aaaaa_1-15-21.pdf"
+    },
+    {
+      "source_key": "c322ee2665f621ed",
+      "facility_name": "Lhoist North America of Alabama, LLC - Montevallo Plant",
+      "title": "Alternative Test Method for Lime Manufacturing Plants",
+      "subparts": [
+        "AAAAA"
+      ],
+      "date": "2021-03-03",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/LHoist%20Montevallo%20Response_03-01-21.pdf"
+    },
+    {
+      "source_key": "f788d5ea6818bcf1",
+      "facility_name": "Lhoist North America - Montevallo Plant",
+      "title": "Technical Compliance Extension for Lime Manufacturing Plants",
+      "subparts": [
+        "AAAAA"
+      ],
+      "date": "2021-04-09",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Lhoist%20North%20America%20of%20Alabama%2C%20LLC-Montevallo%20Plant%20Response_04-09-21.pdf"
+    },
+    {
+      "source_key": "b503542efb47a618",
+      "facility_name": "Mississippi Lime",
+      "title": "Alternative Monitoring for Lime Manufacturing Plants",
+      "subparts": [
+        "AAAAA"
+      ],
+      "date": "2021-01-11",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Mississippi%20Lime%20Response_01-11-21.pdf"
+    },
+    {
+      "source_key": "d3825bf702d7d334",
+      "facility_name": "Carmeuse Americas - Longview",
+      "title": "Alternative Monitoring for Lime Manufacturing Plant",
+      "subparts": [
+        "AAAAA"
+      ],
+      "date": "2023-06-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Carmeuse%20Americas%20Longview_06-21-2023.pdf"
+    },
+    {
+      "source_key": "c5754a03c055f72d",
+      "facility_name": "Mosaic Fertilizer - Faustina Plant",
+      "title": "Alternative Monitoring for Phosphate Fertilizers Production Plants",
+      "subparts": [
+        "BB"
+      ],
+      "date": "2021-10-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Mosaic%20Fertilizer%2C%20LLC-Faustina%20Plant%20Response_10-14-21.pdf"
+    },
+    {
+      "source_key": "b2b0ce099923ed9f",
+      "facility_name": "Mosaic Fertilizer New Whales Facility",
+      "title": "Alternative Monitoring for Phosphate Fertilizer Production Plants",
+      "subparts": [
+        "BB"
+      ],
+      "date": "2023-07-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Mosaic%20Fertilizer%20Response_07-21-2023.pdf"
+    },
+    {
+      "source_key": "161476419e4abdde",
+      "facility_name": "ExxonMobil Beaumont Refinery-Flare Vent Gas Composition Monitoring AMP",
+      "title": "Alternative Monitoring for Petroleum Refineries",
+      "subparts": [
+        "CC"
+      ],
+      "date": "2022-11-09",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/ExxonMobil%20Beaumont_11-09-2022.pdf"
+    },
+    {
+      "source_key": "8cf36f732416eab7",
+      "facility_name": "Nucor Steel Gallatin",
+      "title": "Alternative Monitoring for Steel Pickling HCl Process Facilities and Hydrochloric Acid Regeneration Plants",
+      "subparts": [
+        "CCC"
+      ],
+      "date": "2021-10-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Nucor%20Steel%20Gallatin%20Response_10-21-21_4.pdf"
+    },
+    {
+      "source_key": "f060995d2ecf6201",
+      "facility_name": "Palisades Nuclear Station",
+      "title": "Applicability Determination for Gasoline Dispensing Facilities",
+      "subparts": [
+        "CCCCCC"
+      ],
+      "date": "2021-02-02",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-05/Entergy%20Nuclear%20Palisades%20Response_2-02-21.pdf"
+    },
+    {
+      "source_key": "b5563366ae10582b",
+      "facility_name": "EGGER",
+      "title": "Regulatory Interpretation for Plywood and Composite Wood Products",
+      "subparts": [
+        "DDDD"
+      ],
+      "date": "2022-06-15",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/EGGER%20Response_6-15-22_0.pdf"
+    },
+    {
+      "source_key": "0fb83045c24b3b85",
+      "facility_name": "Kronospan",
+      "title": "Other Request-Compliance Option for Plywood and Composite Wood Products",
+      "subparts": [
+        "DDDD"
+      ],
+      "date": "2023-03-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Kronospan_03-23-2023.pdf"
+    },
+    {
+      "source_key": "cfec586a0c1776a8",
+      "facility_name": "DTE Greenwood Energy Center",
+      "title": "Applicability Determination for Electric Generating Unit",
+      "subparts": [
+        "DDDDD",
+        "UUUUU"
+      ],
+      "date": "2023-10-24",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-11/dte-greenwood-energy-ad-response_10-24-23.pdf"
+    },
+    {
+      "source_key": "180874f89d26bf8d",
+      "facility_name": "PotlatchDeltic Saint Marie's",
+      "title": "Regulatory Interpretation for Industrial, Commercial, and Institutional Boilers and Process Heaters",
+      "subparts": [
+        "DDDDD"
+      ],
+      "date": "2025-03-13",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/potlatchdeltic-land-lumber-response_3-13-25.pdf"
+    },
+    {
+      "source_key": "919344a519450b13",
+      "facility_name": "Shuqualak Lumber Company",
+      "title": "Alternative Monitoring for Industrial, Commercial, and Institutional Boilers and Process Heaters",
+      "subparts": [
+        "DDDDD"
+      ],
+      "date": "2024-12-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/shuqualak-lumber-response_12-5-24.pdf"
+    },
+    {
+      "source_key": "7aa91b3dfa0606ed",
+      "facility_name": "Giant Cement",
+      "title": "Alternative Monitoring for Hazardous Waste Combuster",
+      "subparts": [
+        "EEE"
+      ],
+      "date": "2022-08-30",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Giant%20Cement_08-30-2022.pdf"
+    },
+    {
+      "source_key": "5458245c2894d520",
+      "facility_name": "Clean Harbors - Kimball NE",
+      "title": "Alternative Monitoring for Hazardous Waste Combustors",
+      "subparts": [
+        "EEE"
+      ],
+      "date": "2025-05-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/clean-harbors-kimball-response_5-14-25.pdf"
+    },
+    {
+      "source_key": "d7a0e2a9efeb5b7c",
+      "facility_name": "Alyeska Valdez Marine Terminal",
+      "title": "Applicability Determination for Municipal Waste Combustors",
+      "subparts": [
+        "EEEE",
+        "SS"
+      ],
+      "date": "2024-04-04",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/alyeska-pipeline-service-company-response_4-4-24.pdf"
+    },
+    {
+      "source_key": "fa395edce5805b87",
+      "facility_name": "Corteva Midland Michigan",
+      "title": "Applicability Determination Regarding the Distillation of a SOCMI-listed Chemical",
+      "subparts": [
+        "F",
+        "G"
+      ],
+      "date": "2023-12-12",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-08/corteva-midland-michigan-response_12-12-23.pdf"
+    },
+    {
+      "source_key": "83c6cb9cbf843726",
+      "facility_name": "Advansix Hopewell Virginia",
+      "title": "Alternative Monitoring for Miscellaneous Organic Chemical Manufacturing",
+      "subparts": [
+        "FFFF"
+      ],
+      "date": "2023-06-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Advansix%20Hopewell_06-07-2023.pdf"
+    },
+    {
+      "source_key": "329cbfd4ce761fb7",
+      "facility_name": "Dow Chemical Plaquemine Operations",
+      "title": "Applicability Determination for MON",
+      "subparts": [
+        "FFFF"
+      ],
+      "date": "2024-03-18",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/dow-playuemine-glycol-ii-amines-production-facility-response_3-18-24.pdf"
+    },
+    {
+      "source_key": "fbd11c16c8a70706",
+      "facility_name": "AMES Copper Group, Formerly IMC Metals",
+      "title": "Applicability Determination for Secondary Copper Smelting Area Sources",
+      "subparts": [
+        "FFFFFF"
+      ],
+      "date": "2020-08-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/AMES%20Copper%20Group%20Response_08-14-20.pdf"
+    },
+    {
+      "source_key": "b71d3faefd0ad31b",
+      "facility_name": "Enerfin Resources Northwest",
+      "title": "Alternative Monitoring for Measurement of VHAP",
+      "subparts": [
+        "HH"
+      ],
+      "date": "2024-06-17",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/enerfin-resources-response_6-17-24.pdf"
+    },
+    {
+      "source_key": "c4e7447babb6a6b9",
+      "facility_name": "Porter Auto Body",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2020-12-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-03/porter-auto-body_subpart-hhhhhhh_12-14-20.pdf"
+    },
+    {
+      "source_key": "d4fd0c50d8f35f3c",
+      "facility_name": "Gerber Collision and Glass",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2020-12-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-05/Gerber%20Collision%20Response_12-14-20.pdf"
+    },
+    {
+      "source_key": "31cf4f0a9be68edf",
+      "facility_name": "Tesla",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2020-12-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-05/Tesla%20Denver%20Response_12-14-20.pdf"
+    },
+    {
+      "source_key": "9139a163ac77b80f",
+      "facility_name": "Boulder Bump Shop",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-04-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Boulder%20Bump%20Shop%20Response_4-08-21.pdf"
+    },
+    {
+      "source_key": "ed952487847a81f0",
+      "facility_name": "Colorado and Fitzsimons Auto Body",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-03-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Colorado%20and%20Fitzsimons%20Auto%20Body%20Response_3-16-21.pdf"
+    },
+    {
+      "source_key": "04661e255a013d89",
+      "facility_name": "Gingerminion DBA Colors on Parade",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2020-12-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Gingerminion%20Response_12-14-20.pdf"
+    },
+    {
+      "source_key": "eb34df8fd0143bb2",
+      "facility_name": "Michael's Auto Body and Glass",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-05-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Michael%27s%20Autobody%20Response_5-05-21.pdf"
+    },
+    {
+      "source_key": "679a84fd592516f7",
+      "facility_name": "Perry and Terry Autobody",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-02-24",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Perry%20and%20Terry%20Auto%20Response_2-24-21.pdf"
+    },
+    {
+      "source_key": "d34850c844252b73",
+      "facility_name": "Accurate Auto Body",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-04-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Accurate%20Auto%20Body%20Response_4-08-21.pdf"
+    },
+    {
+      "source_key": "f23eddcfeaa06456",
+      "facility_name": "Arapahoe Collision and Mechanical",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-03-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Arapahoe%20Collision%20Response_3-16-21.pdf"
+    },
+    {
+      "source_key": "9699334727bc1e3a",
+      "facility_name": "Complete Auto Body and Paint",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-05-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Complete%20Auto%20Body%20Response_5-05-21.pdf"
+    },
+    {
+      "source_key": "96e52ea6ac90f65d",
+      "facility_name": "Crash Champions, multiple facilities in Colorado",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-06-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Crash%20Champions%20Locations%20Response_6-22-21.pdf"
+    },
+    {
+      "source_key": "3e13694026773c7d",
+      "facility_name": "Denver Auto Body",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-04-15",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Denver%20Auto%20Body%20Response_4-15-21.pdf"
+    },
+    {
+      "source_key": "350dad72b5099296",
+      "facility_name": "Hartford Finishing",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2021-02-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Hartford%20Finishing%20Response_2-16-2021.pdf"
+    },
+    {
+      "source_key": "5efbabc992def96a",
+      "facility_name": "Tesla Salt Lake City",
+      "title": "Applicability Determination for Miscellaneous Coating Manufacturing",
+      "subparts": [
+        "HHHHHH"
+      ],
+      "date": "2022-10-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Tesla_10-14-2022.pdf"
+    },
+    {
+      "source_key": "0959ac79851d7a4d",
+      "facility_name": "Oxy Vinyls Houston Operations Pasadena Polyvinyl Chloride Plant",
+      "title": "Alternative Monitoring for Polyvinyl Chloride and Copolymers Production",
+      "subparts": [
+        "HHHHHHH"
+      ],
+      "date": "2021-12-06",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Oxy%20Vinyls-Pasadena%20Polyvinyl%20Chloride%20Plant%20Response_12-06-21.pdf"
+    },
+    {
+      "source_key": "67aa5a5f9ad5a46c",
+      "facility_name": "Dow Chemical-Freeport, TX",
+      "title": "Alternative Monitoring for Polymers and Resins",
+      "subparts": [
+        "JJJ"
+      ],
+      "date": "2025-01-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/dow-chemical-freeport-tx-response_1-8-25.pdf"
+    },
+    {
+      "source_key": "d50866bc2800bf18",
+      "facility_name": "Aurora Energy",
+      "title": "Alternative Reporting for Oil and Gas Exploration and Production Operation",
+      "subparts": [
+        "JJJJJJ"
+      ],
+      "date": "2024-08-01",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/aurora-energy-response_7-14-23.pdf"
+    },
+    {
+      "source_key": "e55d6bde07959e05",
+      "facility_name": "Toray Composite Materials America, Inc.",
+      "title": "Alternative Monitoring for Asphalt Processing and Asphalt Roofing",
+      "subparts": [
+        "LLLLL"
+      ],
+      "date": "2022-02-03",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Toray%20Composite%20Materials%20America%2C%20Inc%20Response_02-03-22.pdf"
+    },
+    {
+      "source_key": "ddee7427ad7bc7f8",
+      "facility_name": "Jackson Cleaners",
+      "title": "Applicability Determination for Perchloroethylene Dry Cleaning Facilities",
+      "subparts": [
+        "M"
+      ],
+      "date": "2020-08-06",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Jackson%20Cleaners%20Response_08-06-20.pdf"
+    },
+    {
+      "source_key": "d9faeada207bf3b0",
+      "facility_name": "Westrock Evadale Mill",
+      "title": "Performance Test Extension for Chemical Recovery Combustion Sources at Kraft, Soda, Sulfite, and Stand-Alone Semichemical Pulp Mills",
+      "subparts": [
+        "MM"
+      ],
+      "date": "2020-10-01",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/WestRock%20Texas%20L.P.-Evadale%20Mill%20Response_10-01-20.pdf"
+    },
+    {
+      "source_key": "07b05869a4a08713",
+      "facility_name": "Misc Metal Parts and Products Surface Coating Facilities",
+      "title": "Regulatory Interpretation for NESAHP MMMM",
+      "subparts": [
+        "MMMM"
+      ],
+      "date": "2022-11-30",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Wright%20EHS%20Solutions%20Response_11-30-22.pdf"
+    },
+    {
+      "source_key": "7e7fbda4fdcab315",
+      "facility_name": "Sterigenics",
+      "title": "Alternative Monitoring for Ethylene Oxide Emissions Standards for Sterilization Facilities",
+      "subparts": [
+        "O"
+      ],
+      "date": "2021-08-26",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Sterigenics%20US%2C%20LLC%20Response_08-26-21.pdf"
+    },
+    {
+      "source_key": "2d057639f1ae8ef3",
+      "facility_name": "King Systems Corporation",
+      "title": "Applicability Determination for Surface Coating Of Miscellaneous Plastic Parts and Products",
+      "subparts": [
+        "PPPP"
+      ],
+      "date": "2020-06-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-05/King%20Systems%20Corp%20Response_6-16-20.pdf"
+    },
+    {
+      "source_key": "e2f69ed68818bb9c",
+      "facility_name": "Spectro Alloys Performance Test Extension Furnace 1 Performance",
+      "title": "Performance Test Extension for Secondary Aluminum Production",
+      "subparts": [
+        "RRR"
+      ],
+      "date": "2022-06-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Spectro%20Alloys%20Corporation%20Response_6-7-22.pdf"
+    },
+    {
+      "source_key": "a68b10c4618c67d4",
+      "facility_name": "U.S. Granules - Henrietta Facility",
+      "title": "Applicability Determination for Secondary Aluminum Production",
+      "subparts": [
+        "RRR"
+      ],
+      "date": "2022-03-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/U.S.%20Granules%20Corporation%20Response_03-25-22.pdf"
+    },
+    {
+      "source_key": "a29b601379b6879c",
+      "facility_name": "Owl's Head Alloys, Inc.",
+      "title": "Alternative Test Method for Secondary Aluminum Production",
+      "subparts": [
+        "RRR"
+      ],
+      "date": "2023-07-11",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Owls%20Head%20Alloys_07-11-2023.pdf"
+    },
+    {
+      "source_key": "1a22b30389dc700a",
+      "facility_name": "Kaiser Aluminum Spokane Valley",
+      "title": "Regulatory Interpretation for Secondary Aluminum Production",
+      "subparts": [
+        "RRR"
+      ],
+      "date": "2024-09-09",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/kaiser-aluminum-response_9-9-24.pdf"
+    },
+    {
+      "source_key": "b739f2104a0bda33",
+      "facility_name": "Cleveland-Cliffs Minorca Mine Inc",
+      "title": "Alternative Monitoring Request for Taconite Iron Ore Processing Units",
+      "subparts": [
+        "RRRRR",
+        "MM"
+      ],
+      "date": "2024-01-19",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/cleveland-cliffs-minorca-mine-response_1-19-24.pdf"
+    },
+    {
+      "source_key": "eec5babf52999951",
+      "facility_name": "United Taconite LLC (Cleveland-Cliffs)",
+      "title": "Alternative Monitoring for Taconite Iron Ore Processing",
+      "subparts": [
+        "RRRRR"
+      ],
+      "date": "2021-12-28",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/United%20Taconite%20Response_12-28-21.pdf"
+    },
+    {
+      "source_key": "d426e08e14aa8b00",
+      "facility_name": "U. S. Steel - Keetac",
+      "title": "Applicability Determination for Ore Processing",
+      "subparts": [
+        "RRRRR"
+      ],
+      "date": "2024-02-26",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/united-states-steel-corporation-response_2-26-24.pdf"
+    },
+    {
+      "source_key": "0856deebcdc7066d",
+      "facility_name": "Domtar AW LLC-Ashdown, AR",
+      "title": "Alternative Reporting Schedule for Pulp and Paper Industry",
+      "subparts": [
+        "S"
+      ],
+      "date": "2021-06-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Domtar%20A.W.%20LLC-Ashdown%20Mill%20Response_06-25-21.pdf"
+    },
+    {
+      "source_key": "aaddbfe9e1e2215d",
+      "facility_name": "International Paper - Columbus, MS Mill",
+      "title": "Alternative Monitoring for Pulp and Paper Industry",
+      "subparts": [
+        "S"
+      ],
+      "date": "2021-09-29",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/International%20Paper-Columbus%20Mill%20Response_09-29-21.pdf"
+    },
+    {
+      "source_key": "d877d023982ada10",
+      "facility_name": "International Paper- New Bern Mill",
+      "title": "Alternative Monitoring for Pulp and Paper Industry",
+      "subparts": [
+        "S"
+      ],
+      "date": "2021-06-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/International%20Paper-New%20Bern%20Mill%20Response_06-25-21.pdf"
+    },
+    {
+      "source_key": "b2c509802f925773",
+      "facility_name": "International Paper ORANGE MILL PLANT",
+      "title": "Alternative Monitoring for Pulp and Paper Production",
+      "subparts": [
+        "S"
+      ],
+      "date": "2022-12-19",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/International%20Paper%20Orange%20Mill%20AMP_12-19-2022%20%281%29.pdf"
+    },
+    {
+      "source_key": "427f641992f31a65",
+      "facility_name": "International Paper (IP) - Columbus Mill",
+      "title": "Alternative Monitoring for Pulp and Paper Production",
+      "subparts": [
+        "S"
+      ],
+      "date": "2023-08-10",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/International%20Paper%20Columbus%20Mill_08-10-2023.pdf"
+    },
+    {
+      "source_key": "5afd914727d6f548",
+      "facility_name": "Motiva Enterprises-Port Arthur, TX Refinery",
+      "title": "Other Request- Revised Alternative Monitoring Plan",
+      "subparts": [
+        "UUU"
+      ],
+      "date": "2021-04-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Motiva%20Enterprises%20LLC-Port%20Arthur%20Refinery%20Response_04-05-21.pdf"
+    },
+    {
+      "source_key": "40d08d4f7c326f84",
+      "facility_name": "CLECO Brame Energy Center-Madison Units 3-1_3-2",
+      "title": "Performance Test Waiver for Coal- and Oil-Fired Electric Utility Steam Generating Units",
+      "subparts": [
+        "UUUUU",
+        "A"
+      ],
+      "date": "2024-06-13",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/cleco-brame-energy-center-response_6-13-24.pdf"
+    },
+    {
+      "source_key": "20db7c43db8abd13",
+      "facility_name": "GVEA Healy",
+      "title": "Alternative Test Method for Coal and Oil-Fired Electric Utility Steam Generating Units",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2020-09-29",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Golden%20Valley%20Electric%20Association-Healy%20Power%20Plant%20Response_09-29-20.pdf"
+    },
+    {
+      "source_key": "9b6dabd91d46e8f3",
+      "facility_name": "Holcomb Station",
+      "title": "Performance Test Waiver for Coal- and Oil-Fired Electric Utility Steam Generating Units",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2021-10-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Sunflower%20Electric%20Power%20Corporation-Holcomb%20Station%20Unit%201%20Response_10-21-21.pdf"
+    },
+    {
+      "source_key": "8129bb53627d1f09",
+      "facility_name": "Dominion Energy",
+      "title": "Performance Test Waiver for Coil and Oil Fired Electric Generating Units",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2023-06-12",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Dominion%20Energy%20Cope_06-12-2023.pdf"
+    },
+    {
+      "source_key": "1f3c74016ceb314e",
+      "facility_name": "GVEA Healy",
+      "title": "Alternative Test Dates for MATS",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2024-04-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/healy-power-plant-response_4-25-24.pdf"
+    },
+    {
+      "source_key": "15b3d5c2d61e79d4",
+      "facility_name": "Lon D Wright Power Plant",
+      "title": "Alternative Reporting and Recordkeeping Requirements for Coal-Fired Power Plant",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2024-08-01",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/lon-d-wright-power-plant-unit-response_8-1-24.pdf"
+    },
+    {
+      "source_key": "1d2f68a679722cd0",
+      "facility_name": "Platte Generating Station",
+      "title": "Alternative Recordkeeping/Reporting for Coal-and Oil Fired Electric Utility Steam Generating Unit",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2024-08-22",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/platte-generating-station-response_8-22-24.pdf"
+    },
+    {
+      "source_key": "e297235ebb6f1bc8",
+      "facility_name": "North Omaha Station",
+      "title": "Performance Test Waiver for Coal-and Oil Fired Electric Utility Steam Generating Unit",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2025-05-19",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/omaha-public-power-district-response_5-19-25.pdf"
+    },
+    {
+      "source_key": "1e99abbab096c528",
+      "facility_name": "Nebraska City Station and North Omaha Station",
+      "title": "Alternative Recordkeeping and Reporting for MATS",
+      "subparts": [
+        "UUUUU"
+      ],
+      "date": "2024-07-01",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/omaha-public-power-district-response_7-1-24.pdf"
+    },
+    {
+      "source_key": "51751e52377efa59",
+      "facility_name": "Vicor Corporation",
+      "title": "Applicability Determination for Nine Metal Fabrication and Finishing Source Categories",
+      "subparts": [
+        "XXXXXX"
+      ],
+      "date": "2020-04-16",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-06/Vicor%20Response_4-14-20.pdf"
+    },
+    {
+      "source_key": "3da80f0384df8674",
+      "facility_name": "Buchanan Marine, LP",
+      "title": "Applicability Determination for Nine Metal Fabrication and Finishing Source Categories",
+      "subparts": [
+        "XXXXXX"
+      ],
+      "date": "2023-04-10",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Buchanan%20Marine_04-10-2023.pdf"
+    },
+    {
+      "source_key": "d5d92c832fd682f5",
+      "facility_name": "Seepex, Inc.",
+      "title": "Applicability Determination for Nine Metal Fabrication and Finishing Source Categories",
+      "subparts": [
+        "XXXXXX"
+      ],
+      "date": "2024-01-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/seepex-response_1-25-24.pdf"
+    },
+    {
+      "source_key": "db176a45c5246563",
+      "facility_name": "Georgia Pacific Wood Products",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2022-07-26",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Georgia-Pacific%20Wood%20Products%20-%20Plywood%20Plant%20Response_7-26-22.pdf"
+    },
+    {
+      "source_key": "41cb7f9d43f2df26",
+      "facility_name": "Tampa Electric Big Bend Station",
+      "title": "Other Request- Testing Minimum Time Notification Waiver",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2022-04-14",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/TECO%20Big%20Bend%20Station%20Response_4-14-22.pdf"
+    },
+    {
+      "source_key": "2c98a7960212a76c",
+      "facility_name": "Consumers Energy Company - Muskegon River Compressor Station",
+      "title": "Performance Test Extension for Stationary Gas Turbine",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2022-12-06",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Consumers%20Energy%20Muskegon_12-06-2022.pdf"
+    },
+    {
+      "source_key": "19511f0ede389c6d",
+      "facility_name": "Duke Energy Florida, LLC, Citrus Combined Cycle Station",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-03-17",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Duke%20Energy%20Florida%20Citrus_03-17-2023.pdf"
+    },
+    {
+      "source_key": "6f118f787bffb30f",
+      "facility_name": "Entergy Services LLC",
+      "title": "Other Request-revision to your approved continuous monitoring system (CMS) plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-06-12",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Entergy%20Services%20Choctaw_06-12-2023.pdf"
+    },
+    {
+      "source_key": "9cb69182e8af6cde",
+      "facility_name": "Choctaw County Generating Plant",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2022-08-30",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Entergy%20Services%20Choctow%20Generating_08-30-22.pdf"
+    },
+    {
+      "source_key": "59ec2bc0f5e53c4a",
+      "facility_name": "Florida Power and Light",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-03-17",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Florida%20Power%20and%20Light%20Ft%20Myer_03-23-2023.pdf"
+    },
+    {
+      "source_key": "72be66aee392ffcc",
+      "facility_name": "Pratt & Whitney 1 Aircraft Road Middletown, CT 06457",
+      "title": "Other Request- Petition for Operating Limitations",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2022-09-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Pratt%20and%20Whitney_09-21-2022.pdf"
+    },
+    {
+      "source_key": "ccac5ea90641d96b",
+      "facility_name": "TC Energy (ANR Brownsville Compressor Station, TN)",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-03-09",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/TC%20Energy_03-09-2023.pdf"
+    },
+    {
+      "source_key": "1597315f4b912046",
+      "facility_name": "Tampa Electric Company - Big Bend Station",
+      "title": "Other Request- approval of a continuous monitoring system (CMS) plan petition",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-07-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/TECO%20Big%20Bend_07-25-2023.pdf"
+    },
+    {
+      "source_key": "d06f168138377095",
+      "facility_name": "Transcontinental Gas Pipe Line Company, LLC (Transco) Station 110",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-01-13",
+      "pdf_url": null
+    },
+    {
+      "source_key": "f3f1e8ffab7e8f62",
+      "facility_name": "Transcontinental Gas Pipe Line Company, LLC (Transco), Compressor Station 85",
+      "title": "Other Request- Approval of CMS Plan",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-01-18",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Transcontinental%20Gas%20Pipeline%20Co%20Compressor%20Station%2085_01-13-2023.pdf"
+    },
+    {
+      "source_key": "dfc681e488c449f3",
+      "facility_name": "ANR PIPELINE COMPANY - LAGRANGE COMPRESSOR STATION",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-08-25",
+      "pdf_url": null
+    },
+    {
+      "source_key": "12e7f19703ddb6b2",
+      "facility_name": "ANR PIPELINE COMPANY - SULPHER SPRINGS COMPRESSOR STATION",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-08-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/ANR%20Indiana%20Response_8-25-23.pdf"
+    },
+    {
+      "source_key": "e29987df07e7100a",
+      "facility_name": "TEXAS EASTERN TRANSMISSION - SOMERSET",
+      "title": "Applicability Determination for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-05-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Enbridge%20Energy%20TETLP%20Ohio_05-23-2023.pdf"
+    },
+    {
+      "source_key": "bc8c36310820e4fd",
+      "facility_name": "University of Michigan - Central Power Plant",
+      "title": "Other Request- Request for Operating Limits / Monitoring Petition",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-06-15",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/UMich%20Power%20Plant_06-15-2023.pdf"
+    },
+    {
+      "source_key": "a975637c5d33d059",
+      "facility_name": "XCEL ENERGY - HIGH BRIDGE COMBINED CYCLE",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-05-22",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Xcel%20Energy%20High%20Bridge_05-22-2023.pdf"
+    },
+    {
+      "source_key": "51fb6eca6bf86a36",
+      "facility_name": "Xcel Energy - High Bridge",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-07-27",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Xcel%20Energy%20High%20Bridge_07-27-2023.pdf"
+    },
+    {
+      "source_key": "38407572954bc38d",
+      "facility_name": "XCEL ENERGY - RIVERSIDE GENERATING PLANT",
+      "title": "Alternative Test Method for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-05-23",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Xcel%20Energy%20Riverside_05-23-2023.pdf"
+    },
+    {
+      "source_key": "6c0f18a8e32ffd56",
+      "facility_name": "DTE GAS COMPANY BELLE RIVER COMPRESSOR STATION",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-12-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-08/dte-gas-company-belle-river-compressor-station-response_12-8-23.pdf"
+    },
+    {
+      "source_key": "020a6e70adeaf816",
+      "facility_name": "DTE GAS COMPANY, WILLOW COMPRESSOR STATION",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-12-08",
+      "pdf_url": null
+    },
+    {
+      "source_key": "df3f68bf2ba18313",
+      "facility_name": "DTE Gas Company, Milford Compressor Station",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-12-08",
+      "pdf_url": null
+    },
+    {
+      "source_key": "c4b21546101ef60d",
+      "facility_name": "ANR Pipeline Company (ANR) LaGrange Compressor Station",
+      "title": "Applicability Determination for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-02-20",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/anr-pipeline-tc-energy-response_2-20-24.pdf"
+    },
+    {
+      "source_key": "459832d14f88bab8",
+      "facility_name": "Consumers Energy s Muskegon River Compressor Station",
+      "title": "Applicability Determination for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-02-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/cms-energy-response_2-21-24.pdf"
+    },
+    {
+      "source_key": "fee4fb1ba0e35fc7",
+      "facility_name": "DTE Marietta",
+      "title": "Applicability Determination for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-02-21",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/dte-vantage-response-2-21-24.pdf"
+    },
+    {
+      "source_key": "c5528a7c9a231e2d",
+      "facility_name": "MSU Simon Turbine",
+      "title": "Applicability Determination for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-03-25",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2024-11/t.b.-simon-power-plant-response_3-25-24.pdf"
+    },
+    {
+      "source_key": "7e80634fed1d1ef5",
+      "facility_name": "ANR Pipeline Company Sulphur Springs and LaGrange Compressor Stations",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2025-06-13",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/anr-pipeline-co.-response_-6-13-25.pdf"
+    },
+    {
+      "source_key": "41cc9a5393f02df4",
+      "facility_name": "ANR Pipeline Sulphur Springs CS",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-06-04",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/anr-pipelinetc-energy-response_6-4-24.pdf"
+    },
+    {
+      "source_key": "542c26e3a0721b55",
+      "facility_name": "Consumers Energy Company - Muskegon River Compressor Station",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-11-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/consumer-energy-response_11-7-23.pdf"
+    },
+    {
+      "source_key": "35ab007eacaef034",
+      "facility_name": "Consumers Muskegon River Compressor Station",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-09-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/consumers-energy-response_9-5-24.pdf"
+    },
+    {
+      "source_key": "e3cce004906bb77e",
+      "facility_name": "DTE Gas Company - Belle River Mills, Milford, and Willow Run",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-05-02",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/dte-energy-response_5-2-24.pdf"
+    },
+    {
+      "source_key": "8037325cb7128830",
+      "facility_name": "DTE Marietta",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-11-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/dte-vantage-response_11-7-23.pdf"
+    },
+    {
+      "source_key": "7b8ee32a31091abf",
+      "facility_name": "Gulf South Pipeline Company, LLC - McComb Compressor Station",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2025-05-19",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/gulf-south-pipeline-company-response_5-19-25.pdf"
+    },
+    {
+      "source_key": "6ac7052e155891d8",
+      "facility_name": "Heartland Corn Products",
+      "title": "Request for Operating Limits / Monitoring Petitions for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2025-04-22",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/heartland-corn-products-response_4-22-25.pdf"
+    },
+    {
+      "source_key": "eb7171ec7b5ba877",
+      "facility_name": "MSU Simon Power Plant",
+      "title": "Alternative Operating Limits/Monitoring for Stationary Combustion Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-12-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/msu-simon-power-plant-response_12-8-23.pdf"
+    },
+    {
+      "source_key": "127e13385da8aae6",
+      "facility_name": "PRIMARY PRODUCTS INGREDIENTS AMERICAS LLC - PRIMIENT SOUTH",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2023-12-08",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/primary-products-ingredients-america-response_12-8-23.pdf"
+    },
+    {
+      "source_key": "4fe2640c330a0abc",
+      "facility_name": "Primient Lafayette",
+      "title": "Alternative Monitoring for Stationary Gas Turbines",
+      "subparts": [
+        "YYYY"
+      ],
+      "date": "2024-09-26",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/primary-products-ingredients-america-response_9-26-24.pdf"
+    },
+    {
+      "source_key": "9ef3591e0ca3a4a4",
+      "facility_name": "Eaton Corporation - Auburn Facility",
+      "title": "Applicability Determination for Stationary Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2023-09-07",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Eaton%20Corporation%20Response_09-07-23.pdf"
+    },
+    {
+      "source_key": "8eab8130002801d3",
+      "facility_name": "Holmes Regional Medical Center",
+      "title": "Alternative Testing for Stationary Compression Combustion Engine",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2023-10-05",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-10/holmes-medical-center-response_10-05-23.pdf"
+    },
+    {
+      "source_key": "501f98f0246b0975",
+      "facility_name": "Citation Oil and Gas (Holland & Hart LLP)",
+      "title": "Applicability Determination for Stationary Reciprocating Internal Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2021-02-11",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/Citation%20Oil%20and%20Gas%20Response_2-11-21.pdf"
+    },
+    {
+      "source_key": "df6397bc0a57d098",
+      "facility_name": "US Army Garrison Command, Ft. Knox",
+      "title": "Regulatory Interpretation for Stationary Reciprocating Internal Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2022-04-27",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2022-08/U.S.%20Army%20Garrison%20Command-Fort%20Knox%20Response_04-27-22.pdf"
+    },
+    {
+      "source_key": "e36e0dc0742cf1ea",
+      "facility_name": "Johns Hopkins All Children's Hospital",
+      "title": "Regulatory Interpretation for Stationary Reciprocating Internal Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2023-03-17",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-08/Johns%20Hopkins%20All%20Childrens%20Hospital_03-17-2023.pdf"
+    },
+    {
+      "source_key": "bc60c49cbe612e92",
+      "facility_name": "Materion Brush Inc.",
+      "title": "Applicability Determination for Stationary Reciprocating Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2023-05-31",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-09/Materion%20Brush_05-31-2023.pdf"
+    },
+    {
+      "source_key": "c549130d91218a56",
+      "facility_name": "Magellan Pipeline Company, L.P. - Osborn Station",
+      "title": "Test Extension Request for Reciprocating Internal Combustion Engine",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2023-09-18",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2023-11/magellan-emission-test-extension-request_9-18-23.pdf"
+    },
+    {
+      "source_key": "35169ee98e0c4d9b",
+      "facility_name": "Duke Energy",
+      "title": "Regulatory Interpretation for Stationary Reciprocating Internal Combustion Engines",
+      "subparts": [
+        "ZZZZ"
+      ],
+      "date": "2025-02-27",
+      "pdf_url": "https://www.epa.gov/system/files/documents/2025-06/duke-energy-response_2-27-25.pdf"
+    }
+  ]
+}
