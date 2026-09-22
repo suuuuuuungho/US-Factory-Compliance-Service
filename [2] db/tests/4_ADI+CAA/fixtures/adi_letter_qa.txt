@@ -1,0 +1,36 @@
+U.S. Environmental Protection Agency
+Applicability Determination Index
+Control Number: M050030
+Category: MACT
+EPA Office: Region 5
+Date: 06/10/2005
+Title: Stack Test Waiver for a Portland Cement Plant Kiln
+Recipient: Brian Graf
+Author: George Czerniak
+Comments: This determination also filed as a MACT determination, ADI Control No. M050031.
+Part 63, A General Provisions
+EEE Hazardous Waste Combustors
+Abstract:
+Q: Will EPA authorize, under 40 CFR part 63, subpart EEE, the use of data from a destruction and
+removal efficiency test conducted on one kiln in lieu of a test on a second kiln at the same facility?
+A: Yes. The company has demonstrated that the two kilns meet the stack test waiver criteria.
+Therefore, EPA approves the request under MACT subpart EEE.
+Letter:
+June 10, 2005
+Mr. Brian Graf
+Essroc Cement Corp.
+3084 West C.R. 225 South
+Logansport, IN 46947
+Re: Essroc Cement Corp. Comprehensive Performance Test for Kiln No. 2
+Dear Mr. Graf:
+<<<PAGE>>>
+On May 3, 2005, Essroc revised a previous data-in-lieu request pursuant to 40 C.F.R. 63.1207(c)(2)
+of the HWC MACT. The kilns are subject to the emission standards set forth at 40 C.F.R. 63.1204 and
+the General Provisions at 40 C.F.R. § 63.7(h). This request also cites 40 CFR Part 60, Subpart AAAA,
+which does not apply to hazardous waste combustors.
+Conditions of Approval
+1. Essroc shall conduct the next comprehensive performance test on Kiln 2 within 12 months.
+2. The operating parameter limits established for Kiln 1 apply to Kiln 2.
+Sincerely,
+George Czerniak
+Chief, Air Enforcement and Compliance Assurance Branch
