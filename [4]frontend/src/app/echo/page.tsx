@@ -1,6 +1,7 @@
 // SUU-218: 빈 페이지. 제목만, 내용은 나중에.
 // SUU-237: public/echo-stats.json 을 읽어 타일 4개 · Subpart 표(정렬·제조업 필터) · 연도별 차트.
 // SUU-245: deviation 설명은 타일 바로 아래, 타일 글자 가운데.
+// SUU-248: 주별은 가로 막대 대신 지도(UsStateMap).
 // SUU-246: 차트 5개 (연도별 건수·연도별 $·Subpart Top10·주 Top10·벌금 크기 분포) 2열 그리드.
 // SUU-242: 글자 전부 영어. 벌금은 중앙값 대신 총액·최대(크게). 표는 10줄씩, 정렬은 ↓/↑ 토글. BarYAxis 는 가로 막대용이라 연도가 왼쪽에 또 찍혀서 뺐다.
 "use client";
@@ -12,6 +13,7 @@ import { BarXAxis } from "@/components/charts/bar-x-axis";
 import { BarYAxis } from "@/components/charts/bar-y-axis";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
+import { UsStateMap } from "@/components/UsStateMap";
 
 type Subpart = {
   code: string;
@@ -124,7 +126,6 @@ export default function EchoPage() {
 
   // 가로 막대용: 벌금 총액 큰 순 10개
   const topSubparts = top10(stats?.subparts ?? [], (s) => s.code);
-  const topStates = top10(stats?.states ?? [], (s) => s.state);
 
   return (
     <main className="flex flex-1 flex-col px-6 py-6">
@@ -186,9 +187,12 @@ export default function EchoPage() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Top 10 states by penalty dollars" note="Total penalties since 2015, by facility state">
-              <div data-chart="top-states">
-                <HBar data={topStates} />
+            <ChartCard title="Penalty dollars by state" note="Total penalties since 2015, by facility state · brighter = more · hover a state">
+              <div data-chart="state-map">
+                <UsStateMap
+                  name="Penalty dollars by state"
+                  values={stats.states.map((s) => ({ state: s.state, value: s.penalty_total_usd, label: `${usdShort(s.penalty_total_usd)} · ${num(s.facilities)} facilities` }))}
+                />
               </div>
             </ChartCard>
 

@@ -1,4 +1,5 @@
 // SUU-237: /echo 페이지가 echo-stats.json 을 읽어 타일·Subpart 표·연도별 차트를 그린다.
+// SUU-248: 주별은 지도. 주 path 에 data-state, 값 큰 주가 더 밝다, hover 하면 이름·금액.
 // SUU-246: 차트 5개(연도별 $·Subpart Top10·주 Top10·벌금 크기 분포 추가), 가로 막대엔 이름 라벨.
 // SUU-242: 영어 라벨, 벌금 총액·최대 타일, 10줄 페이지, 정렬 ↓/↑ 토글, 차트 왼쪽에 연도 없음, deviation 설명.
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -160,7 +161,7 @@ it("연도별 차트 SVG 가 그려지고, 왼쪽에 연도 라벨(BarYAxis)이 
 
 it("차트 5개가 모두 SVG 로 그려진다", async () => {
   const container = await openPage();
-  for (const id of ["yearly", "yearly-usd", "top-subparts", "top-states", "buckets"]) {
+  for (const id of ["yearly", "yearly-usd", "top-subparts", "state-map", "buckets"]) {
     await waitFor(() => expect(container.querySelector(`[data-chart='${id}'] svg`), id).not.toBeNull());
   }
 });
@@ -173,9 +174,19 @@ it("가로 막대는 벌금 총액 큰 순 10개, 왼쪽에 이름이 보인다"
   expect(subparts.indexOf("ZZZZ")).toBeLessThan(subparts.indexOf("M")); // $622M 이 $220K 보다 위
   expect(subparts).not.toContain("A"); // total 0 → 12개 중 10개에 못 듦
   expect(subparts.length).toBe(10);
-  const states = labels("top-states");
-  expect(states.slice(0, 2)).toEqual(["NM", "TX"]);
-  expect(states.length).toBe(10);
+});
+
+it("주별 지도: 주 path 50개 이상, NM 이 TX 보다 밝고, hover 하면 이름·금액", async () => {
+  const container = await openPage();
+  const map = container.querySelector("[data-chart='state-map']")!;
+  const paths = map.querySelectorAll("path[data-state]");
+  expect(paths.length).toBeGreaterThanOrEqual(50);
+  const alpha = (code: string) => Number(map.querySelector(`path[data-state='${code}']`)!.getAttribute("fill")!.match(/[\d.]+\)$/)![0].slice(0, -1));
+  expect(alpha("NM")).toBeGreaterThan(alpha("TX"));
+  expect(alpha("TX")).toBeGreaterThan(alpha("MI"));
+  expect(alpha("WY")).toBeLessThan(alpha("MI")); // 데이터 없는 주가 제일 어둡다
+  fireEvent.mouseEnter(map.querySelector("path[data-state='TX']")!);
+  expect(screen.getByTestId("map-hover").textContent).toContain("TX · $144.8M · 10 facilities");
 });
 
 it("벌금 크기 분포 차트는 구간 5개 라벨을 찍는다", async () => {
