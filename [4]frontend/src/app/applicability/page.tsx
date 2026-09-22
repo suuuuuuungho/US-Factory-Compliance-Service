@@ -55,6 +55,21 @@ export default function ApplicabilityPage() {
   const [opened, setOpened] = useState<Record<string, OpenedSection>>({});
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const sectionCache = useRef<Record<string, Section>>({});
+  // SUU-255: 메모칸에 지금 쓰여 있는 글. Save as PDF 때 편지 Notes에 들어간다.
+  const [memo, setMemo] = useState({ title: "", body: "" });
+  const [lastQuestion, setLastQuestion] = useState("");
+
+  // SUU-255: 편지 PDF 내려받기. @react-pdf/renderer 는 무거워서 누를 때만 불러온다.
+  async function savePdf() {
+    if (!result) return;
+    const [{ pdf }, { LetterPdf }] = await Promise.all([import("@react-pdf/renderer"), import("./LetterPdf")]);
+    const blob = await pdf(<LetterPdf question={lastQuestion} result={result} memo={memo} />).toBlob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `applicability-letter-${new Date().toISOString().slice(0, 10)}.pdf`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
 
   function patchOpened(key: string, patch: Partial<OpenedSection>) {
     setOpened((o) => (o[key] ? { ...o, [key]: { ...o[key], ...patch } } : o));
@@ -79,6 +94,7 @@ export default function ApplicabilityPage() {
 
   async function submit(question: string) {
     setAsked(true);
+    setLastQuestion(question);
     setLoading(true);
     setResult(null);
     setError(null);
@@ -118,6 +134,15 @@ export default function ApplicabilityPage() {
     <>
       {loading && <Waiting />}
       {error && <p className="text-red-400">{error}</p>}
+      {result && (
+        <button
+          type="button"
+          onClick={savePdf}
+          className="self-start rounded-md border border-hairline bg-surface-1 px-4 py-2 text-sm text-ink hover:text-accent-blue"
+        >
+          Save as PDF
+        </button>
+      )}
       {result && result.answer === null && (
         <ul className="list-disc pl-6">
           {result.issues.map((issue) => (
@@ -235,7 +260,7 @@ export default function ApplicabilityPage() {
                   </section>
                 ),
               },
-              memo: { title: "Memo", node: <MemoPane /> },
+              memo: { title: "Memo", node: <MemoPane onChange={(t, b) => setMemo({ title: t, body: b })} /> },
               ...Object.fromEntries(
                 Object.entries(opened).map(([key, { section, error, paragraph }]) => {
                   // SUU-189: 문단이 있으면 그 문단만. 본문에서 못 찾으면 전체로 떨어진다

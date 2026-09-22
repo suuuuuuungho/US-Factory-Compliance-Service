@@ -18,9 +18,15 @@ function load(): Memo[] {
 const INPUT =
   "rounded-md border border-hairline bg-surface-1 p-3 text-ink placeholder:text-ink-muted focus:border-accent-blue focus:outline-none";
 
-export default function MemoPane() {
+// SUU-255: onChange(title, body) — 편집칸이 바뀔 때마다 page에 올려 PDF Notes에 넣는다.
+export default function MemoPane({ onChange }: { onChange?: (title: string, body: string) => void } = {}) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  function edit(nextTitle: string, nextBody: string) {
+    setTitle(nextTitle);
+    setBody(nextBody);
+    onChange?.(nextTitle, nextBody);
+  }
   const [memos, setMemos] = useState<Memo[]>(load);
 
   function persist(next: Memo[]) {
@@ -34,12 +40,12 @@ export default function MemoPane() {
 
   return (
     <section aria-label="Memo pane" className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-lg border border-hairline bg-surface-1 p-4">
-      <input className={INPUT} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input className={INPUT} placeholder="Title" value={title} onChange={(e) => edit(e.target.value, body)} />
       <textarea
         className={`${INPUT} min-h-40 flex-1 resize-none`}
         placeholder="Write a memo…"
         value={body}
-        onChange={(e) => setBody(e.target.value)}
+        onChange={(e) => edit(title, e.target.value)}
       />
       <button
         type="button"
@@ -53,10 +59,7 @@ export default function MemoPane() {
           <li key={i} className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => {
-                setTitle(m.title);
-                setBody(m.body);
-              }}
+              onClick={() => edit(m.title, m.body)}
               className="flex min-w-0 flex-1 justify-between gap-3 py-1.5 text-left hover:text-accent-blue"
             >
               <span className="truncate text-ink">{m.title || "(untitled)"}</span>
