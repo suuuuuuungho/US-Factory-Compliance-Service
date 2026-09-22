@@ -1,5 +1,6 @@
 // SUU-218: 빈 페이지. 제목만, 내용은 나중에.
 // SUU-237: public/echo-stats.json 을 읽어 타일 4개 · Subpart 표(정렬·제조업 필터) · 연도별 차트.
+// SUU-251: 색 역할 — 보라(brand accent) = 벌금 $, 코랄 = 위반. 타일 숫자·선·막대·지도 램프·정렬 헤더·체크박스에 같은 규칙.
 // SUU-245: deviation 설명은 타일 바로 아래, 타일 글자 가운데.
 // SUU-248: 주별은 가로 막대 대신 지도(UsStateMap).
 // SUU-246: 차트 5개 (연도별 건수·연도별 $·Subpart Top10·주 Top10·벌금 크기 분포) 2열 그리드.
@@ -137,9 +138,9 @@ export default function EchoPage() {
         <div className="mx-auto mt-6 w-full max-w-5xl">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
             <Tile id="facilities" label="Part 63 facilities" value={num(stats.summary.facilities)} />
-            <Tile id="violation-pct" label="Facilities with violations" value={pct(stats.summary.violation_facility_pct)} />
-            <Tile id="penalty-total" label="Total penalties since 2015" value={usdShort(stats.summary.penalty_total_usd)} />
-            <Tile id="penalty-max" label="Largest single penalty" value={usdShort(stats.summary.penalty_max_usd)} />
+            <Tile id="violation-pct" label="Facilities with violations" value={pct(stats.summary.violation_facility_pct)} tone="coral" />
+            <Tile id="penalty-total" label="Total penalties since 2015" value={usdShort(stats.summary.penalty_total_usd)} tone="violet" />
+            <Tile id="penalty-max" label="Largest single penalty" value={usdShort(stats.summary.penalty_max_usd)} tone="violet" />
             <Tile id="deviation-pct" label="Title V deviation %" value={pct(stats.summary.deviation_y_pct)} />
           </div>
 
@@ -149,10 +150,10 @@ export default function EchoPage() {
               A Title V (major source) operating permit lists every Clean Air Act requirement a facility must follow. At least once a
               year the facility must certify, signed by a responsible official, whether it complied with each permit condition.
               Any period when a condition was not met — a missed monitoring run, an emission limit exceeded, a late report — is
-              a <span className="text-ink">deviation</span> and must be disclosed in that certification.
+              a <span className="text-gradient-violet">deviation</span> and must be disclosed in that certification.
             </p>
             <p className="mt-2">
-              <span className="text-ink">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
+              <span className="text-gradient-violet">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
               where the facility reported at least one deviation. A deviation is self-reported and is not automatically a violation,
               but it is the first thing regulators look at when deciding whom to inspect.
             </p>
@@ -164,8 +165,8 @@ export default function EchoPage() {
                 <YearLineChart
                   data={stats.yearly}
                   series={[
-                    { key: "violations", label: "Violations", color: "var(--chart-5)" },
-                    { key: "penalties", label: "Penalty actions", color: "var(--chart-3)" },
+                    { key: "violations", label: "Violations", color: "var(--color-gradient-coral)" },
+                    { key: "penalties", label: "Penalty actions", color: "var(--color-gradient-violet)" },
                   ]}
                 />
               </div>
@@ -173,7 +174,7 @@ export default function EchoPage() {
 
             <ChartCard title="Penalty dollars by year" note={`Sum of penalties assessed each year · ${stats.yearly.at(-1)?.year ?? ""} is year to date`}>
               <div data-chart="yearly-usd" className="text-ink">
-                <YearLineChart data={stats.yearly} series={[{ key: "penalty_usd", label: "Penalties", color: "var(--chart-5)" }]} format={(v) => usdShort(v)} />
+                <YearLineChart data={stats.yearly} series={[{ key: "penalty_usd", label: "Penalties", color: "var(--color-gradient-violet)" }]} format={(v) => usdShort(v)} />
               </div>
             </ChartCard>
 
@@ -188,13 +189,13 @@ export default function EchoPage() {
                 <BarChart data={stats.penalty_buckets} xDataKey="bucket" aspectRatio="2 / 1">
                   <Grid horizontal vertical={false} />
                   <BarXAxis />
-                  <Bar dataKey="count" fill="var(--chart-2)" />
+                  <Bar dataKey="count" fill="var(--color-gradient-violet)" />
                   <ChartTooltip />
                 </BarChart>
               </div>
             </ChartCard>
 
-            <ChartCard title="Penalty dollars by state" className="md:col-span-2" note="Total penalties since 2015, by facility state · brighter = more · hover a state">
+            <ChartCard title="Penalty dollars by state" className="md:col-span-2" note="Total penalties since 2015, by facility state · darker = more · hover a state">
               <div data-chart="state-map">
                 <UsStateMap
                   name="Penalty dollars by state"
@@ -210,6 +211,7 @@ export default function EchoPage() {
               <label className="flex items-center gap-2 text-sm text-ink">
                 <input
                   type="checkbox"
+                  className="accent-gradient-violet"
                   checked={mfgOnly}
                   onChange={(e) => {
                     setMfgOnly(e.target.checked);
@@ -219,7 +221,8 @@ export default function EchoPage() {
                 Manufacturing only
               </label>
             </div>
-            <table className="mt-3 w-full border-collapse text-left text-sm">
+            <div className="scheme-dark mt-3 overflow-x-auto">
+              <table className="w-full border-collapse text-left text-sm">
               <thead className="border-b border-hairline text-ink-muted">
                 <tr>
                   <th className="px-3 py-3 font-medium">Subpart</th>
@@ -229,7 +232,7 @@ export default function EchoPage() {
                       <button
                         type="button"
                         onClick={() => toggleSort(c.key)}
-                        className={sortKey === c.key ? "font-semibold text-ink" : "hover:text-ink"}
+                        className={sortKey === c.key ? "font-semibold text-gradient-violet" : "hover:text-ink"}
                       >
                         {c.label}
                         {sortKey === c.key ? (sortAsc ? " ↑" : " ↓") : ""}
@@ -254,6 +257,7 @@ export default function EchoPage() {
                 ))}
               </tbody>
             </table>
+            </div>
             <div data-testid="pager" className="mt-3 flex items-center justify-end gap-3 text-sm text-ink-muted">
               <button type="button" onClick={() => setPage(page - 1)} disabled={page === 0} className="hover:text-ink disabled:opacity-40">
                 ← Prev
@@ -296,17 +300,19 @@ function HBar({ data }: { data: { name: string; usd: number }[] }) {
     <BarChart data={data} xDataKey="name" orientation="horizontal" aspectRatio="2 / 1" margin={{ left: 64 }}>
       <Grid horizontal={false} vertical />
       <BarYAxis />
-      <Bar dataKey="usd" fill="var(--chart-2)" />
-      <ChartTooltip rows={(point) => [{ color: "var(--chart-2)", label: String(point.name), value: usdShort(point.usd as number) }]} />
+      <Bar dataKey="usd" fill="var(--color-gradient-violet)" />
+      <ChartTooltip rows={(point) => [{ color: "var(--color-gradient-violet)", label: String(point.name), value: usdShort(point.usd as number) }]} />
     </BarChart>
   );
 }
 
-function Tile({ id, label, value }: { id: string; label: string; value: string }) {
+const TONE = { ink: "text-ink", violet: "text-gradient-violet", coral: "text-gradient-coral" } as const;
+
+function Tile({ id, label, value, tone = "ink" }: { id: string; label: string; value: string; tone?: keyof typeof TONE }) {
   return (
     <div data-testid={`tile-${id}`} className="rounded-xl border border-hairline p-4 text-center">
       <div className="text-sm text-ink-muted">{label}</div>
-      <div className="mt-1 text-2xl font-bold text-ink tabular-nums">{value}</div>
+      <div className={`mt-1 text-2xl font-bold tabular-nums ${TONE[tone]}`}>{value}</div>
     </div>
   );
 }

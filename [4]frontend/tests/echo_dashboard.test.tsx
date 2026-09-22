@@ -188,17 +188,39 @@ it("가로 막대는 벌금 총액 큰 순 10개, 왼쪽에 이름이 보인다"
   expect(subparts.length).toBe(10);
 });
 
-it("주별 지도: 주 path 50개 이상, NM 이 TX 보다 밝고, hover 하면 이름·금액", async () => {
+it("주별 지도: 주 path 50개 이상, 금액 클수록 진하게(NM > TX > MI), 데이터 없는 주는 회색, 범례, hover", async () => {
   const container = await openPage();
   const map = container.querySelector("[data-chart='state-map']")!;
   const paths = map.querySelectorAll("path[data-state]");
   expect(paths.length).toBeGreaterThanOrEqual(50);
-  const alpha = (code: string) => Number(map.querySelector(`path[data-state='${code}']`)!.getAttribute("fill")!.match(/[\d.]+\)$/)![0].slice(0, -1));
-  expect(alpha("NM")).toBeGreaterThan(alpha("TX"));
-  expect(alpha("TX")).toBeGreaterThan(alpha("MI"));
-  expect(alpha("WY")).toBeLessThan(alpha("MI")); // 데이터 없는 주가 제일 어둡다
+  const level = (code: string) => Number(map.querySelector(`path[data-state='${code}']`)!.getAttribute("data-level"));
+  const fill = (code: string) => map.querySelector(`path[data-state='${code}']`)!.getAttribute("fill")!;
+  expect(level("NM")).toBe(1);
+  expect(level("NM")).toBeGreaterThan(level("TX"));
+  expect(level("TX")).toBeGreaterThan(level("MI"));
+  expect(fill("NM")).toContain("#3418b8"); // 1등 = 제일 짙은 보라
+  expect(fill("TX")).toContain("color-mix(in oklch"); // 사이 값은 섞은 색
+  expect(fill("WY")).toBe("#1c1c1c"); // 데이터 없음 = 회색
+  expect(level("WY")).toBe(0);
+  expect(screen.getByTestId("map-legend").textContent).toContain("$191.8M");
   fireEvent.mouseEnter(map.querySelector("path[data-state='TX']")!);
   expect(screen.getByTestId("map-hover").textContent).toContain("TX · $144.8M · 10 facilities");
+});
+
+it("색 역할: 벌금 $ 타일·선은 보라, 위반은 코랄. 표는 좁은 화면에서 가로 스크롤 상자 안", async () => {
+  const container = await openPage();
+  expect(screen.getByRole("table").parentElement!.className).toContain("overflow-x-auto");
+  expect(screen.getByTestId("tile-penalty-total").querySelector(".text-gradient-violet")).not.toBeNull();
+  expect(screen.getByTestId("tile-penalty-max").querySelector(".text-gradient-violet")).not.toBeNull();
+  expect(screen.getByTestId("tile-violation-pct").querySelector(".text-gradient-coral")).not.toBeNull();
+  expect(screen.getByTestId("tile-facilities").querySelector(".text-ink")).not.toBeNull();
+  const yearly = container.querySelector("[data-chart='yearly']")!;
+  expect(yearly.querySelector("path[data-series='violations']")!.getAttribute("stroke")).toBe("var(--color-gradient-coral)");
+  expect(yearly.querySelector("path[data-series='penalties']")!.getAttribute("stroke")).toBe("var(--color-gradient-violet)");
+  expect(yearly.querySelectorAll("linearGradient").length).toBe(2); // 선 아래 그라디언트 면
+  const table = screen.getByRole("table");
+  fireEvent.click(within(table).getByRole("button", { name: /Total \$/ }));
+  expect(within(table).getByRole("button", { name: /Total \$/ }).className).toContain("text-gradient-violet");
 });
 
 it("벌금 크기 분포 차트는 구간 5개 라벨을 찍는다", async () => {
