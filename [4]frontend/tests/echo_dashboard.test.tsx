@@ -1,4 +1,5 @@
 // SUU-237: /echo 페이지가 echo-stats.json 을 읽어 타일·Subpart 표·연도별 차트를 그린다.
+// SUU-246: 차트 5개(연도별 $·Subpart Top10·주 Top10·벌금 크기 분포 추가), 가로 막대엔 이름 라벨.
 // SUU-242: 영어 라벨, 벌금 총액·최대 타일, 10줄 페이지, 정렬 ↓/↑ 토글, 차트 왼쪽에 연도 없음, deviation 설명.
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -59,9 +60,21 @@ const STATS = {
     ...["B", "C", "D", "E", "F", "G", "H", "I", "J"].map((code, i) => sub(code, { facilities: 100 - i })),
   ],
   yearly: [
-    { year: 2023, violations: 2000, penalties: 700 },
-    { year: 2024, violations: 2100, penalties: 650 },
-    { year: 2025, violations: 2279, penalties: 687 },
+    { year: 2023, violations: 2000, penalties: 700, penalty_usd: 136174046.39 },
+    { year: 2024, violations: 2100, penalties: 650, penalty_usd: 135917192.26 },
+    { year: 2025, violations: 2279, penalties: 687, penalty_usd: 150279934.89 },
+  ],
+  states: [
+    { state: "NM", ...sub("x"), penalty_total_usd: 191816340 },
+    { state: "TX", ...sub("x"), penalty_total_usd: 144817823 },
+    ...["MI", "IN", "CA", "CO", "PA", "OH", "LA", "IL", "WV", "KY", "AL"].map((state, i) => ({ state, ...sub("x"), penalty_total_usd: 1000 - i })),
+  ],
+  penalty_buckets: [
+    { bucket: "<$1K", count: 585 },
+    { bucket: "$1K–10K", count: 4612 },
+    { bucket: "$10K–100K", count: 3831 },
+    { bucket: "$100K–1M", count: 867 },
+    { bucket: "$1M+", count: 103 },
   ],
 };
 
@@ -143,6 +156,32 @@ it("연도별 차트 SVG 가 그려지고, 왼쪽에 연도 라벨(BarYAxis)이 
   // BarYAxis 는 연도를 <span> 으로 찍는다. BarXAxis 도 span 이라 "2023" 이 1번만 나와야 한다
   const yearSpans = Array.from(chart.querySelectorAll("span")).filter((el) => el.textContent === "2023");
   expect(yearSpans.length).toBeLessThanOrEqual(1);
+});
+
+it("차트 5개가 모두 SVG 로 그려진다", async () => {
+  const container = await openPage();
+  for (const id of ["yearly", "yearly-usd", "top-subparts", "top-states", "buckets"]) {
+    await waitFor(() => expect(container.querySelector(`[data-chart='${id}'] svg`), id).not.toBeNull());
+  }
+});
+
+it("가로 막대는 벌금 총액 큰 순 10개, 왼쪽에 이름이 보인다", async () => {
+  const container = await openPage();
+  const labels = (id: string) => Array.from(container.querySelectorAll(`[data-chart='${id}'] span`)).map((el) => el.textContent);
+  await waitFor(() => expect(labels("top-subparts")).toContain("ZZZZ"));
+  const subparts = labels("top-subparts");
+  expect(subparts.indexOf("ZZZZ")).toBeLessThan(subparts.indexOf("M")); // $622M 이 $220K 보다 위
+  expect(subparts).not.toContain("A"); // total 0 → 12개 중 10개에 못 듦
+  expect(subparts.length).toBe(10);
+  const states = labels("top-states");
+  expect(states.slice(0, 2)).toEqual(["NM", "TX"]);
+  expect(states.length).toBe(10);
+});
+
+it("벌금 크기 분포 차트는 구간 5개 라벨을 찍는다", async () => {
+  const container = await openPage();
+  await waitFor(() => expect(container.textContent).toContain("$1M+"));
+  expect(container.querySelector("[data-chart='buckets']")!.textContent).toContain("$10K–100K");
 });
 
 it("Title V deviation 설명은 타일 5개 바로 아래, 표보다 위에 있다", async () => {

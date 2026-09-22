@@ -1,6 +1,7 @@
 """SUU-236: 현재 ECHO release를 세어 대시보드용 echo-stats.json(summary·subparts·yearly)을 만든다.
 
 SUU-242: 벌금 총액(penalty_total_usd)·최대 1건(penalty_max_usd)도 같이 센다.
+SUU-246: yearly 에 그 해 벌금 총액(penalty_usd), 주(state)별 통계, 벌금 크기 구간(penalty_buckets) 추가.
 """
 
 from __future__ import annotations
@@ -17,11 +18,13 @@ from typing import Any
 from echo_release import DATASET, SCOPE_KEY
 
 PENALTY_SINCE = date(2015, 1, 1)
+# 벌금 1건 크기 구간 (상한 미포함). 마지막은 $1M 이상
+PENALTY_BUCKETS = [("<$1K", 1_000), ("$1K–10K", 10_000), ("$10K–100K", 100_000), ("$100K–1M", 1_000_000), ("$1M+", None)]
 YEARLY_FROM = 2000
 DEFAULT_OUT = Path(__file__).resolve().parents[3] / "[4]frontend" / "public" / "echo-stats.json"
 
 _QUERIES = {
-    "echo_facility": "select pgm_sys_id from echo_facility where release_id = %s",
+    "echo_facility": "select pgm_sys_id, state from echo_facility where release_id = %s",
     "echo_industry": "select pgm_sys_id, code_system, code from echo_industry where release_id = %s",
     "echo_program_subpart": "select pgm_sys_id, cfr_subpart, subpart_desc, cfr_part, mapping_status"
                             " from echo_program_subpart where release_id = %s",
@@ -142,13 +145,39 @@ def compute_stats(rows: dict[str, list[dict]]) -> dict:
     penalty_years = Counter(
         day.year for (_, _, day), (_, linked) in penalties.items() if day is not None and linked & facilities
     )
+    penalty_usd_years: Counter = Counter()
+    for (_, _, day), (amount, linked) in penalties.items():
+        if day is not None and linked & facilities:
+            penalty_usd_years[day.year] += amount
     years = [y for y in violations | penalty_years if y >= YEARLY_FROM]
     yearly = [
-        {"year": y, "violations": violations.get(y, 0), "penalties": penalty_years.get(y, 0)}
+        {"year": y, "violations": violations.get(y, 0), "penalties": penalty_years.get(y, 0),
+         "penalty_usd": _number(penalty_usd_years.get(y, 0))}
         for y in range(YEARLY_FROM, max(years) + 1)
     ] if years else []
 
-    return {"summary": summary, "subparts": subparts, "yearly": yearly}
+    # 주별: 시설의 state 로 묶어 같은 통계. 벌금 총액 큰 순
+    state_of = {r["pgm_sys_id"]: r.get("state") for r in rows["echo_facility"]}
+    by_state: dict[str, set[str]] = defaultdict(set)
+    for f in facilities:
+        if state_of.get(f):
+            by_state[state_of[f]].add(f)
+    states = [{"state": st, **_stats_for(members, mfg, violated, penalties, certs)} for st, members in by_state.items()]
+    states.sort(key=lambda s: (-s["penalty_total_usd"], s["state"]))
+
+    # 벌금 1건 크기 구간 (summary 와 같은 2015~ 처분)
+    amounts = [
+        amount for (_, _, day), (amount, linked) in penalties.items()
+        if day is not None and day >= PENALTY_SINCE and linked & facilities
+    ]
+    penalty_buckets = []
+    lower = 0
+    for label, upper in PENALTY_BUCKETS:
+        count = sum(1 for a in amounts if a >= lower and (upper is None or a < upper))
+        penalty_buckets.append({"bucket": label, "count": count})
+        lower = upper or lower
+
+    return {"summary": summary, "subparts": subparts, "yearly": yearly, "states": states, "penalty_buckets": penalty_buckets}
 
 
 def write_stats(stats: dict, path: Path) -> None:

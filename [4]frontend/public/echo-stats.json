@@ -1587,137 +1587,793 @@
     {
       "year": 2000,
       "violations": 184,
-      "penalties": 657
+      "penalties": 657,
+      "penalty_usd": 37976115.31
     },
     {
       "year": 2001,
       "violations": 205,
-      "penalties": 1052
+      "penalties": 1052,
+      "penalty_usd": 125975309
     },
     {
       "year": 2002,
       "violations": 215,
-      "penalties": 1227
+      "penalties": 1227,
+      "penalty_usd": 82833649.07
     },
     {
       "year": 2003,
       "violations": 230,
-      "penalties": 1380
+      "penalties": 1380,
+      "penalty_usd": 81693151
     },
     {
       "year": 2004,
       "violations": 334,
-      "penalties": 1127
+      "penalties": 1127,
+      "penalty_usd": 69267955.65
     },
     {
       "year": 2005,
       "violations": 282,
-      "penalties": 1305
+      "penalties": 1305,
+      "penalty_usd": 131121307.89
     },
     {
       "year": 2006,
       "violations": 410,
-      "penalties": 1360
+      "penalties": 1360,
+      "penalty_usd": 59404693.25
     },
     {
       "year": 2007,
       "violations": 540,
-      "penalties": 1311
+      "penalties": 1311,
+      "penalty_usd": 98772211.39
     },
     {
       "year": 2008,
       "violations": 566,
-      "penalties": 1578
+      "penalties": 1578,
+      "penalty_usd": 89907261.97
     },
     {
       "year": 2009,
       "violations": 702,
-      "penalties": 1657
+      "penalties": 1657,
+      "penalty_usd": 85690601.14
     },
     {
       "year": 2010,
       "violations": 668,
-      "penalties": 1349
+      "penalties": 1349,
+      "penalty_usd": 153881807.12
     },
     {
       "year": 2011,
       "violations": 651,
-      "penalties": 1354
+      "penalties": 1354,
+      "penalty_usd": 82371198.6
     },
     {
       "year": 2012,
       "violations": 554,
-      "penalties": 1134
+      "penalties": 1134,
+      "penalty_usd": 130246852.99
     },
     {
       "year": 2013,
       "violations": 554,
-      "penalties": 1175
+      "penalties": 1175,
+      "penalty_usd": 99453730.02
     },
     {
       "year": 2014,
       "violations": 969,
-      "penalties": 1145
+      "penalties": 1145,
+      "penalty_usd": 49295605.82
     },
     {
       "year": 2015,
       "violations": 1591,
-      "penalties": 960
+      "penalties": 960,
+      "penalty_usd": 39626823.86
     },
     {
       "year": 2016,
       "violations": 1886,
-      "penalties": 1054
+      "penalties": 1054,
+      "penalty_usd": 66815319.48
     },
     {
       "year": 2017,
       "violations": 1949,
-      "penalties": 752
+      "penalties": 752,
+      "penalty_usd": 31478317.79
     },
     {
       "year": 2018,
       "violations": 2203,
-      "penalties": 964
+      "penalties": 964,
+      "penalty_usd": 51041903.39
     },
     {
       "year": 2019,
       "violations": 2286,
-      "penalties": 926
+      "penalties": 926,
+      "penalty_usd": 48588378.46
     },
     {
       "year": 2020,
       "violations": 1929,
-      "penalties": 835
+      "penalties": 835,
+      "penalty_usd": 56980114.31
     },
     {
       "year": 2021,
       "violations": 2524,
-      "penalties": 693
+      "penalties": 693,
+      "penalty_usd": 35667599.56
     },
     {
       "year": 2022,
       "violations": 2298,
-      "penalties": 835
+      "penalties": 835,
+      "penalty_usd": 71998268.31
     },
     {
       "year": 2023,
       "violations": 2855,
-      "penalties": 864
+      "penalties": 864,
+      "penalty_usd": 136174046.39
     },
     {
       "year": 2024,
       "violations": 2470,
-      "penalties": 778
+      "penalties": 778,
+      "penalty_usd": 135917192.26
     },
     {
       "year": 2025,
       "violations": 2279,
-      "penalties": 687
+      "penalties": 687,
+      "penalty_usd": 150279934.89
     },
     {
       "year": 2026,
       "violations": 1286,
-      "penalties": 650
+      "penalties": 650,
+      "penalty_usd": 134215223.98
+    }
+  ],
+  "states": [
+    {
+      "state": "NM",
+      "facilities": 1396,
+      "mfg_facilities": 24,
+      "violation_facility_pct": 11.1,
+      "penalty_count": 106,
+      "penalty_median_usd": 46719.02,
+      "penalty_total_usd": 191816340.34,
+      "penalty_max_usd": 47833048.21,
+      "deviation_y_pct": 12.2
+    },
+    {
+      "state": "TX",
+      "facilities": 2538,
+      "mfg_facilities": 614,
+      "violation_facility_pct": 38.8,
+      "penalty_count": 1757,
+      "penalty_median_usd": 14325,
+      "penalty_total_usd": 144817823.28,
+      "penalty_max_usd": 12100000,
+      "deviation_y_pct": 45.7
+    },
+    {
+      "state": "MI",
+      "facilities": 888,
+      "mfg_facilities": 359,
+      "violation_facility_pct": 48.3,
+      "penalty_count": 143,
+      "penalty_median_usd": 68000,
+      "penalty_total_usd": 123232378,
+      "penalty_max_usd": 100000000,
+      "deviation_y_pct": 22.0
+    },
+    {
+      "state": "IN",
+      "facilities": 991,
+      "mfg_facilities": 713,
+      "violation_facility_pct": 58.8,
+      "penalty_count": 675,
+      "penalty_median_usd": 9000,
+      "penalty_total_usd": 63734137.49,
+      "penalty_max_usd": 31424000,
+      "deviation_y_pct": 2.8
+    },
+    {
+      "state": "CA",
+      "facilities": 343,
+      "mfg_facilities": 213,
+      "violation_facility_pct": 56.9,
+      "penalty_count": 1765,
+      "penalty_median_usd": 6000,
+      "penalty_total_usd": 61754962.5,
+      "penalty_max_usd": 27500000,
+      "deviation_y_pct": 5.5
+    },
+    {
+      "state": "CO",
+      "facilities": 2653,
+      "mfg_facilities": 94,
+      "violation_facility_pct": 24.7,
+      "penalty_count": 473,
+      "penalty_median_usd": 35000,
+      "penalty_total_usd": 49766640,
+      "penalty_max_usd": 3839910,
+      "deviation_y_pct": 0.8
+    },
+    {
+      "state": "PA",
+      "facilities": 2868,
+      "mfg_facilities": 851,
+      "violation_facility_pct": 37.8,
+      "penalty_count": 746,
+      "penalty_median_usd": 5616,
+      "penalty_total_usd": 42347130.22,
+      "penalty_max_usd": 4570500,
+      "deviation_y_pct": 4.2
+    },
+    {
+      "state": "OH",
+      "facilities": 1331,
+      "mfg_facilities": 640,
+      "violation_facility_pct": 38.0,
+      "penalty_count": 106,
+      "penalty_median_usd": 60000,
+      "penalty_total_usd": 42105183.66,
+      "penalty_max_usd": 19000000,
+      "deviation_y_pct": 36.3
+    },
+    {
+      "state": "LA",
+      "facilities": 1676,
+      "mfg_facilities": 307,
+      "violation_facility_pct": 16.7,
+      "penalty_count": 362,
+      "penalty_median_usd": 14250,
+      "penalty_total_usd": 39091493.79,
+      "penalty_max_usd": 3350000,
+      "deviation_y_pct": 34.3
+    },
+    {
+      "state": "IL",
+      "facilities": 989,
+      "mfg_facilities": 560,
+      "violation_facility_pct": 50.6,
+      "penalty_count": 106,
+      "penalty_median_usd": 49950,
+      "penalty_total_usd": 19491145,
+      "penalty_max_usd": 2700000,
+      "deviation_y_pct": 29.7
+    },
+    {
+      "state": "WA",
+      "facilities": 182,
+      "mfg_facilities": 135,
+      "violation_facility_pct": 46.2,
+      "penalty_count": 407,
+      "penalty_median_usd": 5000,
+      "penalty_total_usd": 17569280.33,
+      "penalty_max_usd": 5250000,
+      "deviation_y_pct": 29.1
+    },
+    {
+      "state": "KS",
+      "facilities": 1653,
+      "mfg_facilities": 266,
+      "violation_facility_pct": 18.9,
+      "penalty_count": 82,
+      "penalty_median_usd": 4000,
+      "penalty_total_usd": 17418628.75,
+      "penalty_max_usd": 14341392.11,
+      "deviation_y_pct": 12.7
+    },
+    {
+      "state": "MD",
+      "facilities": 816,
+      "mfg_facilities": 119,
+      "violation_facility_pct": 7.5,
+      "penalty_count": 20,
+      "penalty_median_usd": 22500,
+      "penalty_total_usd": 16578000,
+      "penalty_max_usd": 8000000,
+      "deviation_y_pct": 16.9
+    },
+    {
+      "state": "AL",
+      "facilities": 684,
+      "mfg_facilities": 400,
+      "violation_facility_pct": 40.8,
+      "penalty_count": 147,
+      "penalty_median_usd": 35000,
+      "penalty_total_usd": 11354755,
+      "penalty_max_usd": 1174000,
+      "deviation_y_pct": 18.9
+    },
+    {
+      "state": "NJ",
+      "facilities": 823,
+      "mfg_facilities": 182,
+      "violation_facility_pct": 25.2,
+      "penalty_count": 437,
+      "penalty_median_usd": 4100,
+      "penalty_total_usd": 10896623,
+      "penalty_max_usd": 682000,
+      "deviation_y_pct": 16.1
+    },
+    {
+      "state": "NY",
+      "facilities": 3259,
+      "mfg_facilities": 409,
+      "violation_facility_pct": 16.5,
+      "penalty_count": 118,
+      "penalty_median_usd": 10000,
+      "penalty_total_usd": 10310771,
+      "penalty_max_usd": 2880000,
+      "deviation_y_pct": 7.2
+    },
+    {
+      "state": "WV",
+      "facilities": 342,
+      "mfg_facilities": 94,
+      "violation_facility_pct": 27.8,
+      "penalty_count": 41,
+      "penalty_median_usd": 35000,
+      "penalty_total_usd": 9239981,
+      "penalty_max_usd": 3800000,
+      "deviation_y_pct": 24.6
+    },
+    {
+      "state": "MN",
+      "facilities": 340,
+      "mfg_facilities": 193,
+      "violation_facility_pct": 63.5,
+      "penalty_count": 178,
+      "penalty_median_usd": 7001,
+      "penalty_total_usd": 9226126.57,
+      "penalty_max_usd": 4500000,
+      "deviation_y_pct": 5.2
+    },
+    {
+      "state": "AK",
+      "facilities": 137,
+      "mfg_facilities": 14,
+      "violation_facility_pct": 84.7,
+      "penalty_count": 23,
+      "penalty_median_usd": 141597,
+      "penalty_total_usd": 8496600.33,
+      "penalty_max_usd": 4233333.33,
+      "deviation_y_pct": 3.6
+    },
+    {
+      "state": "MS",
+      "facilities": 525,
+      "mfg_facilities": 255,
+      "violation_facility_pct": 54.5,
+      "penalty_count": 73,
+      "penalty_median_usd": 38000,
+      "penalty_total_usd": 7305787,
+      "penalty_max_usd": 2500000,
+      "deviation_y_pct": 7.1
+    },
+    {
+      "state": "PR",
+      "facilities": 261,
+      "mfg_facilities": 55,
+      "violation_facility_pct": 46.4,
+      "penalty_count": 13,
+      "penalty_median_usd": 200000,
+      "penalty_total_usd": 6948041,
+      "penalty_max_usd": 3125000,
+      "deviation_y_pct": 20.1
+    },
+    {
+      "state": "UT",
+      "facilities": 89,
+      "mfg_facilities": 20,
+      "violation_facility_pct": 46.1,
+      "penalty_count": 22,
+      "penalty_median_usd": 20550,
+      "penalty_total_usd": 6369411.33,
+      "penalty_max_usd": 2683333.33,
+      "deviation_y_pct": 21.8
+    },
+    {
+      "state": "SC",
+      "facilities": 521,
+      "mfg_facilities": 400,
+      "violation_facility_pct": 48.6,
+      "penalty_count": 112,
+      "penalty_median_usd": 11500,
+      "penalty_total_usd": 6222028.88,
+      "penalty_max_usd": 1100000,
+      "deviation_y_pct": 25.6
+    },
+    {
+      "state": "NC",
+      "facilities": 1662,
+      "mfg_facilities": 1140,
+      "violation_facility_pct": 45.8,
+      "penalty_count": 311,
+      "penalty_median_usd": 5256,
+      "penalty_total_usd": 6172003.19,
+      "penalty_max_usd": 975000,
+      "deviation_y_pct": 3.3
+    },
+    {
+      "state": "IA",
+      "facilities": 768,
+      "mfg_facilities": 319,
+      "violation_facility_pct": 29.4,
+      "penalty_count": 26,
+      "penalty_median_usd": 10000,
+      "penalty_total_usd": 5805598,
+      "penalty_max_usd": 3400000,
+      "deviation_y_pct": 33.2
+    },
+    {
+      "state": "VA",
+      "facilities": 1735,
+      "mfg_facilities": 460,
+      "violation_facility_pct": 12.7,
+      "penalty_count": 169,
+      "penalty_median_usd": 15169.7,
+      "penalty_total_usd": 5331243.22,
+      "penalty_max_usd": 263335,
+      "deviation_y_pct": 17.8
+    },
+    {
+      "state": "OK",
+      "facilities": 13837,
+      "mfg_facilities": 229,
+      "violation_facility_pct": 14.9,
+      "penalty_count": 248,
+      "penalty_median_usd": 4981.5,
+      "penalty_total_usd": 5274447.41,
+      "penalty_max_usd": 1200000,
+      "deviation_y_pct": 14.7
+    },
+    {
+      "state": "WI",
+      "facilities": 357,
+      "mfg_facilities": 249,
+      "violation_facility_pct": 73.1,
+      "penalty_count": 33,
+      "penalty_median_usd": 50000,
+      "penalty_total_usd": 4608989.5,
+      "penalty_max_usd": 1600000,
+      "deviation_y_pct": 18.8
+    },
+    {
+      "state": "MA",
+      "facilities": 287,
+      "mfg_facilities": 156,
+      "violation_facility_pct": 37.3,
+      "penalty_count": 28,
+      "penalty_median_usd": 11700,
+      "penalty_total_usd": 4355336.5,
+      "penalty_max_usd": 3850000,
+      "deviation_y_pct": 29.7
+    },
+    {
+      "state": "KY",
+      "facilities": 290,
+      "mfg_facilities": 162,
+      "violation_facility_pct": 35.5,
+      "penalty_count": 62,
+      "penalty_median_usd": 15000,
+      "penalty_total_usd": 4341599,
+      "penalty_max_usd": 1174000,
+      "deviation_y_pct": 9.7
+    },
+    {
+      "state": "WY",
+      "facilities": 59,
+      "mfg_facilities": 12,
+      "violation_facility_pct": 50.8,
+      "penalty_count": 45,
+      "penalty_median_usd": 12000,
+      "penalty_total_usd": 4340050,
+      "penalty_max_usd": 1600000,
+      "deviation_y_pct": 0.7
+    },
+    {
+      "state": "TN",
+      "facilities": 522,
+      "mfg_facilities": 256,
+      "violation_facility_pct": 43.5,
+      "penalty_count": 267,
+      "penalty_median_usd": 3000,
+      "penalty_total_usd": 4148673.22,
+      "penalty_max_usd": 1174000,
+      "deviation_y_pct": 19.1
+    },
+    {
+      "state": "DE",
+      "facilities": 182,
+      "mfg_facilities": 47,
+      "violation_facility_pct": 21.4,
+      "penalty_count": 14,
+      "penalty_median_usd": 190125,
+      "penalty_total_usd": 4003592.29,
+      "penalty_max_usd": 960000,
+      "deviation_y_pct": 20.8
+    },
+    {
+      "state": "FL",
+      "facilities": 648,
+      "mfg_facilities": 286,
+      "violation_facility_pct": 59.4,
+      "penalty_count": 222,
+      "penalty_median_usd": 4500,
+      "penalty_total_usd": 3881570.86,
+      "penalty_max_usd": 831250,
+      "deviation_y_pct": 14.5
+    },
+    {
+      "state": "CT",
+      "facilities": 263,
+      "mfg_facilities": 184,
+      "violation_facility_pct": 38.0,
+      "penalty_count": 26,
+      "penalty_median_usd": 20000,
+      "penalty_total_usd": 3590243,
+      "penalty_max_usd": 2000000,
+      "deviation_y_pct": 0.1
+    },
+    {
+      "state": "MO",
+      "facilities": 708,
+      "mfg_facilities": 256,
+      "violation_facility_pct": 25.8,
+      "penalty_count": 39,
+      "penalty_median_usd": 10500,
+      "penalty_total_usd": 3486451.8,
+      "penalty_max_usd": 1200000,
+      "deviation_y_pct": 23.8
+    },
+    {
+      "state": "AR",
+      "facilities": 938,
+      "mfg_facilities": 338,
+      "violation_facility_pct": 39.4,
+      "penalty_count": 313,
+      "penalty_median_usd": 3168,
+      "penalty_total_usd": 3429684.25,
+      "penalty_max_usd": 600000,
+      "deviation_y_pct": 12.0
+    },
+    {
+      "state": "ID",
+      "facilities": 136,
+      "mfg_facilities": 69,
+      "violation_facility_pct": 32.4,
+      "penalty_count": 23,
+      "penalty_median_usd": 13550,
+      "penalty_total_usd": 2518560,
+      "penalty_max_usd": 1500000,
+      "deviation_y_pct": 31.3
+    },
+    {
+      "state": "OR",
+      "facilities": 136,
+      "mfg_facilities": 103,
+      "violation_facility_pct": 58.8,
+      "penalty_count": 39,
+      "penalty_median_usd": 14423,
+      "penalty_total_usd": 2421133,
+      "penalty_max_usd": 1296885,
+      "deviation_y_pct": 11.2
+    },
+    {
+      "state": "GA",
+      "facilities": 605,
+      "mfg_facilities": 326,
+      "violation_facility_pct": 57.0,
+      "penalty_count": 154,
+      "penalty_median_usd": 5000,
+      "penalty_total_usd": 1639274,
+      "penalty_max_usd": 241420,
+      "deviation_y_pct": 1.6
+    },
+    {
+      "state": "VI",
+      "facilities": 13,
+      "mfg_facilities": 1,
+      "violation_facility_pct": 53.8,
+      "penalty_count": 1,
+      "penalty_median_usd": 1300000,
+      "penalty_total_usd": 1300000,
+      "penalty_max_usd": 1300000,
+      "deviation_y_pct": 16.0
+    },
+    {
+      "state": "RI",
+      "facilities": 88,
+      "mfg_facilities": 55,
+      "violation_facility_pct": 47.7,
+      "penalty_count": 17,
+      "penalty_median_usd": 3000,
+      "penalty_total_usd": 892587,
+      "penalty_max_usd": 396000,
+      "deviation_y_pct": 6.1
+    },
+    {
+      "state": "MT",
+      "facilities": 76,
+      "mfg_facilities": 21,
+      "violation_facility_pct": 64.5,
+      "penalty_count": 12,
+      "penalty_median_usd": 45475,
+      "penalty_total_usd": 849730,
+      "penalty_max_usd": 177950,
+      "deviation_y_pct": 11.5
+    },
+    {
+      "state": "HI",
+      "facilities": 10,
+      "mfg_facilities": 3,
+      "violation_facility_pct": 60.0,
+      "penalty_count": 4,
+      "penalty_median_usd": 83080.5,
+      "penalty_total_usd": 835361,
+      "penalty_max_usd": 650000,
+      "deviation_y_pct": 18.4
+    },
+    {
+      "state": "ND",
+      "facilities": 182,
+      "mfg_facilities": 28,
+      "violation_facility_pct": 8.2,
+      "penalty_count": 2,
+      "penalty_median_usd": 335000,
+      "penalty_total_usd": 670000,
+      "penalty_max_usd": 450000,
+      "deviation_y_pct": 9.9
+    },
+    {
+      "state": "NH",
+      "facilities": 40,
+      "mfg_facilities": 26,
+      "violation_facility_pct": 37.5,
+      "penalty_count": 8,
+      "penalty_median_usd": 40794,
+      "penalty_total_usd": 621213.5,
+      "penalty_max_usd": 310000,
+      "deviation_y_pct": 8.7
+    },
+    {
+      "state": "NV",
+      "facilities": 39,
+      "mfg_facilities": 19,
+      "violation_facility_pct": 48.7,
+      "penalty_count": 30,
+      "penalty_median_usd": 9060,
+      "penalty_total_usd": 415651.8,
+      "penalty_max_usd": 120000,
+      "deviation_y_pct": 33.1
+    },
+    {
+      "state": "DC",
+      "facilities": 243,
+      "mfg_facilities": 4,
+      "violation_facility_pct": 5.3,
+      "penalty_count": 2,
+      "penalty_median_usd": 132435,
+      "penalty_total_usd": 264870,
+      "penalty_max_usd": 250000,
+      "deviation_y_pct": 36.2
+    },
+    {
+      "state": "ME",
+      "facilities": 71,
+      "mfg_facilities": 28,
+      "violation_facility_pct": 32.4,
+      "penalty_count": 4,
+      "penalty_median_usd": 43998.5,
+      "penalty_total_usd": 177907,
+      "penalty_max_usd": 79710,
+      "deviation_y_pct": 30.1
+    },
+    {
+      "state": "NE",
+      "facilities": 162,
+      "mfg_facilities": 64,
+      "violation_facility_pct": 21.0,
+      "penalty_count": 1,
+      "penalty_median_usd": 75000,
+      "penalty_total_usd": 75000,
+      "penalty_max_usd": 75000,
+      "deviation_y_pct": 0.8
+    },
+    {
+      "state": "SD",
+      "facilities": 124,
+      "mfg_facilities": 50,
+      "violation_facility_pct": 36.3,
+      "penalty_count": 3,
+      "penalty_median_usd": 19635,
+      "penalty_total_usd": 48567,
+      "penalty_max_usd": 23242,
+      "deviation_y_pct": 1.0
+    },
+    {
+      "state": "AZ",
+      "facilities": 87,
+      "mfg_facilities": 53,
+      "violation_facility_pct": 49.4,
+      "penalty_count": 6,
+      "penalty_median_usd": 2002.5,
+      "penalty_total_usd": 20925,
+      "penalty_max_usd": 10920,
+      "deviation_y_pct": 9.4
+    },
+    {
+      "state": "GU",
+      "facilities": 8,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 25.0,
+      "penalty_count": 1,
+      "penalty_median_usd": 2000,
+      "penalty_total_usd": 2000,
+      "penalty_max_usd": 2000,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "state": "MP",
+      "facilities": 3,
+      "mfg_facilities": 0,
+      "violation_facility_pct": 66.7,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
+      "deviation_y_pct": 0.0
+    },
+    {
+      "state": "VT",
+      "facilities": 34,
+      "mfg_facilities": 23,
+      "violation_facility_pct": 23.5,
+      "penalty_count": 0,
+      "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
+      "deviation_y_pct": 22.5
+    }
+  ],
+  "penalty_buckets": [
+    {
+      "bucket": "<$1K",
+      "count": 585
+    },
+    {
+      "bucket": "$1K–10K",
+      "count": 4612
+    },
+    {
+      "bucket": "$10K–100K",
+      "count": 3831
+    },
+    {
+      "bucket": "$100K–1M",
+      "count": 867
+    },
+    {
+      "bucket": "$1M+",
+      "count": 103
     }
   ]
 }

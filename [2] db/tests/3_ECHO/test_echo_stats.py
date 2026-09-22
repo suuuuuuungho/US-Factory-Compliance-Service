@@ -30,7 +30,7 @@ from echo_stats import compute_stats, current_release_id, fetch_rows, write_stat
 
 def base_rows() -> dict[str, list[dict]]:
     return {
-        "echo_facility": [{"pgm_sys_id": f} for f in ("F1", "F2", "F3")],
+        "echo_facility": [{"pgm_sys_id": "F1", "state": "TX"}, {"pgm_sys_id": "F2", "state": "TX"}, {"pgm_sys_id": "F3", "state": "LA"}],
         "echo_industry": [
             {"pgm_sys_id": "F1", "code_system": "NAICS", "code": "331110"},
             {"pgm_sys_id": "F2", "code_system": "NAICS", "code": "493110"},
@@ -118,10 +118,10 @@ def test_yearly_counts_violations_once_and_penalties_by_action_year():
 
     years = {y["year"]: y for y in stats["yearly"]}
     assert [y["year"] for y in stats["yearly"]] == list(range(2000, 2022))  # 2000부터 마지막 해까지 빈 해도 0으로
-    assert years[2014] == {"year": 2014, "violations": 0, "penalties": 1}
-    assert years[2016] == {"year": 2016, "violations": 1, "penalties": 0}
-    assert years[2019] == {"year": 2019, "violations": 0, "penalties": 1}
-    assert years[2021] == {"year": 2021, "violations": 1, "penalties": 0}  # V2는 F1·F3 둘 다 붙었지만 1건
+    assert years[2014] == {"year": 2014, "violations": 0, "penalties": 1, "penalty_usd": 5000}
+    assert years[2016] == {"year": 2016, "violations": 1, "penalties": 0, "penalty_usd": 0}
+    assert years[2019] == {"year": 2019, "violations": 0, "penalties": 1, "penalty_usd": 12000}
+    assert years[2021] == {"year": 2021, "violations": 1, "penalties": 0, "penalty_usd": 0}  # V2는 F1·F3 둘 다 붙었지만 1건
     assert sum(y["violations"] for y in stats["yearly"]) == 2
     assert sum(y["penalties"] for y in stats["yearly"]) == 2  # A1(2014)·A2(2019). A3는 금액 0
 
@@ -156,6 +156,33 @@ def test_penalty_total_and_max_over_two_actions():
     assert _subpart(stats, "ZZZZ")["penalty_total_usd"] == 42000  # F1 은 ZZZZ·DDDDD 둘 다
 
 
+def test_states_group_facilities_by_state_sorted_by_penalty_total():
+    stats = compute_stats(base_rows())
+
+    # SUU-246: TX(F1·F2) 벌금 A2 $12,000 (A1 은 2015 전) · LA(F3) 벌금 없음
+    assert [s["state"] for s in stats["states"]] == ["TX", "LA"]
+    tx = stats["states"][0]
+    assert tx["facilities"] == 2 and tx["violation_facility_pct"] == 50.0
+    assert tx["penalty_count"] == 1 and tx["penalty_total_usd"] == 12000
+    assert stats["states"][1]["penalty_total_usd"] == 0
+
+
+def test_penalty_buckets_count_each_action_once():
+    rows = base_rows()
+    # A2 $12,000(2019) 에 더해 $500(2020)·$2,500,000(2021) 처분 → <$1K 1 · $10K–100K 1 · $1M+ 1
+    for aid, day, amount in (("A5", date(2020, 1, 5), "500"), ("A6", date(2021, 6, 6), "2500000")):
+        rows["echo_activity"].append({"activity_kind": "formal", "activity_id": aid, "activity_date": day, "attributes": {}})
+        rows["echo_activity_facility"].append({"activity_kind": "formal", "activity_id": aid, "pgm_sys_id": "F1"})
+        rows["echo_penalty"].append({"penalty_key": f"formal:{aid}", "activity_kind": "formal", "activity_id": aid, "amount": Decimal(amount)})
+
+    stats = compute_stats(rows)
+
+    assert [(b["bucket"], b["count"]) for b in stats["penalty_buckets"]] == [
+        ("<$1K", 1), ("$1K–10K", 0), ("$10K–100K", 1), ("$100K–1M", 0), ("$1M+", 1),
+    ]
+    assert stats["yearly"][-1]["penalty_usd"] == 2500000  # 2021
+
+
 def test_empty_release_gives_zero_and_null_not_division_error():
     stats = compute_stats({table: [] for table in base_rows()})
 
@@ -163,7 +190,8 @@ def test_empty_release_gives_zero_and_null_not_division_error():
         "facilities": 0, "mfg_facilities": 0, "violation_facility_pct": 0.0,
         "penalty_count": 0, "penalty_median_usd": None, "penalty_total_usd": 0, "penalty_max_usd": None, "deviation_y_pct": 0.0,
     }
-    assert stats["subparts"] == [] and stats["yearly"] == []
+    assert stats["subparts"] == [] and stats["yearly"] == [] and stats["states"] == []
+    assert [b["count"] for b in stats["penalty_buckets"]] == [0, 0, 0, 0, 0]
 
 
 def test_write_stats_saves_json_file(tmp_path):
@@ -172,7 +200,7 @@ def test_write_stats_saves_json_file(tmp_path):
     write_stats(compute_stats(base_rows()), out)
 
     data = json.loads(out.read_text(encoding="utf-8"))
-    assert set(data) == {"summary", "subparts", "yearly"}
+    assert set(data) == {"summary", "subparts", "yearly", "states", "penalty_buckets"}
     assert data["summary"]["facilities"] == 3
 
 
