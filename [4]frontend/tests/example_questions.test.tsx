@@ -4,9 +4,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import Applicability from "../src/app/applicability/page";
 
-it("h1 클래스가 28px 굵게다", () => {
+it("h1 클래스가 28px 굵게 New York(font-serif)다", () => {
   render(<Applicability />);
-  expect(screen.getByRole("heading", { level: 1 }).className).toBe("text-[28px] font-bold text-ink");
+  expect(screen.getByRole("heading", { level: 1 }).className).toBe("font-serif text-[28px] font-bold text-ink");
 });
 
 it("PromptBar 너비가 640px 다", () => {

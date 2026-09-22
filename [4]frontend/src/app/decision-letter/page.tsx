@@ -2,7 +2,7 @@
 export default function DecisionLetterPage() {
   return (
     <main className="flex-1 px-6 py-10">
-      <h1 className="text-[28px] font-bold text-ink">EPA Decision Letter</h1>
+      <h1 className="text-center font-serif text-[28px] font-bold text-ink">EPA Decision Letter</h1>
     </main>
   );
 }

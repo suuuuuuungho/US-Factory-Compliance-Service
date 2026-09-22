@@ -57,7 +57,7 @@ export default function FederalRegisterPage() {
             </svg>
           </button>
         ) : null}
-        <h1 className="text-center text-[28px] font-bold text-ink">Federal Register</h1>
+        <h1 className="text-center font-serif text-[28px] font-bold text-ink">Federal Register</h1>
       </div>
       {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
       {selectedDocument ? (
