@@ -11,7 +11,7 @@ it("header에 bg-canvas·border-b 없고, 메뉴 nav가 가운데 칸, 제목·�
   expect(header.classList.contains("border-b")).toBe(false);
   expect(header.classList.contains("grid-cols-[1fr_auto_1fr]")).toBe(true);
   expect(screen.getByRole("navigation").classList.contains("col-start-2")).toBe(true);
-  for (const name of ["US Factory Compliance AI Service", "About", "Applicability", "Federal Register", "EPA ECHO", "EPA Decision Letter"]) {
+  for (const name of ["US Factory Compliance AI Service", "About", "eCFR Applicability", "Federal Register", "EPA ECHO", "EPA Decision Letter"]) {
     expect(screen.getByRole("link", { name }).classList.contains("text-white")).toBe(true);
   }
 });

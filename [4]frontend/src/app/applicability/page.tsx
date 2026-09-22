@@ -135,7 +135,7 @@ export default function ApplicabilityPage() {
     >
       {!asked && (
         <>
-          <h1 className="font-serif text-[28px] font-bold text-ink">Applicability</h1>
+          <h1 className="font-serif text-[28px] font-bold text-ink">eCFR Applicability</h1>
           <p className="text-lg text-accent-blue">
             40 CFR Part 63 applicability criteria, with the sections to check.
           </p>

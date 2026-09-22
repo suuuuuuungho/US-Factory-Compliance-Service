@@ -4,12 +4,12 @@ import { expect, it } from "vitest";
 import Applicability from "../src/app/applicability/page";
 import Home from "../src/app/page";
 
-it("/applicability 에 질문 textarea + Send 버튼이 있고 h1이 Applicability 다", () => {
+it("/applicability 에 질문 textarea + Send 버튼이 있고 h1이 eCFR Applicability 다", () => {
   render(<Applicability />);
   expect(screen.getByRole("textbox")).toBeTruthy();
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "x" } }); // SUU-214: 글이 없으면 Send 가 잠겨 있다
   expect(screen.getByRole("button", { name: "Send" })).toBeTruthy();
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Applicability");
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("eCFR Applicability");
 });
 
 it("/ 에는 질문 textarea가 없다", () => {

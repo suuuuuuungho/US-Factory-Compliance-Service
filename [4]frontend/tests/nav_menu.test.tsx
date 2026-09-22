@@ -13,7 +13,7 @@ it("TopNav에 링크 5개가 순서대로 있고 href가 맞다", () => {
   const links = screen.getAllByRole("link").filter((a) => a.getAttribute("href") !== "/");
   expect(links.map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
     ["About", "/about"],
-    ["Applicability", "/applicability"],
+    ["eCFR Applicability", "/applicability"],
     ["Federal Register", "/federal-register"],
     ["EPA ECHO", "/echo"],
     ["EPA Decision Letter", "/decision-letter"],

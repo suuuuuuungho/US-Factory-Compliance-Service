@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const MENU = [
   ["About", "/about"],
-  ["Applicability", "/applicability"],
+  ["eCFR Applicability", "/applicability"],
   ["Federal Register", "/federal-register"],
   ["EPA ECHO", "/echo"],
   ["EPA Decision Letter", "/decision-letter"],

@@ -7,7 +7,7 @@ it("상단바에 메뉴 링크가 있고 href가 맞다", () => {
   render(<TopNav />);
   const expected = [
     ["About", "/about"],
-    ["Applicability", "/applicability"],
+    ["eCFR Applicability", "/applicability"],
     ["Federal Register", "/federal-register"],
     ["EPA ECHO", "/echo"],
     ["EPA Decision Letter", "/decision-letter"],

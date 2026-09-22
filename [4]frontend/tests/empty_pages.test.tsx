@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import Applicability from "../src/app/applicability/page";
 
-it("/applicability 페이지 h1이 Applicability 다", () => {
+it("/applicability 페이지 h1이 eCFR Applicability 다", () => {
   render(<Applicability />);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Applicability");
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("eCFR Applicability");
 });
