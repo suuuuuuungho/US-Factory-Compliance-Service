@@ -1,5 +1,6 @@
 // SUU-233: 줄마다 Before(원문) | After(개정문) 두 칸으로 나란히. 바뀐 줄은 왼쪽에 빠진 단어, 오른쪽에 새 단어만 mark.
 // SUU-238: 섹션 카드 대신 스크롤 영역 하나. 고정 머리글이 지금 보는 조항(§)으로 바뀐다.
+// SUU-239: Applicability 카드(CARD/CARD_TITLE)와 같은 모양. 문서 제목·인용도 머리글 안에.
 "use client";
 
 import { useRef, useState } from "react";
@@ -129,34 +130,33 @@ export function FrDiff({ document }: { document: FrDiffDocument }) {
   const current = document.sections[Math.min(currentIndex, document.sections.length - 1)];
 
   return (
-    <article>
-      <header>
-        <p className="text-sm text-ink-muted">{document.citation}</p>
-        <h2 className="mt-1 text-xl font-semibold text-ink">{document.title}</h2>
-      </header>
-      <div
-        ref={scrollRef}
-        data-diff-scroll
-        onScroll={handleScroll}
-        className="mt-4 max-h-[calc(100vh-14rem)] overflow-y-auto rounded-md border border-hairline bg-surface-1"
-      >
-        <div ref={headerRef} data-diff-current className="sticky top-0 z-10 border-b border-hairline bg-surface-1 px-4 pt-3 pb-2">
-          <h3 className="font-medium text-ink">§ {current.section}</h3>
-          <div className="mt-2 grid grid-cols-2 gap-px text-xs text-ink-muted">
-            <div className="px-2">Before ({current.before_date})</div>
-            <div className="px-2">After ({current.after_date})</div>
-          </div>
+    <div
+      ref={scrollRef}
+      data-diff-scroll
+      onScroll={handleScroll}
+      className="max-h-[calc(100dvh-10rem)] min-h-0 flex-1 overflow-y-auto rounded-lg border border-hairline bg-surface-1 md:max-h-none"
+    >
+      <div ref={headerRef} data-diff-current className="sticky top-0 z-10 bg-gradient-violet px-5 py-3 text-ink">
+        <div className="flex items-baseline justify-between gap-4">
+          <h3 className="text-[22px] font-bold leading-tight tracking-[-0.8px]">§ {current.section}</h3>
+          <p className="min-w-0 truncate text-sm" title={document.title}>
+            {document.citation} · {document.title}
+          </p>
         </div>
-        <div className="px-4 pb-4 text-sm leading-6">
-          {document.sections.map((section) => (
-            <div key={section.node_key} data-diff-section className="space-y-1 pt-3">
-              {section.rows.map((row, index) => (
-                <Row key={index} row={row} />
-              ))}
-            </div>
-          ))}
+        <div className="mt-2 grid grid-cols-2 gap-px text-xs">
+          <div className="px-2">Before ({current.before_date})</div>
+          <div className="px-2">After ({current.after_date})</div>
         </div>
       </div>
-    </article>
+      <div className="px-5 pb-5 text-sm leading-6">
+        {document.sections.map((section) => (
+          <div key={section.node_key} data-diff-section className="space-y-1 pt-3">
+            {section.rows.map((row, index) => (
+              <Row key={index} row={row} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
