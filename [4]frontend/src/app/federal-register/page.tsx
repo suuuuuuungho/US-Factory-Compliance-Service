@@ -2,6 +2,7 @@
 // SUU-232: 머리글 영어, 제목은 한 줄(truncate). SUU-234: Section 열은 너무 길어 뺐다.
 // SUU-238: 문서를 고르면 목록은 숨기고 diff 만. 뒤로 버튼으로 목록 복귀.
 // SUU-239: 제목 가운데, 뒤로 버튼은 제목과 같은 줄. diff 는 Applicability 처럼 화면 남는 높이를 다 쓴다.
+// SUU-243: 목록은 남는 높이 안에서 스크롤, 10개씩 이전/다음 페이지.
 // SUU-241: flex-1 이면 basis 0% 라 내용 크기만큼 main 이 커져 h-[calc] 가 무시됐다 → min-h-0 flex-auto.
 "use client";
 
@@ -12,10 +13,15 @@ type FrDiffPayload = {
   documents: FrDiffDocument[];
 };
 
+const PAGE_SIZE = 10;
+
 export default function FederalRegisterPage() {
   const [documents, setDocuments] = useState<FrDiffDocument[]>([]);
   const [selectedDocument, setSelectedDocument] = useState<FrDiffDocument | null>(null);
   const [error, setError] = useState(false);
+  const [page, setPage] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(documents.length / PAGE_SIZE));
+  const pageDocuments = documents.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +64,8 @@ export default function FederalRegisterPage() {
           <FrDiff document={selectedDocument} />
         </section>
       ) : (
-        <div data-pane="list" className="mx-auto mt-6 w-full max-w-4xl">
+        <div className="mt-6 flex min-h-0 flex-1 flex-col">
+          <div data-pane="list" className="scheme-dark mx-auto w-full max-w-4xl min-h-0 flex-1 overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="border-b border-hairline text-ink-muted">
               <tr>
@@ -70,7 +77,7 @@ export default function FederalRegisterPage() {
               </tr>
             </thead>
             <tbody>
-              {documents.map((document, index) => {
+              {pageDocuments.map((document, index) => {
                 const subparts = [...new Set(
                   document.sections
                     .map((section) => section.node_key?.split("/")[2]?.replace("subpart-", ""))
@@ -85,7 +92,7 @@ export default function FederalRegisterPage() {
                       document.reason ? "text-ink-muted" : "text-ink"
                     }`}
                   >
-                    <td className="px-3 py-3">{index + 1}</td>
+                    <td className="px-3 py-3">{page * PAGE_SIZE + index + 1}</td>
                     <td className="px-3 py-3 whitespace-nowrap">{subparts}</td>
                     {/* w-full max-w-0: 남는 폭을 제목이 다 쓰고, 넘치면 한 줄로 자른다 */}
                     <td className="w-full max-w-0 px-3 py-3">
@@ -103,6 +110,26 @@ export default function FederalRegisterPage() {
               })}
             </tbody>
           </table>
+          </div>
+          <div className="flex items-center justify-center gap-4 py-3 text-sm text-ink-muted">
+            <button
+              type="button"
+              onClick={() => setPage((current) => current - 1)}
+              disabled={page === 0}
+              className="rounded-full border border-hairline px-3 py-1 text-ink transition-colors hover:bg-surface-1 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              이전
+            </button>
+            <span>{page + 1} / {pageCount}</span>
+            <button
+              type="button"
+              onClick={() => setPage((current) => current + 1)}
+              disabled={page >= pageCount - 1}
+              className="rounded-full border border-hairline px-3 py-1 text-ink transition-colors hover:bg-surface-1 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              다음
+            </button>
+          </div>
         </div>
       )}
     </main>
