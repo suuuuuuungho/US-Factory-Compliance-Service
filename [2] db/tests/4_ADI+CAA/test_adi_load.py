@@ -165,6 +165,17 @@ def test_current_ecfr_and_echo_releases_fill_the_composite_fk_columns(adi):
     assert candidates[0]["document_id"] == adi.rows("adi_facility_candidate")[0]["document_id"]
 
 
+def test_copy_column_lists_have_no_duplicate_names(adi):
+    """SUU-225: 실 DB 는 `column "historical_ecfr_release_id" specified more than once` 로 COPY 를 거부한다.
+    jsonl 에 이미 있는 FK 열을 다시 덧붙이면 안 된다."""
+    conn = _conn_for(adi)
+
+    load_release(adi.root, adi.as_of, RELEASE_ID, conn=conn)
+
+    for table, columns in conn.columns.items():
+        assert len(columns) == len(set(columns)), (table, columns)
+
+
 def test_missing_current_ecfr_or_echo_release_raises_instead_of_loading_half(adi):
     """common_dataset_current 에 ecfr·echo 가 없으면 복합 FK 를 채울 수 없다. 조용히 NULL 로 넣지 않는다."""
     conn = _conn_for(adi, current={"ecfr": ECFR_RELEASE})

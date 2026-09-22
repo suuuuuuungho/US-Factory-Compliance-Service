@@ -129,3 +129,20 @@ def test_next_release_reuses_raw_objects_already_registered(adi):
     assert [len(batch) for batch in known.inserts] == [5]
     links = {l["object_id"] for l in client.table("common_release_object").rows if l["release_id"] == release_id}
     assert old_id in links and len(links) == 6
+
+
+def test_same_file_in_two_manifests_is_one_raw_object_and_one_link(adi):
+    """SUU-225: 같은 파일이 (같은 URL·sha256으로) manifest 두 곳에 있어도 raw_object 1개, release_object 1개."""
+    from datetime import date
+    from ecfr_raw import save_raw
+
+    url, _ = adi.objects["M170010"]
+    body = next((adi.root / "adi_letters" / "shard_1").glob("raw/2026-09-17/*/M170010.pdf")).read_bytes()
+    save_raw(adi.root / "adi_letters", date(2026, 9, 17), "M170010.pdf", body, source_url=url, final_url=url, http_status=200, media_type="application/pdf")
+    client = FakeClient()
+
+    release_id = register_release(adi.root, adi.as_of, client=client)
+
+    assert len(client.table("common_raw_object").rows) == 6
+    links = [l for l in client.table("common_release_object").rows if l["release_id"] == release_id]
+    assert len(links) == 6 and len({l["object_id"] for l in links}) == 6

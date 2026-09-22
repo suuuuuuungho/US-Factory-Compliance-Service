@@ -23,10 +23,14 @@ def _timestamp(now: datetime | None) -> str:
 
 
 def _entries(root: Path, raw_as_of: str) -> list[dict[str, Any]]:
-    entries = []
+    entries, seen = [], set()
     for manifest in sorted(root.glob(f"**/raw/{raw_as_of}/manifest.json")):
         dataset_root = manifest.parent.parents[1]
         for entry in json.loads(manifest.read_text(encoding="utf-8")):
+            # 같은 파일이 두 manifest에 있으면(수집을 두 번 한 경우) 한 번만 등록한다.
+            if (entry["source_url"], entry["sha256"]) in seen:
+                continue
+            seen.add((entry["source_url"], entry["sha256"]))
             entries.append({**entry, "storage_uri": (dataset_root / entry["path"]).relative_to(root).as_posix()})
     return entries
 
