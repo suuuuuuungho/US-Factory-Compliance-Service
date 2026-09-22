@@ -63,5 +63,4 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 # Linear 이슈, 브랜치, PR, 커밋을 만들기 전에 항상 이 규칙 파일을 읽고 그대로 지킨다.
 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\4) workflow\2_rules.md`
 
-
-
+# 새 터미널을 열어 작업할 때는 무조건 worktree를 나눈다 (`claude --worktree <이름>`). 같은 폴더에서 터미널 두 개로 git을 만지지 않는다. 자세한 규칙은 위 `2_rules.md` 3절.
