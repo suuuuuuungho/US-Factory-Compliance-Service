@@ -1,5 +1,5 @@
 // SUU-238: 문서를 고르면 목록은 사라지고 diff 만 한 스크롤 영역에 이어진다. 고정 머리글이 지금 보는 조항으로 바뀐다.
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import FederalRegisterPage from "../src/app/federal-register/page";
 
@@ -105,4 +105,24 @@ it("머리글은 색 없이 § 옆에 제목, 스크롤바 어둡게, 카드 좌
   const scroll = container.querySelector("[data-diff-scroll]") as HTMLElement;
   expect(scroll.className).toMatch(/scheme-dark/);
   expect(container.querySelector("[data-pane='diff']")!.className).toMatch(/max-w-6xl/);
+});
+
+// SUU-241: main 이 내용만큼 커지면 상자가 안 스크롤되고 머리글이 같이 올라가 버린다.
+it("main 은 flex-1 이 아니라 min-h-0 flex-auto 라서 h-[calc] 높이가 먹힌다", async () => {
+  const container = await openDiff();
+  const main = container.querySelector("main")!;
+  expect(main.className).toMatch(/min-h-0/);
+  expect(main.className).toMatch(/flex-auto/);
+  expect(main.className).not.toMatch(/\bflex-1\b/);
+  expect(main.className).toMatch(/md:h-\[calc\(100dvh-60px\)\]/);
+});
+
+it("Before/After 머리글은 가운데, 두 칸 사이에 세로 구분선", async () => {
+  const container = await openDiff();
+  const header = container.querySelector("[data-diff-current]") as HTMLElement;
+  const labels = within(header).getByText(/^Before/).parentElement!;
+  expect(labels.className).toMatch(/text-center/);
+  const divider = container.querySelector("[data-diff-scroll] [data-diff-divider]") as HTMLElement;
+  expect(divider.className).toMatch(/left-1\/2/);
+  expect(divider.className).toMatch(/border-l/);
 });

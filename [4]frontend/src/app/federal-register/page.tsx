@@ -2,6 +2,7 @@
 // SUU-232: 머리글 영어, 제목은 한 줄(truncate). SUU-234: Section 열은 너무 길어 뺐다.
 // SUU-238: 문서를 고르면 목록은 숨기고 diff 만. 뒤로 버튼으로 목록 복귀.
 // SUU-239: 제목 가운데, 뒤로 버튼은 제목과 같은 줄. diff 는 Applicability 처럼 화면 남는 높이를 다 쓴다.
+// SUU-241: flex-1 이면 basis 0% 라 내용 크기만큼 main 이 커져 h-[calc] 가 무시됐다 → min-h-0 flex-auto.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -34,7 +35,7 @@ export default function FederalRegisterPage() {
   }, []);
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-6 md:h-[calc(100dvh-60px)] md:overflow-hidden">
+    <main className="flex min-h-0 flex-auto flex-col px-6 py-6 md:h-[calc(100dvh-60px)] md:overflow-hidden">
       <div className="relative flex items-center justify-center">
         {selectedDocument ? (
           <button
