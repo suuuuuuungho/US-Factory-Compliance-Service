@@ -1,4 +1,4 @@
-// SUU-231: /federal-register 목록이 표(#·Subpart·Section·Title·Effective·+/−)로 가운데 보이고,
+// SUU-231: /federal-register 목록이 표(#·Subpart·Title·Effective·+/−)로 가운데 보이고,
 // 한 줄을 누르면 표가 왼쪽 열로 가고 오른쪽에 diff가 붙는다.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
@@ -52,11 +52,11 @@ async function renderPage() {
 
 afterEach(() => vi.unstubAllGlobals());
 
-// SUU-232: 머리글은 영어. 연번은 #. Section 열(amended_sections) 추가.
-it("표 머리글: #·Subpart·Section·Title·Effective·Changes", async () => {
+// SUU-232: 머리글은 영어. 연번은 #. SUU-234: Section 열은 뺐다.
+it("표 머리글: #·Subpart·Title·Effective·Changes", async () => {
   await renderPage();
   const headers = screen.getAllByRole("columnheader").map((h) => h.textContent?.trim());
-  expect(headers).toEqual(["#", "Subpart", "Section", "Title", "Effective", "Changes"]);
+  expect(headers).toEqual(["#", "Subpart", "Title", "Effective", "Changes"]);
 });
 
 // SUU-232: 제목은 한 줄로 자르고(truncate) 전체 제목은 title 속성에 둔다.
@@ -69,14 +69,16 @@ it("제목 칸은 한 줄(truncate)이고 title 속성에 전체 제목이 있�
   expect(truncated!.getAttribute("title")).toBe(DOC.title);
 });
 
-it("첫 행: # 1, subpart 'A, T', section '63.14, 63.460', 개정일은 시행일", async () => {
+it("첫 행: # 1, subpart 'A, T', 개정일은 시행일, 조항 번호는 표에 없다", async () => {
   await renderPage();
   const row = screen.getByRole("button", { name: /Halogenated Solvent Cleaning/ }).closest("tr")!;
   const cells = within(row).getAllByRole("cell").map((c) => c.textContent?.trim());
   expect(cells[0]).toBe("1");
   expect(cells[1]).toBe("A, T");
-  expect(cells[2]).toBe("63.14, 63.460"); // SUU-232: amended_sections
-  expect(cells[4]).toBe("2025-05-09");
+  expect(cells[3]).toBe("2025-05-09");
+  // SUU-234: 조항 번호(amended_sections)는 표에 없다
+  expect(cells.length).toBe(5);
+  expect(screen.queryByText(/63\.460/)).toBeNull();
   // 게재일은 표에 없다
   expect(screen.queryByText(/2025-03-10/)).toBeNull();
 });
@@ -89,14 +91,13 @@ it("+N 은 초록(semantic-success), −M 은 빨강(gradient-coral) 으로 따�
   expect(minus.className).toMatch(/gradient-coral/);
 });
 
-it("diff 없는 문서는 # 2, subpart '—', section '—', 개정일 '—', 행이 회색(text-ink-muted)", async () => {
+it("diff 없는 문서는 # 2, subpart '—', 개정일 '—', 행이 회색(text-ink-muted)", async () => {
   await renderPage();
   const row = screen.getByRole("button", { name: /Correction Without Effective Date/ }).closest("tr")!;
   const cells = within(row).getAllByRole("cell").map((c) => c.textContent?.trim());
   expect(cells[0]).toBe("2");
   expect(cells[1]).toBe("—");
-  expect(cells[2]).toBe("—");
-  expect(cells[4]).toBe("—");
+  expect(cells[3]).toBe("—");
   expect(row.className).toMatch(/text-ink-muted/);
 });
 
