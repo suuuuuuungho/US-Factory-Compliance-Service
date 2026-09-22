@@ -91,6 +91,8 @@ def test_summary_matches_hand_count():
         "violation_facility_pct": 66.7,
         "penalty_count": 1,
         "penalty_median_usd": 12000,
+        "penalty_total_usd": 12000,
+        "penalty_max_usd": 12000,
         "deviation_y_pct": 66.7,
     }
 
@@ -102,12 +104,12 @@ def test_subparts_match_hand_count_and_ignore_unmapped_and_part_60():
     assert _subpart(stats, "ZZZZ") == {
         "code": "ZZZZ", "desc": "Stationary RICE",
         "facilities": 2, "mfg_facilities": 1, "violation_facility_pct": 50.0,
-        "penalty_count": 1, "penalty_median_usd": 12000, "deviation_y_pct": 50.0,
+        "penalty_count": 1, "penalty_median_usd": 12000, "penalty_total_usd": 12000, "penalty_max_usd": 12000, "deviation_y_pct": 50.0,
     }
     assert _subpart(stats, "DDDDD") == {
         "code": "DDDDD", "desc": "Industrial Boilers",
         "facilities": 2, "mfg_facilities": 2, "violation_facility_pct": 100.0,
-        "penalty_count": 1, "penalty_median_usd": 12000, "deviation_y_pct": 100.0,
+        "penalty_count": 1, "penalty_median_usd": 12000, "penalty_total_usd": 12000, "penalty_max_usd": 12000, "deviation_y_pct": 100.0,
     }
 
 
@@ -138,12 +140,28 @@ def test_same_action_on_two_facilities_counts_penalty_once():
     assert sum(y["penalties"] for y in stats["yearly"]) == 2
 
 
+def test_penalty_total_and_max_over_two_actions():
+    rows = base_rows()
+    # SUU-242: F1에 2021년 $30,000 처분이 하나 더 → 총액 42,000 · 최대 30,000 · 중앙값 21,000
+    rows["echo_activity"].append({"activity_kind": "formal", "activity_id": "A4", "activity_date": date(2021, 3, 2), "attributes": {}})
+    rows["echo_activity_facility"].append({"activity_kind": "formal", "activity_id": "A4", "pgm_sys_id": "F1"})
+    rows["echo_penalty"].append({"penalty_key": "formal:14", "activity_kind": "formal", "activity_id": "A4", "amount": Decimal("30000")})
+
+    stats = compute_stats(rows)
+
+    assert stats["summary"]["penalty_count"] == 2
+    assert stats["summary"]["penalty_total_usd"] == 42000
+    assert stats["summary"]["penalty_max_usd"] == 30000
+    assert stats["summary"]["penalty_median_usd"] == 21000
+    assert _subpart(stats, "ZZZZ")["penalty_total_usd"] == 42000  # F1 은 ZZZZ·DDDDD 둘 다
+
+
 def test_empty_release_gives_zero_and_null_not_division_error():
     stats = compute_stats({table: [] for table in base_rows()})
 
     assert stats["summary"] == {
         "facilities": 0, "mfg_facilities": 0, "violation_facility_pct": 0.0,
-        "penalty_count": 0, "penalty_median_usd": None, "deviation_y_pct": 0.0,
+        "penalty_count": 0, "penalty_median_usd": None, "penalty_total_usd": 0, "penalty_max_usd": None, "deviation_y_pct": 0.0,
     }
     assert stats["subparts"] == [] and stats["yearly"] == []
 

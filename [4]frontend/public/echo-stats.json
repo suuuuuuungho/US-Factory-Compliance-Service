@@ -5,6 +5,8 @@
     "violation_facility_pct": 27.9,
     "penalty_count": 9998,
     "penalty_median_usd": 9098.5,
+    "penalty_total_usd": 958783122.68,
+    "penalty_max_usd": 100000000,
     "deviation_y_pct": 18.5
   },
   "subparts": [
@@ -16,6 +18,8 @@
       "violation_facility_pct": 26.0,
       "penalty_count": 5227,
       "penalty_median_usd": 11250,
+      "penalty_total_usd": 622077405.61,
+      "penalty_max_usd": 47833048.21,
       "deviation_y_pct": 21.7
     },
     {
@@ -26,6 +30,8 @@
       "violation_facility_pct": 7.0,
       "penalty_count": 29,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 220790.68,
+      "penalty_max_usd": 48254,
       "deviation_y_pct": 10.0
     },
     {
@@ -36,6 +42,8 @@
       "violation_facility_pct": 49.2,
       "penalty_count": 2635,
       "penalty_median_usd": 9360,
+      "penalty_total_usd": 216294446.88,
+      "penalty_max_usd": 31604865.9,
       "deviation_y_pct": 20.8
     },
     {
@@ -46,6 +54,8 @@
       "violation_facility_pct": 29.2,
       "penalty_count": 613,
       "penalty_median_usd": 11700,
+      "penalty_total_usd": 130907768.83,
+      "penalty_max_usd": 47833048.21,
       "deviation_y_pct": 24.4
     },
     {
@@ -56,6 +66,8 @@
       "violation_facility_pct": 75.7,
       "penalty_count": 2705,
       "penalty_median_usd": 13125,
+      "penalty_total_usd": 432844351.12,
+      "penalty_max_usd": 47833048.21,
       "deviation_y_pct": 26.4
     },
     {
@@ -66,6 +78,8 @@
       "violation_facility_pct": 35.8,
       "penalty_count": 114,
       "penalty_median_usd": 3745,
+      "penalty_total_usd": 1309530.11,
+      "penalty_max_usd": 200000,
       "deviation_y_pct": 10.3
     },
     {
@@ -76,6 +90,8 @@
       "violation_facility_pct": 28.3,
       "penalty_count": 90,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 5145301.49,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 16.2
     },
     {
@@ -86,6 +102,8 @@
       "violation_facility_pct": 55.4,
       "penalty_count": 178,
       "penalty_median_usd": 5250,
+      "penalty_total_usd": 9028514.78,
+      "penalty_max_usd": 1035885,
       "deviation_y_pct": 18.0
     },
     {
@@ -96,6 +114,8 @@
       "violation_facility_pct": 64.0,
       "penalty_count": 222,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 2989534.97,
+      "penalty_max_usd": 206620,
       "deviation_y_pct": 9.0
     },
     {
@@ -106,6 +126,8 @@
       "violation_facility_pct": 40.1,
       "penalty_count": 168,
       "penalty_median_usd": 5752,
+      "penalty_total_usd": 7225351.82,
+      "penalty_max_usd": 1100000,
       "deviation_y_pct": 16.5
     },
     {
@@ -116,6 +138,8 @@
       "violation_facility_pct": 71.3,
       "penalty_count": 244,
       "penalty_median_usd": 6002.25,
+      "penalty_total_usd": 7774347.95,
+      "penalty_max_usd": 1600000,
       "deviation_y_pct": 14.1
     },
     {
@@ -126,6 +150,8 @@
       "violation_facility_pct": 49.8,
       "penalty_count": 463,
       "penalty_median_usd": 7500,
+      "penalty_total_usd": 59971996.28,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 12.8
     },
     {
@@ -136,6 +162,8 @@
       "violation_facility_pct": 60.2,
       "penalty_count": 172,
       "penalty_median_usd": 4259.5,
+      "penalty_total_usd": 4325405.71,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 13.2
     },
     {
@@ -146,6 +174,8 @@
       "violation_facility_pct": 68.0,
       "penalty_count": 133,
       "penalty_median_usd": 6620,
+      "penalty_total_usd": 3636024.8,
+      "penalty_max_usd": 350000,
       "deviation_y_pct": 12.7
     },
     {
@@ -156,6 +186,8 @@
       "violation_facility_pct": 81.8,
       "penalty_count": 761,
       "penalty_median_usd": 16250,
+      "penalty_total_usd": 81904461.66,
+      "penalty_max_usd": 12100000,
       "deviation_y_pct": 40.8
     },
     {
@@ -166,6 +198,8 @@
       "violation_facility_pct": 54.5,
       "penalty_count": 98,
       "penalty_median_usd": 7290,
+      "penalty_total_usd": 3388541.65,
+      "penalty_max_usd": 600000,
       "deviation_y_pct": 14.3
     },
     {
@@ -176,6 +210,8 @@
       "violation_facility_pct": 75.4,
       "penalty_count": 228,
       "penalty_median_usd": 7831.5,
+      "penalty_total_usd": 5128571.91,
+      "penalty_max_usd": 250000,
       "deviation_y_pct": 17.5
     },
     {
@@ -186,6 +222,8 @@
       "violation_facility_pct": 49.4,
       "penalty_count": 189,
       "penalty_median_usd": 10500,
+      "penalty_total_usd": 12973436.55,
+      "penalty_max_usd": 5250000,
       "deviation_y_pct": 17.4
     },
     {
@@ -196,6 +234,8 @@
       "violation_facility_pct": 80.6,
       "penalty_count": 1050,
       "penalty_median_usd": 15000,
+      "penalty_total_usd": 129358159.73,
+      "penalty_max_usd": 27500000,
       "deviation_y_pct": 43.5
     },
     {
@@ -206,6 +246,8 @@
       "violation_facility_pct": 64.4,
       "penalty_count": 180,
       "penalty_median_usd": 8227.76,
+      "penalty_total_usd": 10789567.11,
+      "penalty_max_usd": 1150000,
       "deviation_y_pct": 20.5
     },
     {
@@ -216,6 +258,8 @@
       "violation_facility_pct": 79.6,
       "penalty_count": 942,
       "penalty_median_usd": 14031.5,
+      "penalty_total_usd": 182018404.21,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 39.4
     },
     {
@@ -226,6 +270,8 @@
       "violation_facility_pct": 82.0,
       "penalty_count": 870,
       "penalty_median_usd": 21431.5,
+      "penalty_total_usd": 115134222.79,
+      "penalty_max_usd": 19000000,
       "deviation_y_pct": 44.7
     },
     {
@@ -236,6 +282,8 @@
       "violation_facility_pct": 61.2,
       "penalty_count": 387,
       "penalty_median_usd": 10287,
+      "penalty_total_usd": 92757309.13,
+      "penalty_max_usd": 31604865.9,
       "deviation_y_pct": 22.4
     },
     {
@@ -246,6 +294,8 @@
       "violation_facility_pct": 84.1,
       "penalty_count": 1122,
       "penalty_median_usd": 15000,
+      "penalty_total_usd": 122891549.5,
+      "penalty_max_usd": 27500000,
       "deviation_y_pct": 43.7
     },
     {
@@ -256,6 +306,8 @@
       "violation_facility_pct": 82.0,
       "penalty_count": 171,
       "penalty_median_usd": 6913,
+      "penalty_total_usd": 13830475.38,
+      "penalty_max_usd": 3125000,
       "deviation_y_pct": 25.0
     },
     {
@@ -266,6 +318,8 @@
       "violation_facility_pct": 67.8,
       "penalty_count": 120,
       "penalty_median_usd": 4000,
+      "penalty_total_usd": 923626.78,
+      "penalty_max_usd": 70755,
       "deviation_y_pct": 5.7
     },
     {
@@ -276,6 +330,8 @@
       "violation_facility_pct": 25.2,
       "penalty_count": 23,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 284804,
+      "penalty_max_usd": 157101,
       "deviation_y_pct": 9.5
     },
     {
@@ -286,6 +342,8 @@
       "violation_facility_pct": 89.1,
       "penalty_count": 2062,
       "penalty_median_usd": 9600,
+      "penalty_total_usd": 240517677.02,
+      "penalty_max_usd": 33916450,
       "deviation_y_pct": 41.9
     },
     {
@@ -296,6 +354,8 @@
       "violation_facility_pct": 33.2,
       "penalty_count": 21,
       "penalty_median_usd": 2000,
+      "penalty_total_usd": 105284.75,
+      "penalty_max_usd": 19101,
       "deviation_y_pct": 4.4
     },
     {
@@ -306,6 +366,8 @@
       "violation_facility_pct": 42.0,
       "penalty_count": 33,
       "penalty_median_usd": 20000,
+      "penalty_total_usd": 5288652.69,
+      "penalty_max_usd": 3590000,
       "deviation_y_pct": 27.8
     },
     {
@@ -316,6 +378,8 @@
       "violation_facility_pct": 72.6,
       "penalty_count": 755,
       "penalty_median_usd": 12300,
+      "penalty_total_usd": 109481470.29,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 41.9
     },
     {
@@ -326,6 +390,8 @@
       "violation_facility_pct": 67.3,
       "penalty_count": 80,
       "penalty_median_usd": 3675,
+      "penalty_total_usd": 1403317,
+      "penalty_max_usd": 350000,
       "deviation_y_pct": 13.4
     },
     {
@@ -336,6 +402,8 @@
       "violation_facility_pct": 86.5,
       "penalty_count": 747,
       "penalty_median_usd": 10000,
+      "penalty_total_usd": 159181009.21,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 37.3
     },
     {
@@ -346,6 +414,8 @@
       "violation_facility_pct": 85.4,
       "penalty_count": 500,
       "penalty_median_usd": 15000,
+      "penalty_total_usd": 60414761.39,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 41.1
     },
     {
@@ -356,6 +426,8 @@
       "violation_facility_pct": 55.7,
       "penalty_count": 62,
       "penalty_median_usd": 7212.5,
+      "penalty_total_usd": 1697494.5,
+      "penalty_max_usd": 274000,
       "deviation_y_pct": 17.1
     },
     {
@@ -366,6 +438,8 @@
       "violation_facility_pct": 91.8,
       "penalty_count": 151,
       "penalty_median_usd": 9360,
+      "penalty_total_usd": 10148896.2,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 34.1
     },
     {
@@ -376,6 +450,8 @@
       "violation_facility_pct": 53.2,
       "penalty_count": 46,
       "penalty_median_usd": 8332.5,
+      "penalty_total_usd": 2471070,
+      "penalty_max_usd": 389000,
       "deviation_y_pct": 23.1
     },
     {
@@ -386,6 +462,8 @@
       "violation_facility_pct": 96.8,
       "penalty_count": 1881,
       "penalty_median_usd": 9000,
+      "penalty_total_usd": 214617271.81,
+      "penalty_max_usd": 33916450,
       "deviation_y_pct": 40.0
     },
     {
@@ -396,6 +474,8 @@
       "violation_facility_pct": 91.9,
       "penalty_count": 258,
       "penalty_median_usd": 19397.5,
+      "penalty_total_usd": 19475163.08,
+      "penalty_max_usd": 1505309,
       "deviation_y_pct": 28.4
     },
     {
@@ -406,6 +486,8 @@
       "violation_facility_pct": 34.4,
       "penalty_count": 19,
       "penalty_median_usd": 5420.17,
+      "penalty_total_usd": 169690.92,
+      "penalty_max_usd": 40000,
       "deviation_y_pct": 10.9
     },
     {
@@ -416,6 +498,8 @@
       "violation_facility_pct": 93.2,
       "penalty_count": 148,
       "penalty_median_usd": 9234.5,
+      "penalty_total_usd": 10119600.2,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 34.6
     },
     {
@@ -426,6 +510,8 @@
       "violation_facility_pct": 84.2,
       "penalty_count": 1521,
       "penalty_median_usd": 7000,
+      "penalty_total_usd": 102285823.46,
+      "penalty_max_usd": 33916450,
       "deviation_y_pct": 27.9
     },
     {
@@ -436,6 +522,8 @@
       "violation_facility_pct": 37.2,
       "penalty_count": 21,
       "penalty_median_usd": 6750,
+      "penalty_total_usd": 495028.25,
+      "penalty_max_usd": 110000,
       "deviation_y_pct": 2.5
     },
     {
@@ -446,6 +534,8 @@
       "violation_facility_pct": 46.3,
       "penalty_count": 25,
       "penalty_median_usd": 13800,
+      "penalty_total_usd": 2314209.1,
+      "penalty_max_usd": 1625000,
       "deviation_y_pct": 12.5
     },
     {
@@ -456,6 +546,8 @@
       "violation_facility_pct": 84.1,
       "penalty_count": 68,
       "penalty_median_usd": 10000,
+      "penalty_total_usd": 18399113.92,
+      "penalty_max_usd": 8000000,
       "deviation_y_pct": 22.1
     },
     {
@@ -466,6 +558,8 @@
       "violation_facility_pct": 40.0,
       "penalty_count": 18,
       "penalty_median_usd": 1500,
+      "penalty_total_usd": 82688.33,
+      "penalty_max_usd": 25000,
       "deviation_y_pct": 18.9
     },
     {
@@ -476,6 +570,8 @@
       "violation_facility_pct": 79.6,
       "penalty_count": 168,
       "penalty_median_usd": 15610,
+      "penalty_total_usd": 44880383.95,
+      "penalty_max_usd": 19000000,
       "deviation_y_pct": 34.0
     },
     {
@@ -486,6 +582,8 @@
       "violation_facility_pct": 62.6,
       "penalty_count": 26,
       "penalty_median_usd": 5500,
+      "penalty_total_usd": 655305.79,
+      "penalty_max_usd": 305305,
       "deviation_y_pct": 11.6
     },
     {
@@ -496,6 +594,8 @@
       "violation_facility_pct": 71.1,
       "penalty_count": 68,
       "penalty_median_usd": 5326.665,
+      "penalty_total_usd": 1014914.85,
+      "penalty_max_usd": 349983.92,
       "deviation_y_pct": 16.8
     },
     {
@@ -506,6 +606,8 @@
       "violation_facility_pct": 60.4,
       "penalty_count": 25,
       "penalty_median_usd": 8000,
+      "penalty_total_usd": 1669495,
+      "penalty_max_usd": 1150000,
       "deviation_y_pct": 9.9
     },
     {
@@ -516,6 +618,8 @@
       "violation_facility_pct": 85.3,
       "penalty_count": 205,
       "penalty_median_usd": 12500,
+      "penalty_total_usd": 65582969.53,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 39.8
     },
     {
@@ -526,6 +630,8 @@
       "violation_facility_pct": 86.5,
       "penalty_count": 54,
       "penalty_median_usd": 17800,
+      "penalty_total_usd": 2592009.73,
+      "penalty_max_usd": 361305,
       "deviation_y_pct": 28.7
     },
     {
@@ -536,6 +642,8 @@
       "violation_facility_pct": 78.4,
       "penalty_count": 146,
       "penalty_median_usd": 10438,
+      "penalty_total_usd": 16070889.21,
+      "penalty_max_usd": 3000000,
       "deviation_y_pct": 32.1
     },
     {
@@ -546,6 +654,8 @@
       "violation_facility_pct": 87.4,
       "penalty_count": 363,
       "penalty_median_usd": 22500,
+      "penalty_total_usd": 48077867.6,
+      "penalty_max_usd": 3400000,
       "deviation_y_pct": 47.5
     },
     {
@@ -556,6 +666,8 @@
       "violation_facility_pct": 91.9,
       "penalty_count": 87,
       "penalty_median_usd": 9400,
+      "penalty_total_usd": 6356637.5,
+      "penalty_max_usd": 3590000,
       "deviation_y_pct": 15.0
     },
     {
@@ -566,6 +678,8 @@
       "violation_facility_pct": 64.7,
       "penalty_count": 358,
       "penalty_median_usd": 6000,
+      "penalty_total_usd": 11694039.52,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 23.0
     },
     {
@@ -576,6 +690,8 @@
       "violation_facility_pct": 78.2,
       "penalty_count": 28,
       "penalty_median_usd": 5074,
+      "penalty_total_usd": 511995.4,
+      "penalty_max_usd": 150000,
       "deviation_y_pct": 20.1
     },
     {
@@ -586,6 +702,8 @@
       "violation_facility_pct": 65.8,
       "penalty_count": 140,
       "penalty_median_usd": 10641,
+      "penalty_total_usd": 40742857.38,
+      "penalty_max_usd": 31424000,
       "deviation_y_pct": 22.6
     },
     {
@@ -596,6 +714,8 @@
       "violation_facility_pct": 50.7,
       "penalty_count": 33,
       "penalty_median_usd": 9280,
+      "penalty_total_usd": 1669632,
+      "penalty_max_usd": 481500,
       "deviation_y_pct": 40.0
     },
     {
@@ -606,6 +726,8 @@
       "violation_facility_pct": 78.1,
       "penalty_count": 109,
       "penalty_median_usd": 8438,
+      "penalty_total_usd": 11560418.13,
+      "penalty_max_usd": 3100000,
       "deviation_y_pct": 36.2
     },
     {
@@ -616,6 +738,8 @@
       "violation_facility_pct": 85.7,
       "penalty_count": 50,
       "penalty_median_usd": 10317.12,
+      "penalty_total_usd": 1212580.31,
+      "penalty_max_usd": 225000,
       "deviation_y_pct": 14.7
     },
     {
@@ -626,6 +750,8 @@
       "violation_facility_pct": 65.0,
       "penalty_count": 39,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 584666,
+      "penalty_max_usd": 140000,
       "deviation_y_pct": 6.5
     },
     {
@@ -636,6 +762,8 @@
       "violation_facility_pct": 74.1,
       "penalty_count": 79,
       "penalty_median_usd": 32900,
+      "penalty_total_usd": 10430001.9,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 40.2
     },
     {
@@ -646,6 +774,8 @@
       "violation_facility_pct": 86.0,
       "penalty_count": 100,
       "penalty_median_usd": 19875,
+      "penalty_total_usd": 13053543.14,
+      "penalty_max_usd": 5002158,
       "deviation_y_pct": 23.9
     },
     {
@@ -656,6 +786,8 @@
       "violation_facility_pct": 89.4,
       "penalty_count": 69,
       "penalty_median_usd": 14610,
+      "penalty_total_usd": 8563922.13,
+      "penalty_max_usd": 5002158,
       "deviation_y_pct": 24.9
     },
     {
@@ -666,6 +798,8 @@
       "violation_facility_pct": 54.3,
       "penalty_count": 8,
       "penalty_median_usd": 46644.5,
+      "penalty_total_usd": 931306,
+      "penalty_max_usd": 473987,
       "deviation_y_pct": 24.6
     },
     {
@@ -676,6 +810,8 @@
       "violation_facility_pct": 62.2,
       "penalty_count": 21,
       "penalty_median_usd": 40950,
+      "penalty_total_usd": 4115357.69,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 34.3
     },
     {
@@ -686,6 +822,8 @@
       "violation_facility_pct": 81.8,
       "penalty_count": 51,
       "penalty_median_usd": 9627,
+      "penalty_total_usd": 2388837,
+      "penalty_max_usd": 432554,
       "deviation_y_pct": 19.4
     },
     {
@@ -696,6 +834,8 @@
       "violation_facility_pct": 65.9,
       "penalty_count": 36,
       "penalty_median_usd": 8500,
+      "penalty_total_usd": 1591415,
+      "penalty_max_usd": 600000,
       "deviation_y_pct": 32.0
     },
     {
@@ -706,6 +846,8 @@
       "violation_facility_pct": 60.0,
       "penalty_count": 29,
       "penalty_median_usd": 5500,
+      "penalty_total_usd": 416644.28,
+      "penalty_max_usd": 147905,
       "deviation_y_pct": 9.6
     },
     {
@@ -716,6 +858,8 @@
       "violation_facility_pct": 48.7,
       "penalty_count": 11,
       "penalty_median_usd": 1725,
+      "penalty_total_usd": 36647.85,
+      "penalty_max_usd": 9112.35,
       "deviation_y_pct": 6.0
     },
     {
@@ -726,6 +870,8 @@
       "violation_facility_pct": 48.7,
       "penalty_count": 5,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 27223.87,
+      "penalty_max_usd": 12523.87,
       "deviation_y_pct": 6.5
     },
     {
@@ -736,6 +882,8 @@
       "violation_facility_pct": 13.5,
       "penalty_count": 3,
       "penalty_median_usd": 7800,
+      "penalty_total_usd": 20400,
+      "penalty_max_usd": 7800,
       "deviation_y_pct": 18.3
     },
     {
@@ -746,6 +894,8 @@
       "violation_facility_pct": 38.2,
       "penalty_count": 13,
       "penalty_median_usd": 7000,
+      "penalty_total_usd": 105930,
+      "penalty_max_usd": 16000,
       "deviation_y_pct": 19.6
     },
     {
@@ -756,6 +906,8 @@
       "violation_facility_pct": 84.4,
       "penalty_count": 20,
       "penalty_median_usd": 8926.335,
+      "penalty_total_usd": 247790.39,
+      "penalty_max_usd": 33750,
       "deviation_y_pct": 17.1
     },
     {
@@ -766,6 +918,8 @@
       "violation_facility_pct": 87.1,
       "penalty_count": 192,
       "penalty_median_usd": 10575,
+      "penalty_total_usd": 12360540.84,
+      "penalty_max_usd": 3000000,
       "deviation_y_pct": 35.4
     },
     {
@@ -776,6 +930,8 @@
       "violation_facility_pct": 93.3,
       "penalty_count": 56,
       "penalty_median_usd": 29000,
+      "penalty_total_usd": 11875437.07,
+      "penalty_max_usd": 3590000,
       "deviation_y_pct": 45.7
     },
     {
@@ -786,6 +942,8 @@
       "violation_facility_pct": 66.7,
       "penalty_count": 28,
       "penalty_median_usd": 7625,
+      "penalty_total_usd": 920140.6,
+      "penalty_max_usd": 294783,
       "deviation_y_pct": 22.2
     },
     {
@@ -796,6 +954,8 @@
       "violation_facility_pct": 75.9,
       "penalty_count": 10,
       "penalty_median_usd": 7573,
+      "penalty_total_usd": 144545,
+      "penalty_max_usd": 70000,
       "deviation_y_pct": 11.1
     },
     {
@@ -806,6 +966,8 @@
       "violation_facility_pct": 92.9,
       "penalty_count": 116,
       "penalty_median_usd": 49350,
+      "penalty_total_usd": 137922884,
+      "penalty_max_usd": 100000000,
       "deviation_y_pct": 31.5
     },
     {
@@ -816,6 +978,8 @@
       "violation_facility_pct": 53.6,
       "penalty_count": 19,
       "penalty_median_usd": 6550,
+      "penalty_total_usd": 653461.74,
+      "penalty_max_usd": 430500,
       "deviation_y_pct": 4.0
     },
     {
@@ -826,6 +990,8 @@
       "violation_facility_pct": 84.6,
       "penalty_count": 43,
       "penalty_median_usd": 64250,
+      "penalty_total_usd": 118334754,
+      "penalty_max_usd": 100000000,
       "deviation_y_pct": 31.5
     },
     {
@@ -836,6 +1002,8 @@
       "violation_facility_pct": 72.0,
       "penalty_count": 38,
       "penalty_median_usd": 14004.5,
+      "penalty_total_usd": 4156138.17,
+      "penalty_max_usd": 2500000,
       "deviation_y_pct": 35.1
     },
     {
@@ -846,6 +1014,8 @@
       "violation_facility_pct": 58.3,
       "penalty_count": 40,
       "penalty_median_usd": 36300,
+      "penalty_total_usd": 6261929.25,
+      "penalty_max_usd": 2850000,
       "deviation_y_pct": 43.1
     },
     {
@@ -856,6 +1026,8 @@
       "violation_facility_pct": 70.8,
       "penalty_count": 144,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 3681028,
+      "penalty_max_usd": 781175,
       "deviation_y_pct": 26.1
     },
     {
@@ -866,6 +1038,8 @@
       "violation_facility_pct": 79.2,
       "penalty_count": 44,
       "penalty_median_usd": 38250,
+      "penalty_total_usd": 14152891.13,
+      "penalty_max_usd": 3400000,
       "deviation_y_pct": 36.4
     },
     {
@@ -876,6 +1050,8 @@
       "violation_facility_pct": 47.8,
       "penalty_count": 11,
       "penalty_median_usd": 3900,
+      "penalty_total_usd": 113200,
+      "penalty_max_usd": 28000,
       "deviation_y_pct": 1.0
     },
     {
@@ -886,6 +1062,8 @@
       "violation_facility_pct": 86.4,
       "penalty_count": 51,
       "penalty_median_usd": 49000,
+      "penalty_total_usd": 13220245,
+      "penalty_max_usd": 5002158,
       "deviation_y_pct": 26.3
     },
     {
@@ -896,6 +1074,8 @@
       "violation_facility_pct": 95.2,
       "penalty_count": 21,
       "penalty_median_usd": 10520,
+      "penalty_total_usd": 1600204,
+      "penalty_max_usd": 587300,
       "deviation_y_pct": 32.7
     },
     {
@@ -906,6 +1086,8 @@
       "violation_facility_pct": 76.2,
       "penalty_count": 19,
       "penalty_median_usd": 20190,
+      "penalty_total_usd": 3046718.34,
+      "penalty_max_usd": 1200000,
       "deviation_y_pct": 17.8
     },
     {
@@ -916,6 +1098,8 @@
       "violation_facility_pct": 90.0,
       "penalty_count": 27,
       "penalty_median_usd": 16220,
+      "penalty_total_usd": 1204608.75,
+      "penalty_max_usd": 250000,
       "deviation_y_pct": 37.1
     },
     {
@@ -926,6 +1110,8 @@
       "violation_facility_pct": 57.9,
       "penalty_count": 8,
       "penalty_median_usd": 3662,
+      "penalty_total_usd": 97083,
+      "penalty_max_usd": 70000,
       "deviation_y_pct": 14.2
     },
     {
@@ -936,6 +1122,8 @@
       "violation_facility_pct": 88.9,
       "penalty_count": 29,
       "penalty_median_usd": 8750,
+      "penalty_total_usd": 6611574,
+      "penalty_max_usd": 5250000,
       "deviation_y_pct": 21.1
     },
     {
@@ -946,6 +1134,8 @@
       "violation_facility_pct": 88.9,
       "penalty_count": 11,
       "penalty_median_usd": 20000,
+      "penalty_total_usd": 350209,
+      "penalty_max_usd": 145120,
       "deviation_y_pct": 24.2
     },
     {
@@ -956,6 +1146,8 @@
       "violation_facility_pct": 88.2,
       "penalty_count": 23,
       "penalty_median_usd": 15000,
+      "penalty_total_usd": 1399346.25,
+      "penalty_max_usd": 405000,
       "deviation_y_pct": 36.8
     },
     {
@@ -966,6 +1158,8 @@
       "violation_facility_pct": 68.8,
       "penalty_count": 16,
       "penalty_median_usd": 12900,
+      "penalty_total_usd": 1357531.25,
+      "penalty_max_usd": 480500,
       "deviation_y_pct": 31.5
     },
     {
@@ -976,6 +1170,8 @@
       "violation_facility_pct": 87.5,
       "penalty_count": 9,
       "penalty_median_usd": 38500,
+      "penalty_total_usd": 3500115.52,
+      "penalty_max_usd": 3000000,
       "deviation_y_pct": 32.1
     },
     {
@@ -986,6 +1182,8 @@
       "violation_facility_pct": 75.0,
       "penalty_count": 238,
       "penalty_median_usd": 5000,
+      "penalty_total_usd": 8328378.5,
+      "penalty_max_usd": 2020216,
       "deviation_y_pct": 34.9
     },
     {
@@ -996,6 +1194,8 @@
       "violation_facility_pct": 80.0,
       "penalty_count": 23,
       "penalty_median_usd": 13563.11,
+      "penalty_total_usd": 3783041.11,
+      "penalty_max_usd": 1500000,
       "deviation_y_pct": 28.6
     },
     {
@@ -1006,6 +1206,8 @@
       "violation_facility_pct": 93.3,
       "penalty_count": 33,
       "penalty_median_usd": 17230,
+      "penalty_total_usd": 4479860.5,
+      "penalty_max_usd": 1500000,
       "deviation_y_pct": 35.1
     },
     {
@@ -1016,6 +1218,8 @@
       "violation_facility_pct": 66.7,
       "penalty_count": 19,
       "penalty_median_usd": 23568.54,
+      "penalty_total_usd": 1625637.45,
+      "penalty_max_usd": 400601,
       "deviation_y_pct": 33.3
     },
     {
@@ -1026,6 +1230,8 @@
       "violation_facility_pct": 85.7,
       "penalty_count": 8,
       "penalty_median_usd": 26687.5,
+      "penalty_total_usd": 305353,
+      "penalty_max_usd": 99000,
       "deviation_y_pct": 19.8
     },
     {
@@ -1036,6 +1242,8 @@
       "violation_facility_pct": 78.6,
       "penalty_count": 28,
       "penalty_median_usd": 15600,
+      "penalty_total_usd": 1024242.53,
+      "penalty_max_usd": 312000,
       "deviation_y_pct": 28.5
     },
     {
@@ -1046,6 +1254,8 @@
       "violation_facility_pct": 57.1,
       "penalty_count": 1,
       "penalty_median_usd": 3500,
+      "penalty_total_usd": 3500,
+      "penalty_max_usd": 3500,
       "deviation_y_pct": 5.9
     },
     {
@@ -1056,6 +1266,8 @@
       "violation_facility_pct": 46.2,
       "penalty_count": 2,
       "penalty_median_usd": 18500,
+      "penalty_total_usd": 37000,
+      "penalty_max_usd": 25000,
       "deviation_y_pct": 23.1
     },
     {
@@ -1066,6 +1278,8 @@
       "violation_facility_pct": 36.4,
       "penalty_count": 1,
       "penalty_median_usd": 3200,
+      "penalty_total_usd": 3200,
+      "penalty_max_usd": 3200,
       "deviation_y_pct": 15.2
     },
     {
@@ -1076,6 +1290,8 @@
       "violation_facility_pct": 72.7,
       "penalty_count": 12,
       "penalty_median_usd": 15681.5,
+      "penalty_total_usd": 924532,
+      "penalty_max_usd": 600000,
       "deviation_y_pct": 42.3
     },
     {
@@ -1086,6 +1302,8 @@
       "violation_facility_pct": 60.0,
       "penalty_count": 1,
       "penalty_median_usd": 40000,
+      "penalty_total_usd": 40000,
+      "penalty_max_usd": 40000,
       "deviation_y_pct": 0.0
     },
     {
@@ -1096,6 +1314,8 @@
       "violation_facility_pct": 55.6,
       "penalty_count": 5,
       "penalty_median_usd": 50000,
+      "penalty_total_usd": 460000,
+      "penalty_max_usd": 340000,
       "deviation_y_pct": 23.5
     },
     {
@@ -1106,6 +1326,8 @@
       "violation_facility_pct": 55.6,
       "penalty_count": 3,
       "penalty_median_usd": 500,
+      "penalty_total_usd": 9450,
+      "penalty_max_usd": 8450,
       "deviation_y_pct": 4.4
     },
     {
@@ -1116,6 +1338,8 @@
       "violation_facility_pct": 87.5,
       "penalty_count": 4,
       "penalty_median_usd": 5750,
+      "penalty_total_usd": 43000,
+      "penalty_max_usd": 30000,
       "deviation_y_pct": 36.4
     },
     {
@@ -1126,6 +1350,8 @@
       "violation_facility_pct": 75.0,
       "penalty_count": 3,
       "penalty_median_usd": 10000,
+      "penalty_total_usd": 30250,
+      "penalty_max_usd": 15000,
       "deviation_y_pct": 17.9
     },
     {
@@ -1136,6 +1362,8 @@
       "violation_facility_pct": 85.7,
       "penalty_count": 8,
       "penalty_median_usd": 11734.5,
+      "penalty_total_usd": 152969,
+      "penalty_max_usd": 71500,
       "deviation_y_pct": 28.3
     },
     {
@@ -1146,6 +1374,8 @@
       "violation_facility_pct": 60.0,
       "penalty_count": 1,
       "penalty_median_usd": 50000,
+      "penalty_total_usd": 50000,
+      "penalty_max_usd": 50000,
       "deviation_y_pct": 17.4
     },
     {
@@ -1156,6 +1386,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 4,
       "penalty_median_usd": 49000,
+      "penalty_total_usd": 228000,
+      "penalty_max_usd": 125000,
       "deviation_y_pct": 24.0
     },
     {
@@ -1166,6 +1398,8 @@
       "violation_facility_pct": 60.0,
       "penalty_count": 5,
       "penalty_median_usd": 25000,
+      "penalty_total_usd": 565750,
+      "penalty_max_usd": 430000,
       "deviation_y_pct": 29.3
     },
     {
@@ -1176,6 +1410,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 5,
       "penalty_median_usd": 75000,
+      "penalty_total_usd": 412000,
+      "penalty_max_usd": 200000,
       "deviation_y_pct": 32.0
     },
     {
@@ -1186,6 +1422,8 @@
       "violation_facility_pct": 60.0,
       "penalty_count": 3,
       "penalty_median_usd": 40000,
+      "penalty_total_usd": 84180,
+      "penalty_max_usd": 40500,
       "deviation_y_pct": 34.0
     },
     {
@@ -1196,6 +1434,8 @@
       "violation_facility_pct": 50.0,
       "penalty_count": 2,
       "penalty_median_usd": 12500,
+      "penalty_total_usd": 25000,
+      "penalty_max_usd": 15000,
       "deviation_y_pct": 16.7
     },
     {
@@ -1206,6 +1446,8 @@
       "violation_facility_pct": 75.0,
       "penalty_count": 1,
       "penalty_median_usd": 2212.48,
+      "penalty_total_usd": 2212.48,
+      "penalty_max_usd": 2212.48,
       "deviation_y_pct": 42.0
     },
     {
@@ -1216,6 +1458,8 @@
       "violation_facility_pct": 0.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 0.0
     },
     {
@@ -1226,6 +1470,8 @@
       "violation_facility_pct": 66.7,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 2.4
     },
     {
@@ -1236,6 +1482,8 @@
       "violation_facility_pct": 0.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 0.0
     },
     {
@@ -1246,6 +1494,8 @@
       "violation_facility_pct": 33.3,
       "penalty_count": 2,
       "penalty_median_usd": 367700,
+      "penalty_total_usd": 735400,
+      "penalty_max_usd": 725000,
       "deviation_y_pct": 0.0
     },
     {
@@ -1256,6 +1506,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 4,
       "penalty_median_usd": 87128.1,
+      "penalty_total_usd": 405346.2,
+      "penalty_max_usd": 227790,
       "deviation_y_pct": 18.3
     },
     {
@@ -1266,6 +1518,8 @@
       "violation_facility_pct": 33.3,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 6.1
     },
     {
@@ -1276,6 +1530,8 @@
       "violation_facility_pct": 50.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 40.6
     },
     {
@@ -1286,6 +1542,8 @@
       "violation_facility_pct": 50.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 0.0
     },
     {
@@ -1296,6 +1554,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 17.6
     },
     {
@@ -1306,6 +1566,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 0,
       "penalty_median_usd": null,
+      "penalty_total_usd": 0,
+      "penalty_max_usd": null,
       "deviation_y_pct": 0.0
     },
     {
@@ -1316,6 +1578,8 @@
       "violation_facility_pct": 100.0,
       "penalty_count": 2,
       "penalty_median_usd": 6412,
+      "penalty_total_usd": 12824,
+      "penalty_max_usd": 9360,
       "deviation_y_pct": 3.1
     }
   ],
