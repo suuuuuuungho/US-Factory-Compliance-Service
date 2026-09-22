@@ -235,7 +235,7 @@ it("Title V deviation 설명은 타일 5개 바로 아래, 표보다 위에 있�
   expect(note.textContent).toContain("What is a Title V deviation?");
   expect(note.textContent).toMatch(/self-reported/);
   // 설명 안 강조어는 색 없이 굵게만
-  expect(note.querySelectorAll(".font-semibold.text-ink").length).toBe(2);
+  expect(note.querySelectorAll("span.font-semibold.text-ink").length).toBe(2);
   expect(note.querySelector(".text-gradient-violet")).toBeNull();
   const tiles = screen.getByTestId("tile-deviation-pct").parentElement!;
   expect(tiles.nextElementSibling).toBe(note);
