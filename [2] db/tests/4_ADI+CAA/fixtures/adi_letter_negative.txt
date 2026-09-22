@@ -1,0 +1,26 @@
+U.S. Environmental Protection Agency
+Applicability Determination Index
+Control Number: M090020
+Category: MACT
+EPA Office: Region 5
+Date: 09/01/2009
+Title: Opt Out of Subpart VVVV Applicability
+Recipient: Stamas Yacht
+Author: George Czerniak
+Comments: Partially rescinds the determination issued as ADI Control Number M080027.
+Part 63, VVVV Boat Manufacturing
+Abstract:
+Q: May Stamas opt out of 40 CFR part 63, subpart VVVV applicability and rescind its Title V permit?
+A: No. The facility remains a major source of HAP based on its potential to emit. Therefore, the
+request to opt out of subpart VVVV applicability should be denied.
+Letter:
+September 1, 2009
+Mr. Stamas
+Stamas Yacht Inc.
+300 Pine Street
+Tarpon Springs, Florida 34689
+Dear Mr. Stamas:
+This letter responds to your request under 40 CFR 63.5701. The facility is not eligible because its
+potential to emit exceeds the major source threshold defined in 40 CFR 63.2.
+Sincerely,
+George Czerniak
