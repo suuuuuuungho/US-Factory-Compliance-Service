@@ -1,4 +1,5 @@
 // SUU-186: 빈 페이지. 제목만, 내용은 나중에. SUU-218: Amendment → Federal Register.
+// SUU-232: 머리글 영어, Section 열(amended_sections), 제목은 한 줄(truncate).
 "use client";
 
 import { useEffect, useState } from "react";
@@ -42,11 +43,12 @@ export default function FederalRegisterPage() {
           <table className="w-full border-collapse text-left text-sm">
             <thead className="border-b border-hairline text-ink-muted">
               <tr>
-                <th className="px-3 py-3 font-medium">연번</th>
+                <th className="px-3 py-3 font-medium">#</th>
                 <th className="px-3 py-3 font-medium">Subpart</th>
-                <th className="px-3 py-3 font-medium">제목</th>
-                <th className="px-3 py-3 font-medium">개정일</th>
-                <th className="px-3 py-3 font-medium">변경</th>
+                <th className="px-3 py-3 font-medium">Section</th>
+                <th className="px-3 py-3 font-medium">Title</th>
+                <th className="px-3 py-3 font-medium">Effective</th>
+                <th className="px-3 py-3 font-medium">Changes</th>
               </tr>
             </thead>
             <tbody>
@@ -66,13 +68,15 @@ export default function FederalRegisterPage() {
                     } ${selectedDocument?.document_key === document.document_key ? "bg-surface-1" : ""}`}
                   >
                     <td className="px-3 py-3">{index + 1}</td>
-                    <td className="px-3 py-3">{subparts}</td>
-                    <td className="px-3 py-3">
-                      <button type="button" className="text-left font-medium">
+                    <td className="px-3 py-3 whitespace-nowrap">{subparts}</td>
+                    <td className="px-3 py-3 whitespace-nowrap">{document.amended_sections.join(", ") || "—"}</td>
+                    {/* w-full max-w-0: 남는 폭을 제목이 다 쓰고, 넘치면 한 줄로 자른다 */}
+                    <td className="w-full max-w-0 px-3 py-3">
+                      <button type="button" title={document.title} className="block w-full truncate text-left font-medium">
                         {document.title}
                       </button>
                     </td>
-                    <td className="px-3 py-3">{document.effective_date ?? "—"}</td>
+                    <td className="px-3 py-3 whitespace-nowrap">{document.effective_date ?? "—"}</td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       <span className="text-semantic-success">+{document.summary.added}</span>
                       <span className="ml-2 text-gradient-coral">−{document.summary.removed}</span>
