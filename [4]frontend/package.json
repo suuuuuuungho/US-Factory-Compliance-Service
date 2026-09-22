@@ -12,6 +12,7 @@
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/react": "^1.1.10",
+    "diff": "^9.0.0",
     "dockview": "^8.3.1",
     "dockview-react": "^8.3.1",
     "motion": "^12.43.0",
