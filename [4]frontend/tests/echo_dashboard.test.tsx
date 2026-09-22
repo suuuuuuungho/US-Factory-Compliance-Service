@@ -80,7 +80,6 @@ it("타일 5개: 시설·위반%·벌금 총액($958.8M)·최대($100.0M)·devia
   expect(screen.getByTestId("tile-facilities").textContent).toContain("49,618");
   expect(screen.getByTestId("tile-violation-pct").textContent).toContain("27.9");
   expect(screen.getByTestId("tile-penalty-total").textContent).toContain("$958.8M");
-  expect(screen.getByTestId("tile-penalty-total").textContent).toContain("9,998");
   expect(screen.getByTestId("tile-penalty-max").textContent).toContain("$100.0M");
   expect(screen.getByTestId("tile-deviation-pct").textContent).toContain("18.5");
   expect(screen.queryByTestId("tile-penalty-median")).toBeNull();
@@ -146,9 +145,20 @@ it("연도별 차트 SVG 가 그려지고, 왼쪽에 연도 라벨(BarYAxis)이 
   expect(yearSpans.length).toBeLessThanOrEqual(1);
 });
 
-it("표 아래 Title V deviation 설명이 있다", async () => {
+it("Title V deviation 설명은 타일 5개 바로 아래, 표보다 위에 있다", async () => {
   await openPage();
   const note = screen.getByTestId("deviation-note");
   expect(note.textContent).toContain("What is a Title V deviation?");
   expect(note.textContent).toMatch(/self-reported/);
+  const tiles = screen.getByTestId("tile-deviation-pct").parentElement!;
+  expect(tiles.nextElementSibling).toBe(note);
+  expect(note.compareDocumentPosition(screen.getByRole("table")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+it("타일 글자는 가운데 정렬, 총액 라벨에 건수 괄호 없음", async () => {
+  await openPage();
+  const tile = screen.getByTestId("tile-penalty-total");
+  expect(tile.className).toContain("text-center");
+  expect(tile.textContent).toContain("Total penalties since 2015");
+  expect(tile.textContent).not.toMatch(/actions/);
 });
