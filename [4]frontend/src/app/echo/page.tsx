@@ -1,6 +1,6 @@
 // SUU-218: 빈 페이지. 제목만, 내용은 나중에.
 // SUU-237: public/echo-stats.json 을 읽어 타일 4개 · Subpart 표(정렬·제조업 필터) · 연도별 차트.
-// SUU-251: 색 역할 — 보라(brand accent) = 벌금 $, 코랄 = 위반. 타일 숫자·선·막대·지도 램프·정렬 헤더·체크박스에 같은 규칙.
+// SUU-251: 색 역할 — 보라(brand accent) = 벌금 $, 코랄 = 위반. 선·막대·지도 램프·정렬 헤더·체크박스에 같은 규칙.
 // SUU-245: deviation 설명은 타일 바로 아래, 타일 글자 가운데.
 // SUU-248: 주별은 가로 막대 대신 지도(UsStateMap).
 // SUU-246: 차트 5개 (연도별 건수·연도별 $·Subpart Top10·주 Top10·벌금 크기 분포) 2열 그리드.
@@ -138,9 +138,9 @@ export default function EchoPage() {
         <div className="mx-auto mt-6 w-full max-w-5xl">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
             <Tile id="facilities" label="Part 63 facilities" value={num(stats.summary.facilities)} />
-            <Tile id="violation-pct" label="Facilities with violations" value={pct(stats.summary.violation_facility_pct)} tone="coral" />
-            <Tile id="penalty-total" label="Total penalties since 2015" value={usdShort(stats.summary.penalty_total_usd)} tone="violet" />
-            <Tile id="penalty-max" label="Largest single penalty" value={usdShort(stats.summary.penalty_max_usd)} tone="violet" />
+            <Tile id="violation-pct" label="Facilities with violations" value={pct(stats.summary.violation_facility_pct)} />
+            <Tile id="penalty-total" label="Total penalties since 2015" value={usdShort(stats.summary.penalty_total_usd)} />
+            <Tile id="penalty-max" label="Largest single penalty" value={usdShort(stats.summary.penalty_max_usd)} />
             <Tile id="deviation-pct" label="Title V deviation %" value={pct(stats.summary.deviation_y_pct)} />
           </div>
 
@@ -150,10 +150,10 @@ export default function EchoPage() {
               A Title V (major source) operating permit lists every Clean Air Act requirement a facility must follow. At least once a
               year the facility must certify, signed by a responsible official, whether it complied with each permit condition.
               Any period when a condition was not met — a missed monitoring run, an emission limit exceeded, a late report — is
-              a <span className="text-gradient-violet">deviation</span> and must be disclosed in that certification.
+              a <span className="font-semibold text-ink">deviation</span> and must be disclosed in that certification.
             </p>
             <p className="mt-2">
-              <span className="text-gradient-violet">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
+              <span className="font-semibold text-ink">Title V deviation %</span> above is the share of annual compliance certifications in ECHO
               where the facility reported at least one deviation. A deviation is self-reported and is not automatically a violation,
               but it is the first thing regulators look at when deciding whom to inspect.
             </p>
@@ -306,13 +306,11 @@ function HBar({ data }: { data: { name: string; usd: number }[] }) {
   );
 }
 
-const TONE = { ink: "text-ink", violet: "text-gradient-violet", coral: "text-gradient-coral" } as const;
-
-function Tile({ id, label, value, tone = "ink" }: { id: string; label: string; value: string; tone?: keyof typeof TONE }) {
+function Tile({ id, label, value }: { id: string; label: string; value: string }) {
   return (
     <div data-testid={`tile-${id}`} className="rounded-xl border border-hairline p-4 text-center">
       <div className="text-sm text-ink-muted">{label}</div>
-      <div className={`mt-1 text-2xl font-bold tabular-nums ${TONE[tone]}`}>{value}</div>
+      <div className="mt-1 text-2xl font-bold text-ink tabular-nums">{value}</div>
     </div>
   );
 }

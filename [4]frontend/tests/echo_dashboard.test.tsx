@@ -207,13 +207,15 @@ it("주별 지도: 주 path 50개 이상, 금액 클수록 진하게(NM > TX > M
   expect(screen.getByTestId("map-hover").textContent).toContain("TX · $144.8M · 10 facilities");
 });
 
-it("색 역할: 벌금 $ 타일·선은 보라, 위반은 코랄. 표는 좁은 화면에서 가로 스크롤 상자 안", async () => {
+it("색 역할: 타일은 색 없음, 벌금 $ 선·막대는 보라, 위반 선은 코랄. 표는 좁은 화면에서 가로 스크롤 상자 안", async () => {
   const container = await openPage();
   expect(screen.getByRole("table").parentElement!.className).toContain("overflow-x-auto");
-  expect(screen.getByTestId("tile-penalty-total").querySelector(".text-gradient-violet")).not.toBeNull();
-  expect(screen.getByTestId("tile-penalty-max").querySelector(".text-gradient-violet")).not.toBeNull();
-  expect(screen.getByTestId("tile-violation-pct").querySelector(".text-gradient-coral")).not.toBeNull();
-  expect(screen.getByTestId("tile-facilities").querySelector(".text-ink")).not.toBeNull();
+  // 타일 5개는 색 없이 흰 숫자 그대로
+  for (const id of ["facilities", "violation-pct", "penalty-total", "penalty-max", "deviation-pct"]) {
+    const tile = screen.getByTestId(`tile-${id}`);
+    expect(tile.querySelector(".text-gradient-violet, .text-gradient-coral")).toBeNull();
+    expect(tile.querySelector(".text-2xl")!.className).toContain("text-ink");
+  }
   const yearly = container.querySelector("[data-chart='yearly']")!;
   expect(yearly.querySelector("path[data-series='violations']")!.getAttribute("stroke")).toBe("var(--color-gradient-coral)");
   expect(yearly.querySelector("path[data-series='penalties']")!.getAttribute("stroke")).toBe("var(--color-gradient-violet)");
@@ -234,6 +236,9 @@ it("Title V deviation 설명은 타일 5개 바로 아래, 표보다 위에 있�
   const note = screen.getByTestId("deviation-note");
   expect(note.textContent).toContain("What is a Title V deviation?");
   expect(note.textContent).toMatch(/self-reported/);
+  // 설명 안 강조어는 색 없이 굵게만
+  expect(note.querySelectorAll("span.font-semibold.text-ink").length).toBe(2);
+  expect(note.querySelector(".text-gradient-violet")).toBeNull();
   const tiles = screen.getByTestId("tile-deviation-pct").parentElement!;
   expect(tiles.nextElementSibling).toBe(note);
   expect(note.compareDocumentPosition(screen.getByRole("table")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
