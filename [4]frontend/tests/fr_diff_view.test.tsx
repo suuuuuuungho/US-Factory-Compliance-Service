@@ -58,13 +58,12 @@ async function renderAndOpen() {
 
 afterEach(() => vi.unstubAllGlobals());
 
-it("목록: 제목·게재일·시행일·+N −M 요약이 보인다", async () => {
+// SUU-231: 목록 모양(표·연번·subpart·색)은 fr_list_view.test.tsx 가 본다
+it("목록: 제목·시행일이 보인다", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(JSON_BODY), { status: 200 })));
   render(<FederalRegisterPage />);
   await screen.findByRole("button", { name: /Halogenated Solvent Cleaning/ });
-  screen.getByText(/2025-03-10/);
   screen.getByText(/2025-05-09/);
-  screen.getByText(/\+1\s*−1/);
 });
 
 it("removed 문단에 diff-removed, added 문단에 diff-added 클래스가 붙는다", async () => {
