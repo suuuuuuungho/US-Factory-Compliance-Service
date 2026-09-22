@@ -10,13 +10,24 @@ const s = StyleSheet.create({
   heading: { fontFamily: "Times-Bold", fontSize: 12, marginTop: 14, marginBottom: 4 },
   item: { marginLeft: 12, marginBottom: 3 },
   cite: { marginLeft: 24, color: "#444" },
+  noteTitle: { fontFamily: "Times-Bold", marginLeft: 12, marginBottom: 3 },
   footer: { marginTop: 24, fontSize: 9, color: "#444" },
 });
 
-export function LetterPdf({ question, result }: { question: string; result: AskResult }) {
+// SUU-255: memo(제목+본문)가 있으면 편지 끝에 Notes 절. 둘 다 비어 있으면 절 자체를 생략.
+export function LetterPdf({
+  question,
+  result,
+  memo,
+}: {
+  question: string;
+  result: AskResult;
+  memo?: { title: string; body: string };
+}) {
   const date = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const candidates = result.answer?.candidates ?? [];
   const checklist = result.answer?.checklist ?? [];
+  const notes = memo && (memo.title.trim() !== "" || memo.body.trim() !== "") ? memo : null;
   return (
     <Document>
       <Page size="LETTER" style={s.page}>
@@ -50,6 +61,14 @@ export function LetterPdf({ question, result }: { question: string; result: AskR
         {result.sections.map((sec) => (
           <Text key={sec.section_key} style={s.item}>{sec.section_key} (Subpart {sec.subpart})</Text>
         ))}
+
+        {notes && (
+          <>
+            <Text style={s.heading}>Notes</Text>
+            {notes.title.trim() !== "" && <Text style={s.noteTitle}>{notes.title}</Text>}
+            {notes.body.trim() !== "" && <Text style={s.item}>{notes.body}</Text>}
+          </>
+        )}
 
         <Text style={s.footer}>For reference only — not a legal determination. Consult qualified counsel or the regulatory agency.</Text>
       </Page>
