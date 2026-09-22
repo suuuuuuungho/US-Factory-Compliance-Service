@@ -21,7 +21,7 @@ it("Send를 누르면 로딩 중에도, 답이 온 뒤에도 h1과 설명 p가 �
   let resolve!: (r: Response) => void;
   vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((r) => (resolve = r))));
   render(<Home />);
-  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Applicability");
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("eCFR Applicability");
   expect(screen.getByText(/40 CFR Part 63 applicability criteria/)).toBeTruthy();
 
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "solvent welding" } });
