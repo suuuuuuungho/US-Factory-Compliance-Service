@@ -1,3 +1,4 @@
+// SUU-233: 줄마다 Before(원문) | After(개정문) 두 칸으로 나란히. 바뀐 줄은 왼쪽에 빠진 단어, 오른쪽에 새 단어만 mark.
 import { diffWords } from "diff";
 
 type DiffRow = {
@@ -29,25 +30,72 @@ export type FrDiffDocument = {
   sections: DiffSection[];
 };
 
-function ChangedText({ before, after }: Pick<DiffRow, "before" | "after">) {
+const PUNCT = /^[.,;:!?]+$/;
+
+// 한쪽 칸만 그린다. side="before"면 removed 조각을, "after"면 added 조각을 mark 로 감싼다.
+function ChangedText({ before, after, side }: Pick<DiffRow, "before" | "after"> & { side: "before" | "after" }) {
   const parts = diffWords(before ?? "", after ?? "");
+  const isMine = (part: { added?: boolean; removed?: boolean }) => (side === "before" ? part.removed : part.added);
+  const isOther = (part: { added?: boolean; removed?: boolean }) => (side === "before" ? part.added : part.removed);
 
   return (
     <>
       {parts.map((part, index) => {
-        const next = parts.slice(index + 1).find((candidate) => !candidate.added && !candidate.removed);
-        const includeTrailingPunctuation =
-          (part.added || part.removed) && next && !next.added && !next.removed && /^[.,;:!?]+$/.test(next.value);
-
-        if (part.added || part.removed) {
-          return <mark key={index}>{part.value}{includeTrailingPunctuation ? next.value : ""}</mark>;
+        if (isOther(part)) return null;
+        if (isMine(part)) {
+          // 바로 뒤 구두점은 mark 안으로 (예: "A" + "." → "A.")
+          const next = parts.slice(index + 1).find((candidate) => !isOther(candidate));
+          const swallow = next && !next.added && !next.removed && PUNCT.test(next.value);
+          return <mark key={index}>{part.value}{swallow ? next.value : ""}</mark>;
         }
-        if (index > 0 && parts.slice(0, index).some((candidate) => candidate.added || candidate.removed) && /^[.,;:!?]+$/.test(part.value)) {
-          return null;
-        }
+        // 앞에서 mark 가 삼킨 구두점은 건너뛴다
+        const prev = parts.slice(0, index).filter((candidate) => !isOther(candidate)).at(-1);
+        if (prev && isMine(prev) && PUNCT.test(part.value)) return null;
         return <span key={index}>{part.value}</span>;
       })}
     </>
+  );
+}
+
+const CELL = "min-w-0 px-2 py-1 whitespace-pre-wrap";
+const REMOVED = "diff-removed bg-gradient-coral/15 text-gradient-coral";
+const ADDED = "diff-added bg-semantic-success/15 text-semantic-success";
+
+function Row({ row }: { row: DiffRow }) {
+  if (row.kind === "equal") {
+    if (!row.is_context) return null;
+    return (
+      <div data-diff-row="equal" className="grid grid-cols-2 gap-px text-ink-muted">
+        <div data-side="before" className={CELL}>{row.before}</div>
+        <div data-side="after" className={CELL}>{row.after}</div>
+      </div>
+    );
+  }
+  if (row.kind === "removed") {
+    return (
+      <div data-diff-row="removed" className="grid grid-cols-2 gap-px">
+        <div data-side="before" className={`${CELL} ${REMOVED}`}>{row.before}</div>
+        <div data-side="after" className={CELL} />
+      </div>
+    );
+  }
+  if (row.kind === "added") {
+    return (
+      <div data-diff-row="added" className="grid grid-cols-2 gap-px">
+        <div data-side="before" className={CELL} />
+        <div data-side="after" className={`${CELL} ${ADDED}`}>{row.after}</div>
+      </div>
+    );
+  }
+  return (
+    <div data-diff-row="changed" className="diff-changed grid grid-cols-2 gap-px text-ink">
+      <div data-side="before" className={`${CELL} [&>mark]:bg-gradient-coral/25 [&>mark]:text-gradient-coral`}>
+        <ChangedText before={row.before} after={row.after} side="before" />
+      </div>
+      <div data-side="after" className={`${CELL} [&>mark]:bg-semantic-success/25 [&>mark]:text-semantic-success`}>
+        <ChangedText before={row.before} after={row.after} side="after" />
+      </div>
+    </div>
   );
 }
 
@@ -65,19 +113,14 @@ export function FrDiff({ document }: { document: FrDiffDocument }) {
       {document.sections.map((section) => (
         <section key={section.node_key} className="rounded-md border border-hairline bg-surface-1 p-4">
           <h3 className="font-medium text-ink">§ {section.section}</h3>
-          <div className="mt-3 space-y-2 text-sm leading-6">
-            {section.rows.map((row, index) => {
-              if (row.kind === "equal") {
-                return row.is_context ? <p key={index} className="text-ink-muted">{row.after}</p> : null;
-              }
-              if (row.kind === "removed") {
-                return <p key={index} className="diff-removed bg-gradient-coral/15 px-2 text-gradient-coral">{row.before}</p>;
-              }
-              if (row.kind === "added") {
-                return <p key={index} className="diff-added bg-semantic-success/15 px-2 text-semantic-success">{row.after}</p>;
-              }
-              return <p key={index} className="diff-changed px-2 text-ink"><ChangedText before={row.before} after={row.after} /></p>;
-            })}
+          <div className="mt-3 grid grid-cols-2 gap-px border-b border-hairline pb-1 text-xs text-ink-muted">
+            <div className="px-2">Before ({section.before_date})</div>
+            <div className="px-2">After ({section.after_date})</div>
+          </div>
+          <div className="mt-1 space-y-1 text-sm leading-6">
+            {section.rows.map((row, index) => (
+              <Row key={index} row={row} />
+            ))}
           </div>
         </section>
       ))}
