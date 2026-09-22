@@ -1,6 +1,7 @@
 // SUU-186: 빈 페이지. 제목만, 내용은 나중에. SUU-218: Amendment → Federal Register.
 // SUU-232: 머리글 영어, 제목은 한 줄(truncate). SUU-234: Section 열은 너무 길어 뺐다.
 // SUU-238: 문서를 고르면 목록은 숨기고 diff 만. 뒤로 버튼으로 목록 복귀.
+// SUU-239: 제목 가운데, 뒤로 버튼은 제목과 같은 줄. diff 는 Applicability 처럼 화면 남는 높이를 다 쓴다.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -33,22 +34,26 @@ export default function FederalRegisterPage() {
   }, []);
 
   return (
-    <main className="flex-1 px-6 py-10">
-      <h1 className="text-[28px] font-bold text-ink">Federal Register</h1>
-      {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
-      {selectedDocument ? (
-        <section data-pane="diff" aria-live="polite" className="mt-6">
+    <main className="flex flex-1 flex-col px-6 py-6 md:h-[calc(100dvh-60px)] md:overflow-hidden">
+      <div className="relative flex items-center justify-center">
+        {selectedDocument ? (
           <button
             type="button"
             aria-label="뒤로"
             onClick={() => setSelectedDocument(null)}
-            className="mb-4 flex h-9 w-9 items-center justify-center rounded-full border border-hairline text-ink transition-colors hover:bg-surface-1"
+            className="absolute left-0 flex h-9 w-9 items-center justify-center rounded-full border border-hairline text-ink transition-colors hover:bg-surface-1"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M19 12H5" />
               <path d="M12 19l-7-7 7-7" />
             </svg>
           </button>
+        ) : null}
+        <h1 className="text-center text-[28px] font-bold text-ink">Federal Register</h1>
+      </div>
+      {error ? <p className="mt-4 text-sm text-ink-muted">불러오지 못했습니다.</p> : null}
+      {selectedDocument ? (
+        <section data-pane="diff" aria-live="polite" className="mt-4 flex min-h-0 flex-1 flex-col">
           <FrDiff document={selectedDocument} />
         </section>
       ) : (
