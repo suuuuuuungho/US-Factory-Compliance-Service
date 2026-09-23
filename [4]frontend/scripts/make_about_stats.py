@@ -15,6 +15,30 @@ ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "[4]frontend" / "public"
 OUT = PUBLIC / "about-stats.json"
 YEARS = range(2018, 2026)
+CITE = {
+    "part63_pages": "40 CFR Part 63 (eCFR / govinfo PDF)",
+    "part63_words": "Our count of the 40 CFR Part 63 text",
+    "part63_tokens_min": "Our count of the 40 CFR Part 63 text",
+    "part63_tokens_max": "Our count of the 40 CFR Part 63 text",
+    "llm_context_tokens": "Published context limits of leading AI models",
+    "rule_changes": "Federal Register, final rules amending 40 CFR Part 63, 2018–2025",
+    "rule_changes_by_year": "Federal Register, final rules amending 40 CFR Part 63, 2018–2025",
+    "sections_changed": "Sections of 40 CFR Part 63 amended by those rules, 2018–2025",
+    "sections_changed_pct": "Sections of 40 CFR Part 63 amended by those rules, 2018–2025",
+    "epa_median_days": "EPA Applicability Determination Index, 235 Part 63 letters",
+    "epa_over_6mo_pct": "EPA Applicability Determination Index, 235 Part 63 letters",
+    "epa_letters_sample": "EPA Applicability Determination Index, 235 Part 63 letters",
+    "letters_total": "EPA Applicability Determination Index + CAA Applicability Determinations Dashboard",
+    "letters_by_year": "EPA Applicability Determination Index + CAA Applicability Determinations Dashboard",
+    "prison_years": "Clean Air Act §113(c)(2), 42 U.S.C. 7413(c)(2)",
+    **{key: "EPA ECHO enforcement data, 2015–" for key in (
+        "violation_pct", "facilities", "penalty_total_usd", "penalty_max_usd", "penalty_by_subpart"
+    )},
+    **{key: "Our evaluation on 102 real EPA applicability questions" for key in (
+        "rag_chunks", "rag_eval_cases", "rag_hit20_pct", "rag_subpart_pct",
+        "rag_citation_grounded_pct", "rag_ndcg_steps", "rag_funnel"
+    )},
+}
 
 
 def database_url() -> str:
@@ -106,7 +130,7 @@ def build_stats(rules: list[dict], letters: list[dict], before_1993: int, unknow
     stats = {}
 
     def add(key: str, value: int | float, unit: str, source: str) -> None:
-        stats[key] = {"value": value, "unit": unit, "source": source}
+        stats[key] = {"value": value, "unit": unit, "source": source, "cite": CITE[key]}
 
     fixed = {
         "part63_pages": (957, "pages", "1_project.md (40 CFR Part 63 PDF)"),
@@ -168,6 +192,8 @@ def build_stats(rules: list[dict], letters: list[dict], before_1993: int, unknow
             "source": "3_rag 검색 품질 개선 과정.md §6; 4_rag SUU-152",
         },
     }
+    for key, item in series.items():
+        item["cite"] = CITE[key]
     return {"generated_at": datetime.now(timezone.utc).isoformat(), "stats": stats, "series": series}
 
 
