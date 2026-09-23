@@ -1,6 +1,6 @@
 // SUU-266: About을 "서명의 아픔 → 원인 3개 → 대가 → RAG로 푼 방법" 흐름으로. 숫자는 전부 public/about-stats.json(SUU-265)에서.
 // 제목·숫자·인용구는 New York(font-serif), 본문은 SF Pro(기본).
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it } from "vitest";
@@ -85,7 +85,8 @@ it("RAG 섹션에 평가 기준 102건이 보이고, 인용구가 있다", () =>
   expect(within(rag).getByText(/We answer from the current rule text, and show you the line\./)).toBeTruthy();
 });
 
-it("차트 11개가 모두 SVG로 그려진다", () => {
+// SUU-267: bklit 차트는 크기를 잰 뒤 SVG를 그리므로 waitFor로 기다린다
+it("차트 11개가 모두 SVG로 그려진다", async () => {
   const { container } = render(<About />);
   const charts = [...container.querySelectorAll<HTMLElement>("[data-chart]")].map((el) => el.dataset.chart);
   expect(charts).toEqual([
@@ -102,7 +103,7 @@ it("차트 11개가 모두 SVG로 그려진다", () => {
     "rag-scores",
   ]);
   for (const el of container.querySelectorAll("[data-chart]")) {
-    expect(el.querySelector("svg"), (el as HTMLElement).dataset.chart).not.toBeNull();
+    await waitFor(() => expect(el.querySelector("svg"), (el as HTMLElement).dataset.chart).not.toBeNull());
   }
 });
 
