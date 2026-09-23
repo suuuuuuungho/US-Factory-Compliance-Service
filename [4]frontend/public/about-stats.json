@@ -1,115 +1,137 @@
 {
-  "generated_at": "2026-09-23T06:49:27.893791+00:00",
+  "generated_at": "2026-09-23T07:12:34.164818+00:00",
   "stats": {
     "part63_pages": {
       "value": 957,
       "unit": "pages",
-      "source": "1_project.md (40 CFR Part 63 PDF)"
+      "source": "1_project.md (40 CFR Part 63 PDF)",
+      "cite": "40 CFR Part 63 (eCFR / govinfo PDF)"
     },
     "part63_words": {
       "value": 3300000,
       "unit": "words",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Our count of the 40 CFR Part 63 text"
     },
     "part63_tokens_min": {
       "value": 4000000,
       "unit": "tokens",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Our count of the 40 CFR Part 63 text"
     },
     "part63_tokens_max": {
       "value": 5000000,
       "unit": "tokens",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Our count of the 40 CFR Part 63 text"
     },
     "llm_context_tokens": {
       "value": 1000000,
       "unit": "tokens",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Published context limits of leading AI models"
     },
     "rule_changes": {
       "value": 136,
       "unit": "rules",
-      "source": "DB fr_document (current FR release, 2018–2025)"
+      "source": "DB fr_document (current FR release, 2018–2025)",
+      "cite": "Federal Register, final rules amending 40 CFR Part 63, 2018–2025"
     },
     "sections_changed": {
       "value": 1126,
       "unit": "sections",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Sections of 40 CFR Part 63 amended by those rules, 2018–2025"
     },
     "sections_changed_pct": {
       "value": 45,
       "unit": "%",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "Sections of 40 CFR Part 63 amended by those rules, 2018–2025"
     },
     "epa_median_days": {
       "value": 138,
       "unit": "days",
-      "source": "1_project.md (Part 63 판정서한 n=235)"
+      "source": "1_project.md (Part 63 판정서한 n=235)",
+      "cite": "EPA Applicability Determination Index, 235 Part 63 letters"
     },
     "epa_over_6mo_pct": {
       "value": 40,
       "unit": "%",
-      "source": "1_project.md (n=235)"
+      "source": "1_project.md (n=235)",
+      "cite": "EPA Applicability Determination Index, 235 Part 63 letters"
     },
     "epa_letters_sample": {
       "value": 235,
       "unit": "letters",
-      "source": "1_project.md"
+      "source": "1_project.md",
+      "cite": "EPA Applicability Determination Index, 235 Part 63 letters"
     },
     "letters_total": {
       "value": 1127,
       "unit": "letters",
-      "source": "DB adi_source_entry (ADI 995 + CAA Dashboard 132)"
+      "source": "DB adi_source_entry (ADI 995 + CAA Dashboard 132)",
+      "cite": "EPA Applicability Determination Index + CAA Applicability Determinations Dashboard"
     },
     "prison_years": {
       "value": 2,
       "unit": "years",
-      "source": "CAA §113(c)(2), 42 U.S.C. 7413(c)(2)"
+      "source": "CAA §113(c)(2), 42 U.S.C. 7413(c)(2)",
+      "cite": "Clean Air Act §113(c)(2), 42 U.S.C. 7413(c)(2)"
     },
     "rag_chunks": {
       "value": 5625,
       "unit": "chunks",
-      "source": "3_rag 검색 품질 개선 과정.md"
+      "source": "3_rag 검색 품질 개선 과정.md",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "rag_eval_cases": {
       "value": 102,
       "unit": "cases",
-      "source": "3_rag 검색 품질 개선 과정.md (평가셋 v2)"
+      "source": "3_rag 검색 품질 개선 과정.md (평가셋 v2)",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "rag_hit20_pct": {
       "value": 96.1,
       "unit": "%",
-      "source": "3_rag §4, hybrid+규칙+LLM Hit@20 0.961"
+      "source": "3_rag §4, hybrid+규칙+LLM Hit@20 0.961",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "rag_subpart_pct": {
       "value": 96.1,
       "unit": "%",
-      "source": "4_rag §5, 상위 10 Subpart 적중 0.961 (SUU-152)"
+      "source": "4_rag §5, 상위 10 Subpart 적중 0.961 (SUU-152)",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "rag_citation_grounded_pct": {
       "value": 99.6,
       "unit": "%",
-      "source": "4_rag §5, 인용 근거율 0.996 (SUU-152)"
+      "source": "4_rag §5, 인용 근거율 0.996 (SUU-152)",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "violation_pct": {
       "value": 27.9,
       "unit": "%",
-      "source": "echo-stats.json (ECHO, 2015~)"
+      "source": "echo-stats.json (ECHO, 2015~)",
+      "cite": "EPA ECHO enforcement data, 2015–"
     },
     "facilities": {
       "value": 49618,
       "unit": "facilities",
-      "source": "echo-stats.json (ECHO, 2015~)"
+      "source": "echo-stats.json (ECHO, 2015~)",
+      "cite": "EPA ECHO enforcement data, 2015–"
     },
     "penalty_total_usd": {
       "value": 958783122.68,
       "unit": "USD",
-      "source": "echo-stats.json (ECHO, 2015~)"
+      "source": "echo-stats.json (ECHO, 2015~)",
+      "cite": "EPA ECHO enforcement data, 2015–"
     },
     "penalty_max_usd": {
       "value": 100000000,
       "unit": "USD",
-      "source": "echo-stats.json (ECHO, 2015~)"
+      "source": "echo-stats.json (ECHO, 2015~)",
+      "cite": "EPA ECHO enforcement data, 2015–"
     }
   },
   "series": {
@@ -148,7 +170,8 @@
           "count": 13
         }
       ],
-      "source": "DB fr_document (current FR release, Rule / part63_list)"
+      "source": "DB fr_document (current FR release, Rule / part63_list)",
+      "cite": "Federal Register, final rules amending 40 CFR Part 63, 2018–2025"
     },
     "letters_by_year": {
       "data": [
@@ -287,7 +310,8 @@
       ],
       "before_1993": 112,
       "unknown": 6,
-      "source": "DB adi_source_entry; CAA dates from decision-letters.json by source_key (current ADI release)"
+      "source": "DB adi_source_entry; CAA dates from decision-letters.json by source_key (current ADI release)",
+      "cite": "EPA Applicability Determination Index + CAA Applicability Determinations Dashboard"
     },
     "penalty_by_subpart": {
       "data": [
@@ -342,7 +366,8 @@
           "penalty_total_usd": 129358159.73
         }
       ],
-      "source": "echo-stats.json subparts (ECHO, 2015~)"
+      "source": "echo-stats.json subparts (ECHO, 2015~)",
+      "cite": "EPA ECHO enforcement data, 2015–"
     },
     "rag_ndcg_steps": {
       "data": [
@@ -367,7 +392,8 @@
           "ndcg": 0.692
         }
       ],
-      "source": "3_rag 검색 품질 개선 과정.md §4"
+      "source": "3_rag 검색 품질 개선 과정.md §4",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     },
     "rag_funnel": {
       "data": [
@@ -388,7 +414,8 @@
           "count": 10
         }
       ],
-      "source": "3_rag 검색 품질 개선 과정.md §6; 4_rag SUU-152"
+      "source": "3_rag 검색 품질 개선 과정.md §6; 4_rag SUU-152",
+      "cite": "Our evaluation on 102 real EPA applicability questions"
     }
   }
 }

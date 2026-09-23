@@ -56,6 +56,44 @@ it("판정서한 연도별은 1993~2025, 날짜 모름 6건, 1993년 전은 befo
   }
 });
 
+// SUU-267: 화면용 출처 cite. 사용자가 직접 찾아볼 수 있는 영어 공개 출처. source(내부 추적용)는 그대로 둔다
+const CITE = {
+  PART63: "40 CFR Part 63 (eCFR / govinfo PDF)",
+  COUNT: "Our count of the 40 CFR Part 63 text",
+  LLM: "Published context limits of leading AI models",
+  FR: "Federal Register, final rules amending 40 CFR Part 63, 2018–2025",
+  SECTIONS: "Sections of 40 CFR Part 63 amended by those rules, 2018–2025",
+  ADI_SAMPLE: "EPA Applicability Determination Index, 235 Part 63 letters",
+  LETTERS: "EPA Applicability Determination Index + CAA Applicability Determinations Dashboard",
+  CAA: "Clean Air Act §113(c)(2), 42 U.S.C. 7413(c)(2)",
+  ECHO: "EPA ECHO enforcement data, 2015–",
+  RAG: "Our evaluation on 102 real EPA applicability questions",
+};
+const STAT_CITE: Record<string, string> = {
+  part63_pages: CITE.PART63, part63_words: CITE.COUNT, part63_tokens_min: CITE.COUNT, part63_tokens_max: CITE.COUNT,
+  llm_context_tokens: CITE.LLM, rule_changes: CITE.FR, sections_changed: CITE.SECTIONS, sections_changed_pct: CITE.SECTIONS,
+  epa_median_days: CITE.ADI_SAMPLE, epa_over_6mo_pct: CITE.ADI_SAMPLE, epa_letters_sample: CITE.ADI_SAMPLE,
+  letters_total: CITE.LETTERS, prison_years: CITE.CAA,
+  violation_pct: CITE.ECHO, facilities: CITE.ECHO, penalty_total_usd: CITE.ECHO, penalty_max_usd: CITE.ECHO,
+  rag_chunks: CITE.RAG, rag_eval_cases: CITE.RAG, rag_hit20_pct: CITE.RAG, rag_subpart_pct: CITE.RAG, rag_citation_grounded_pct: CITE.RAG,
+};
+const SERIES_CITE: Record<string, string> = {
+  rule_changes_by_year: CITE.FR, letters_by_year: CITE.LETTERS, penalty_by_subpart: CITE.ECHO,
+  rag_ndcg_steps: CITE.RAG, rag_funnel: CITE.RAG,
+};
+
+it("모든 숫자에 화면용 영어 cite가 있고, 내부 추적용 source는 남아 있다", () => {
+  const { stats, series } = load("about-stats.json");
+  for (const [k, cite] of Object.entries(STAT_CITE)) {
+    expect(stats[k].cite, k).toBe(cite);
+    expect(stats[k].source?.trim(), k).toBeTruthy();
+  }
+  for (const [k, cite] of Object.entries(SERIES_CITE)) {
+    expect(series[k].cite, k).toBe(cite);
+    expect(series[k].source?.trim(), k).toBeTruthy();
+  }
+});
+
 it("과징금·위반 숫자가 echo-stats.json summary와 같다", () => {
   const { stats, series } = load("about-stats.json");
   const { summary, subparts } = load("echo-stats.json");
