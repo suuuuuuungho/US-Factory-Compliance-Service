@@ -1,28 +1,6 @@
 # DB 전수조사 결과
 
-## [1] 조사 범위와 읽는 법
-
-1) 조사 기준
-   - 조사일: 2026-09-14. 수치는 아래에 적은 공식 응답을 읽은 시점의 값이다.
-   - 서비스 범위: [프로젝트 설명](<../../1) project/1_project.md>)에 따라 미국 제조업 공장의 **40 CFR Part 63** 적용 후보와 근거를 찾는다.
-   - 네 데이터셋의 공식 제공 종류를 조사했다. 실제 전수 확인 범위는 데이터셋마다 아래에 따로 적었다.
-   - `직접 확인`은 실제 응답을 읽고 센 값, `공식 설명`은 제공기관의 안내, `설계 결정`은 구축에 적용할 방법이다.
-   - 이번 작업은 조사와 계획 작성이다. 운영용 수집기·파서·DB·예약 작업을 구축하거나 실행한 결과가 아니다.
-
-2) 데이터의 역할
-   - eCFR: 기준일의 규정 원문. 조항 후보와 판정 질문의 기본 근거다.
-   - Federal Register: 규정의 제안·확정·정정·시행일 변경을 추적하는 자료다.
-   - ECHO: 신고된 시설·점검·위반·처분 이력이다. 다른 공장에도 같은 규정이 적용된다는 증거는 아니다.
-   - ADI + CAA 적용·준수 Dashboard: EPA의 해석과 특정 요청에 대한 회신이다. 당시 사실관계와 조건을 함께 읽어야 한다.
-   - 여기서 CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard 및 CAA Pipeline과 구분한다. [EPA 안내](https://www.epa.gov/complying-air-emissions-standards-stationary-sources)
-
-3) 완료 범위의 한계
-   - 현재 Part 63 전체 XML·이력 목록, Federal Register의 Part 63 구조화 검색 결과 전체 목록, ECHO 핵심 CSV 전체 행, ADI와 CAA Dashboard 전체 목록을 확인했다.
-   - 모든 과거 규정 버전의 본문, 모든 FR 본문, 모든 판정문 PDF를 읽어 법적 의미까지 검토한 것은 아니다.
-   - ECHO 전체 환경 분야의 대용량 파일까지 모두 내려받은 것은 아니다. Part 63에 필요한 대기 자료를 전수 확인하고 나머지 제공 종류는 포함·제외 이유를 조사했다.
-   - 검색 목록의 전수 확인과 원문 전체 수집 완료는 서로 다르다. 아래 건수를 운영 DB 적재 건수로 사용하지 않는다.
-
-## [2] eCFR
+## [1] eCFR
 
 1) 공식 제공 종류
    - 전체 제목 목록: `GET /api/versioner/v1/titles.json`.

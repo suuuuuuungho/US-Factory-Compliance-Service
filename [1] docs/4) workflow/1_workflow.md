@@ -2,7 +2,7 @@
 
 ## 1. 한 줄 요약
 
-> 터미널에 만들고 싶은 기능을 던지면 → Claude가 티켓을 만들고 설계하고 → Codex가 구현하고 → 로봇(CI)이 검사하고 → 사람이 Merge 누르면 → 자동 배포되고 → Slack이 알려준다.
+> 터미널에 만들고 싶은 기능을 던지면 → Claude가 티켓을 만들고 설계하고 → Codex가 구현하고 → 로봇(CI)이 검사하고 → 사람이 merge를 승인하면 → 자동 배포되고 → Slack이 알려준다.
 
 ## 2. 그림으로 보기
 
@@ -40,7 +40,7 @@
 [CI]     테스트 자동 실행 + 이름 규칙 검사
    │        실패 → Slack 🔴 → Codex가 고침 → 다시 push
    ▼        성공 ✅
-[사람]   PR 확인 → Merge 버튼 (Squash)
+[사람]   PR 확인 → merge 승인 → Codex가 Squash merge
    │                                            ─▶ Linear: Done (자동)
    ▼                                            ─▶ Slack: 병합 완료 🟢
 [CD]     main에 합쳐지면 자동 배포
@@ -76,7 +76,7 @@
 |---|---|
 | 누가 | Claude Code |
 | 입력 | Linear 이슈 번호 |
-| Claude가 하는 일 | 1) 이슈 읽기 2) 건드릴 파일·범위 정하기 3) 완료 기준 쓰기 4) **실패하는 테스트 코드** 작성 (`<영역>/tests/test_*.py`, pytest) 5) `main`에서 브랜치 만들기 6) 설계 파일 + 테스트 commit·push 7) Linear 댓글로 요약 |
+| Claude가 하는 일 | 1) 이슈 읽기 2) 건드릴 파일·범위 정하기 3) 완료 기준 쓰기 4) **실패하는 테스트 코드** 작성 (`<영역>/tests/test_*.py` pytest, 프론트는 `[4]frontend/tests/*.test.tsx` vitest) 5) `main`에서 브랜치 만들기 6) 설계 파일 + 테스트 commit·push 7) Linear 댓글로 요약 |
 | 결과물 | 브랜치 `feat/suu-20-xxx`, 설계 파일 `[5] tickets/1)DB/1_feat/SUU-20.md`, 실패하는 테스트 |
 | Linear | `/spec`이 상태를 In Progress로 바꿈 (Linear 자동화는 PR 열림·merge만 다룸) |
 | 완료 확인 | 테스트 돌리면 빨강 (아직 구현 없으니 당연) |
@@ -89,7 +89,7 @@
 | 입력 | "SUU-20 구현해줘" |
 | Codex가 하는 일 | 1) `AGENTS.md` 규칙 읽기 2) 브랜치 checkout 3) 설계 파일 + 테스트 읽기 4) 테스트 통과할 때까지 구현 5) commit → push → PR 생성 6) CI 확인 및 결과 요약 |
 | 하면 안 되는 것 | 테스트 파일 수정·삭제, `main`에 직접 push |
-| 이때 Claude는 | **git을 건드리지 않는다** (브랜치 전환·커밋 금지). 같은 폴더를 같이 쓰기 때문. Codex가 PR 링크를 보여준 뒤에 이어서 한다 |
+| 이때 Claude는 | **git을 건드리지 않는다** (브랜치 전환·커밋 금지). 같은 폴더를 같이 쓰기 때문. Codex가 PR 링크를 보여준 뒤에 이어서 한다. 다른 작업을 동시에 하려면 worktree를 나눈다 (`2_rules.md` 3절) |
 | 결과물 | PR (제목: Linear 제목 + ` (SUU-20)`) |
 | 자동으로 | Linear → In Review, Slack 🟡 |
 | 완료 확인 | 로컬 테스트와 CI가 모두 초록이고, Codex가 결과를 요약한 뒤 merge 승인 대기 |
@@ -100,7 +100,7 @@
 |---|---|
 | 누가 | GitHub Actions |
 | 언제 | PR 열릴 때, push 될 때마다 |
-| 하는 일 | 1) 테스트 실행 2) 브랜치 이름·PR 제목 규칙 검사 |
+| 하는 일 | 1) 테스트 실행 (pytest + 프론트 vitest) 2) 브랜치 이름·PR 제목·설계 파일 규칙 검사 |
 | 실패하면 | Slack 🔴 → Codex가 고쳐서 다시 push |
 | 완료 확인 | PR에 초록 체크 ✅ |
 
@@ -119,7 +119,7 @@
 | 누가 | Render + Vercel + Supabase |
 | 언제 | `main`에 합쳐질 때 |
 | 하는 일 | 백엔드 → Render(`render.yaml`), 프론트 → Vercel, DB → Supabase 마이그레이션 |
-| 자동으로 | Render·Vercel Slack 알림(각 대시보드 연동) |
+| 자동으로 | Vercel 배포 결과는 `slack.yml`(deployment_status)이 Slack에 알림. Render 알림은 Render 대시보드 연동 |
 
 ## 5. 만들 파일 (9개)
 
@@ -129,9 +129,9 @@
 | `.claude/commands/ticket.md` | Claude | `/ticket "기능"` → 티켓 초안 → 확인 → Linear 발행 |
 | `.claude/commands/spec.md` | Claude | `/spec SUU-20` → 설계 + 실패 테스트 + 브랜치 |
 | `AGENTS.md` (루트) | Codex | Codex가 지킬 규칙 (설계 파일 읽기, 테스트 금지, PR 제목) |
-| `.github/workflows/ci.yml` | CI | pytest 실행 + 규칙 검사 |
+| `.github/workflows/ci.yml` | CI | pytest·vitest 실행 + 규칙 검사 |
 | `pyproject.toml` | 테스트 | pytest 설정 (`[3] backend` 같은 폴더를 import 가능하게) |
-| `render.yaml` | CD | main merge 시 Render 배포 |
+| `render.yaml` (루트) | CD | main merge 시 Render 배포 |
 | `.github/workflows/slack.yml` | 알림 | PR 열림 / CI 실패 / 병합 / 배포 결과 |
 | `.github/pull_request_template.md` | PR | PR 본문 틀 (이슈 번호, 테스트 결과) |
 
@@ -151,7 +151,7 @@
 | Vercel | GitHub 레포 연결 + Root Directory `[4]frontend` + `NEXT_PUBLIC_API_URL` | main merge 시 자동 배포, PR마다 미리보기 |
 | Render | GitHub 레포 연결(Blueprint) + 환경변수 4개 + Slack 연동 | main merge 시 백엔드 자동 배포 |
 
-> "승인 1명 필수"는 켜지 않는다. GitHub은 자기 PR을 자기가 승인 못 하게 막아서 혼자 개발하면 merge가 안 된다. **Merge 버튼을 누르는 것이 승인**이다.
+> "승인 1명 필수"는 켜지 않는다. GitHub은 자기 PR을 자기가 승인 못 하게 막아서 혼자 개발하면 merge가 안 된다. **사람이 merge를 승인하는 것이 승인**이다.
 
 ## 7. 구축 순서 (하나씩 만들고 확인)
 
@@ -162,20 +162,20 @@
 | 2 | GitHub 브랜치 보호 + merge 설정 | main에 직접 push 하면 거부됨 | ✅
 | 3 | Linear ↔ GitHub 연동 | PR 열면 이슈에 자동 연결, merge 시 Done |  ✅
 | 4 | `slack.yml` | PR 열면 Slack에 메시지 옴 | ✅ SUU-29
-| 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | 🟡 SUU-30 파일 완료, 실전 검증 남음
+| 5 | `/ticket`, `/spec`, `AGENTS.md`, PR 템플릿, pytest CI | 진짜 티켓 하나로 Claude → Codex → PR 끝까지 돌려봄 | ✅ SUU-30 (SUU-31 · PR #9로 검증)
 | 6 | Vercel 연결(cd.yml 없음) + slack.yml deployment_status | main merge 시 Slack에 🚀 배포 알림, `https://us-factory-compliance-service.vercel.app` | ✅ SUU-165 (SUU-140~143에서 한 번 연결했다가 SUU-144로 초기화. Root Directory 공백 불가 → `[4]frontend`) |
-| 6-b | `render.yaml` + Render 연결 | `/health` 200 | SUU-160 |
+| 6-b | `render.yaml` + Render 연결 | `/health` 200 | ✅ SUU-160 |
 
 ## 8. 결정 기록 (왜 이렇게 했나)
 
 | 결정 | 이유 |
 |---|---|
 | 테스트 코드는 Claude가 쓴다 | 진짜 TDD. Codex 목표가 "이 테스트 통과"로 명확해짐 |
-| Python 3.12 + pytest | 백엔드·DB 파이프라인이 Python. 프론트는 스택 정해지면 추가 |
+| Python 3.12 + pytest | 백엔드·DB 파이프라인이 Python. 프론트(Next.js)는 vitest |
 | 티켓은 Claude가 쓰고 사람이 확인한다 | 사람이 쓰면 크고 애매한 티켓이 나오기 쉬움. Claude가 쪼개면 테스트 크기가 됨 |
 | Codex는 CLI(로컬) | Claude Code와 같은 터미널·같은 폴더. `AGENTS.md` 자동으로 읽음 |
 | Linear 상태는 기본 GitHub 연동 | 코드 0줄. 이전의 직접 스크립트 방식은 버림 |
 | 브랜치는 main 하나 + 짧은 브랜치 | 혼자 개발 + 자동 배포라 develop / release 불필요 |
 | Squash merge만 | 티켓 하나 = main 커밋 하나 |
 | 이전 `.github` 파일은 버림 | 새로 만든다. 필요하면 git 히스토리에서 꺼냄 |
-| 배포는 Vercel + Supabase | 설정만으로 자동 배포. 백엔드는 스택 정해지면 추가 |
+| 배포는 Render + Vercel + Supabase | 설정만으로 자동 배포. 백엔드(FastAPI)는 Render, 프론트는 Vercel |
