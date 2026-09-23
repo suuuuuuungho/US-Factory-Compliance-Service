@@ -1,0 +1,441 @@
+{
+  "generated_at": "2026-09-23T06:27:47.374830+00:00",
+  "stats": {
+    "part63_pages": {
+      "value": 957,
+      "unit": "pages",
+      "source": "1_project.md (40 CFR Part 63 PDF)"
+    },
+    "part63_words": {
+      "value": 3300000,
+      "unit": "words",
+      "source": "1_project.md"
+    },
+    "part63_tokens_min": {
+      "value": 4000000,
+      "unit": "tokens",
+      "source": "1_project.md"
+    },
+    "part63_tokens_max": {
+      "value": 5000000,
+      "unit": "tokens",
+      "source": "1_project.md"
+    },
+    "llm_context_tokens": {
+      "value": 1000000,
+      "unit": "tokens",
+      "source": "1_project.md"
+    },
+    "rule_changes": {
+      "value": 136,
+      "unit": "rules",
+      "source": "DB fr_document (current FR release, 2018–2025)"
+    },
+    "sections_changed": {
+      "value": 1126,
+      "unit": "sections",
+      "source": "1_project.md"
+    },
+    "sections_changed_pct": {
+      "value": 45,
+      "unit": "%",
+      "source": "1_project.md"
+    },
+    "epa_median_days": {
+      "value": 138,
+      "unit": "days",
+      "source": "1_project.md (Part 63 판정서한 n=235)"
+    },
+    "epa_over_6mo_pct": {
+      "value": 40,
+      "unit": "%",
+      "source": "1_project.md (n=235)"
+    },
+    "epa_letters_sample": {
+      "value": 235,
+      "unit": "letters",
+      "source": "1_project.md"
+    },
+    "letters_total": {
+      "value": 1127,
+      "unit": "letters",
+      "source": "DB adi_source_entry (ADI 995 + CAA Dashboard 132)"
+    },
+    "prison_years": {
+      "value": 2,
+      "unit": "years",
+      "source": "CAA §113(c)(2), 42 U.S.C. 7413(c)(2)"
+    },
+    "rag_chunks": {
+      "value": 5625,
+      "unit": "chunks",
+      "source": "3_rag 검색 품질 개선 과정.md"
+    },
+    "rag_eval_cases": {
+      "value": 102,
+      "unit": "cases",
+      "source": "3_rag 검색 품질 개선 과정.md (평가셋 v2)"
+    },
+    "rag_hit20_pct": {
+      "value": 96.1,
+      "unit": "%",
+      "source": "3_rag §4, hybrid+규칙+LLM Hit@20 0.961"
+    },
+    "rag_subpart_pct": {
+      "value": 96.1,
+      "unit": "%",
+      "source": "4_rag §5, 상위 10 Subpart 적중 0.961 (SUU-152)"
+    },
+    "rag_citation_grounded_pct": {
+      "value": 99.6,
+      "unit": "%",
+      "source": "4_rag §5, 인용 근거율 0.996 (SUU-152)"
+    },
+    "violation_pct": {
+      "value": 27.9,
+      "unit": "%",
+      "source": "echo-stats.json (ECHO, 2015~)"
+    },
+    "facilities": {
+      "value": 49618,
+      "unit": "facilities",
+      "source": "echo-stats.json (ECHO, 2015~)"
+    },
+    "penalty_total_usd": {
+      "value": 958783122.68,
+      "unit": "USD",
+      "source": "echo-stats.json (ECHO, 2015~)"
+    },
+    "penalty_max_usd": {
+      "value": 100000000,
+      "unit": "USD",
+      "source": "echo-stats.json (ECHO, 2015~)"
+    }
+  },
+  "series": {
+    "rule_changes_by_year": {
+      "data": [
+        {
+          "year": 2018,
+          "count": 19
+        },
+        {
+          "year": 2019,
+          "count": 13
+        },
+        {
+          "year": 2020,
+          "count": 43
+        },
+        {
+          "year": 2021,
+          "count": 6
+        },
+        {
+          "year": 2022,
+          "count": 15
+        },
+        {
+          "year": 2023,
+          "count": 8
+        },
+        {
+          "year": 2024,
+          "count": 19
+        },
+        {
+          "year": 2025,
+          "count": 13
+        }
+      ],
+      "source": "DB fr_document (current FR release, Rule / part63_list)"
+    },
+    "letters_by_year": {
+      "data": [
+        {
+          "year": 1973,
+          "count": 11
+        },
+        {
+          "year": 1974,
+          "count": 2
+        },
+        {
+          "year": 1975,
+          "count": 1
+        },
+        {
+          "year": 1976,
+          "count": 28
+        },
+        {
+          "year": 1977,
+          "count": 14
+        },
+        {
+          "year": 1978,
+          "count": 6
+        },
+        {
+          "year": 1979,
+          "count": 4
+        },
+        {
+          "year": 1980,
+          "count": 2
+        },
+        {
+          "year": 1981,
+          "count": 1
+        },
+        {
+          "year": 1982,
+          "count": 2
+        },
+        {
+          "year": 1985,
+          "count": 1
+        },
+        {
+          "year": 1986,
+          "count": 1
+        },
+        {
+          "year": 1988,
+          "count": 3
+        },
+        {
+          "year": 1989,
+          "count": 6
+        },
+        {
+          "year": 1990,
+          "count": 12
+        },
+        {
+          "year": 1991,
+          "count": 9
+        },
+        {
+          "year": 1992,
+          "count": 9
+        },
+        {
+          "year": 1993,
+          "count": 14
+        },
+        {
+          "year": 1994,
+          "count": 3
+        },
+        {
+          "year": 1995,
+          "count": 41
+        },
+        {
+          "year": 1996,
+          "count": 48
+        },
+        {
+          "year": 1997,
+          "count": 39
+        },
+        {
+          "year": 1998,
+          "count": 35
+        },
+        {
+          "year": 1999,
+          "count": 21
+        },
+        {
+          "year": 2000,
+          "count": 47
+        },
+        {
+          "year": 2001,
+          "count": 53
+        },
+        {
+          "year": 2002,
+          "count": 26
+        },
+        {
+          "year": 2003,
+          "count": 41
+        },
+        {
+          "year": 2004,
+          "count": 46
+        },
+        {
+          "year": 2005,
+          "count": 55
+        },
+        {
+          "year": 2006,
+          "count": 50
+        },
+        {
+          "year": 2007,
+          "count": 26
+        },
+        {
+          "year": 2008,
+          "count": 52
+        },
+        {
+          "year": 2009,
+          "count": 25
+        },
+        {
+          "year": 2010,
+          "count": 23
+        },
+        {
+          "year": 2011,
+          "count": 24
+        },
+        {
+          "year": 2012,
+          "count": 23
+        },
+        {
+          "year": 2013,
+          "count": 26
+        },
+        {
+          "year": 2014,
+          "count": 25
+        },
+        {
+          "year": 2015,
+          "count": 21
+        },
+        {
+          "year": 2016,
+          "count": 23
+        },
+        {
+          "year": 2017,
+          "count": 18
+        },
+        {
+          "year": 2018,
+          "count": 31
+        },
+        {
+          "year": 2019,
+          "count": 32
+        },
+        {
+          "year": 2020,
+          "count": 9
+        }
+      ],
+      "unknown": 138,
+      "source": "DB adi_source_entry; CAA dates from adi_document_version.signed_on (current ADI release)"
+    },
+    "penalty_by_subpart": {
+      "data": [
+        {
+          "code": "ZZZZ",
+          "desc": "MACT Part 63 - Subpart ZZZZ - STATIONARY RECIPROCATING INTERNAL COMBUSTION ENGINES (RICE)",
+          "penalty_total_usd": 622077405.61
+        },
+        {
+          "code": "DDDDD",
+          "desc": "MACT Part 63 - Subpart DDDDD - MAJOR SOURCES: INDUSTRIAL/COMMERCIAL/INSTITUTIONAL BOILERS & PROCESS HEATER",
+          "penalty_total_usd": 432844351.12
+        },
+        {
+          "code": "CC",
+          "desc": "MACT Part 63 - Subpart CC - PETROLEUM REFINERIES",
+          "penalty_total_usd": 240517677.02
+        },
+        {
+          "code": "A",
+          "desc": "MACT Part 63 - Subpart A - GENERAL PROVISIONS",
+          "penalty_total_usd": 216294446.88
+        },
+        {
+          "code": "UUU",
+          "desc": "MACT Part 63 - Subpart UUU - PETROLEUM REFINERIES: CCU'S, CRU'S & SRU'S",
+          "penalty_total_usd": 214617271.81
+        },
+        {
+          "code": "EEEE",
+          "desc": "MACT Part 63 - Subpart EEEE - ORGANIC LIQUIDS DISTRIBUTION (NON-GASOLINE)",
+          "penalty_total_usd": 182018404.21
+        },
+        {
+          "code": "GGGGG",
+          "desc": "MACT Part 63 - Subpart GGGGG - SITE REMEDIATION",
+          "penalty_total_usd": 159181009.21
+        },
+        {
+          "code": "L",
+          "desc": "MACT Part 63 - Subpart L - COKE OVEN BATTERIES",
+          "penalty_total_usd": 137922884
+        },
+        {
+          "code": "HH",
+          "desc": "MACT Part 63 - Subpart HH - OIL AND NATURAL GAS PRODUCTION FACILITIES",
+          "penalty_total_usd": 130907768.83
+        },
+        {
+          "code": "H",
+          "desc": "MACT Part 63 - Subpart H - EQUIPMENT LEAKS OF HAZARDOUS ORGANICS",
+          "penalty_total_usd": 129358159.73
+        }
+      ],
+      "source": "echo-stats.json subparts (ECHO, 2015~)"
+    },
+    "rag_ndcg_steps": {
+      "data": [
+        {
+          "step": "baseline",
+          "ndcg": 0.264
+        },
+        {
+          "step": "Kanon 2 + context",
+          "ndcg": 0.437
+        },
+        {
+          "step": "reranker",
+          "ndcg": 0.561
+        },
+        {
+          "step": "rules",
+          "ndcg": 0.631
+        },
+        {
+          "step": "LLM rerank",
+          "ndcg": 0.692
+        }
+      ],
+      "source": "3_rag 검색 품질 개선 과정.md §4"
+    },
+    "rag_funnel": {
+      "data": [
+        {
+          "stage": "chunks",
+          "count": 5625
+        },
+        {
+          "stage": "candidates",
+          "count": 150
+        },
+        {
+          "stage": "reranked",
+          "count": 20
+        },
+        {
+          "stage": "sent to model",
+          "count": 10
+        }
+      ],
+      "source": "3_rag 검색 품질 개선 과정.md §6; 4_rag SUU-152"
+    }
+  }
+}
