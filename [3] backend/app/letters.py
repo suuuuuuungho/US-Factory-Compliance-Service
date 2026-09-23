@@ -21,7 +21,7 @@ LETTER_RELEASE_ID = "5cc370d0-c513-4376-981f-2d910b39ae6b"  # SUU-256 이 서한
 TOP_N = 5
 RERANK_K = 20
 # 리랭커 점수(0~1) 기준선. 2026-09-22 실제 128건으로 잼: 같은 사례 0.71~0.93, 같은 업종 0.044~0.14, 무관 ≤0.002.
-# 같은 업종 사례(말투 따라 0.044~0.053 오르내림)는 살리고 무관은 거르는 값. 자세한 표는 [5] tickets/SUU-257.md
+# 같은 업종 사례(말투 따라 0.044~0.053 오르내림)는 살리고 무관은 거르는 값. 자세한 표는 [5] tickets/3)Backend/1_feat/SUU-257.md
 MIN_SCORE = 0.03
 
 META_PATH = Path(__file__).resolve().parents[2] / "[4]frontend" / "public" / "decision-letters.json"
