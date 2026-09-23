@@ -1,146 +1,61 @@
-// SUU-217: About. 무엇을 하고 / 안 하는지, 어떻게 돌아가는지, 데이터 출처, 면책. 제목·숫자·인용구는 New York(font-serif), 본문은 SF Pro(기본).
+import aboutStats from "../../../public/about-stats.json";
 
-const problems = [
-  ["Part 63 is vast.", "Hundreds of subparts. Finding the handful that touch your plant is the hard part."],
-  ["Rules keep changing.", "Amendments land every year, and nobody on the floor has time to track them."],
-  ["The vocabulary is legal, not operational.", "“Affected source” and “major source” don’t sound like anything you run."],
-  ["Wrong calls are expensive.", "Misapplying a subpart means penalties, rework, and a certification with your name on it."],
-];
+const { stats, series } = aboutStats;
+type StatKey = keyof typeof stats;
 
-const does = [
-  "Candidate Part 63 sections that may apply to your plant",
-  "The criteria that decide applicability, with the CFR text behind each one",
-  "A checklist of what to confirm at your facility",
-  "Prior EPA applicability determinations on similar cases",
-  "Whether the cited section was recently amended",
-];
-
-const doesNot = [
-  "A final applicability determination",
-  "Legal advice, or anything you should sign without reading the source",
-];
-
-const steps = [
-  ["Describe your plant", "Processes, materials, emission units — in your own words."],
-  ["We search the rule text", "Retrieval over the current 40 CFR Part 63, so answers come from the regulation, not from memory."],
-  ["You get candidates, criteria, checklist", "Every item carries its section citation. You verify; you decide."],
-];
-
-const sources = [
-  ["eCFR", "The current text of 40 CFR Part 63"],
-  ["Federal Register", "Amendments and their effective dates"],
-  ["ECHO", "EPA enforcement and compliance history by facility"],
-  ["ADI", "Applicability Determination Index — past EPA applicability decisions"],
-];
-
-function H2({ children }: { children: string }) {
-  return <h2 className="font-serif text-3xl leading-tight text-ink">{children}</h2>;
+function Stat({ name, label }: { name: StatKey; label?: string }) {
+  const item = stats[name];
+  return <div className="min-w-0"><span data-stat={name} data-value={String(item.value)} className="block font-serif text-4xl text-ink sm:text-5xl">{label ?? item.value.toLocaleString("en-US")}</span><small className="block text-xs leading-relaxed text-ink-muted">{item.source}</small></div>;
+}
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="space-y-8 border-t border-hairline pt-10 sm:pt-14"><h2 className="font-serif text-3xl text-ink sm:text-5xl">{title}</h2>{children}</section>;
+}
+function Chart({ name, title, source, children }: { name: string; title: string; source?: string; children: React.ReactNode }) {
+  return <figure data-chart={name} className="min-w-0 space-y-3 border-t border-hairline-soft pt-5"><figcaption className="text-sm text-ink">{title}</figcaption><svg viewBox="0 0 600 220" role="img" aria-label={title} className="h-auto w-full">{children}</svg>{source && <p className="text-xs text-ink-muted">Source: {source}</p>}</figure>;
+}
+function Bars({ values, labels, format }: { values: number[]; labels: string[]; format?: (n: number) => string }) {
+  const max = Math.max(...values, 1);
+  return <>{values.map((v, i) => { const y = 7 + i * 202 / values.length; const h = 180 / values.length; return <g key={i}><text x="0" y={y + h * .6} fill="#aaa" fontSize="11">{labels[i]}</text><rect x="145" y={y} width={390 * v / max} height={Math.max(h - 7, 5)} fill="#ddd" /><text x="540" y={y + h * .6} fill="#aaa" fontSize="11">{format ? format(v) : v.toLocaleString("en-US")}</text></g>; })}</>;
+}
+function Trend({ data }: { data: { year: number; count: number }[] }) {
+  const max = Math.max(...data.map((r) => r.count), 1);
+  const points = data.map((r, i) => `${20 + i * 560 / (data.length - 1)},${180 - r.count * 155 / max}`).join(" ");
+  return <><line x1="20" x2="580" y1="180" y2="180" stroke="#555" /><polyline points={points} fill="none" stroke="#eee" strokeWidth="2" /><text x="20" y="207" fill="#aaa" fontSize="12">{data[0].year}</text><text x="545" y="207" fill="#aaa" fontSize="12">{data.at(-1)?.year}</text></>;
+}
+function Squares({ percent }: { percent: number }) {
+  return <>{Array.from({ length: 100 }, (_, i) => <rect key={i} x={10 + i % 20 * 29} y={15 + Math.floor(i / 20) * 32} width="21" height="21" fill={i < Math.round(percent) ? "#eee" : "#444"} />)}</>;
 }
 
 export default function AboutPage() {
-  return (
-    <main className="flex-1 px-6 py-16">
-      <div className="mx-auto flex max-w-3xl flex-col gap-20">
-        <header className="flex flex-col gap-5">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">About</p>
-          <h1 className="font-serif text-3xl leading-tight tracking-[-0.01em] text-ink sm:text-4xl">
-            Questions and evidence, not verdicts.
-          </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-ink-muted">
-            A service for environmental staff at US manufacturing plants. It finds which 40 CFR Part 63
-            sections may apply to your facility, shows the criteria that decide it, and points to the text
-            that backs it up.
-          </p>
-        </header>
-
-        <section className="flex flex-col gap-4">
-          <H2>Who it&apos;s for</H2>
-          <p className="text-base leading-relaxed text-ink-muted">
-            Environmental and regulatory staff preparing a Title V air permit. You know the plant floor; you
-            may not know the regulatory vocabulary. Outside counsel for every question is out of reach.
-          </p>
-        </section>
-
-        <section className="flex flex-col gap-6">
-          <H2>Why it&apos;s hard</H2>
-          <ol className="grid gap-6 sm:grid-cols-2">
-            {problems.map(([title, body], i) => (
-              <li key={title} className="flex flex-col gap-2 border-t border-hairline pt-4">
-                <span className="font-serif text-2xl text-ink-muted">0{i + 1}</span>
-                <p className="font-medium text-ink">{title}</p>
-                <p className="text-sm leading-relaxed text-ink-muted">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className="flex flex-col gap-6">
-          <H2>What we do — and don&apos;t</H2>
-          <div className="grid gap-8 sm:grid-cols-2">
-            <div className="flex flex-col gap-3">
-              <p id="about-do" className="text-xs font-medium uppercase tracking-[0.18em] text-semantic-success">
-                What we do
-              </p>
-              <ul aria-labelledby="about-do" className="flex flex-col gap-2">
-                {does.map((t) => (
-                  <li key={t} className="border-l border-semantic-success pl-3 text-sm leading-relaxed text-ink">
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-3">
-              <p id="about-dont" className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">
-                What we don&apos;t do
-              </p>
-              <ul aria-labelledby="about-dont" className="flex flex-col gap-2">
-                {doesNot.map((t) => (
-                  <li key={t} className="border-l border-hairline pl-3 text-sm leading-relaxed text-ink-muted">
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <blockquote className="border-t border-hairline pt-6 font-serif text-lg italic leading-snug text-ink">
-            We don&apos;t tell you the answer. We tell you where to look and what to confirm.
-          </blockquote>
-        </section>
-
-        <section className="flex flex-col gap-6">
-          <H2>How it works</H2>
-          <ol className="grid gap-4 sm:grid-cols-3">
-            {steps.map(([title, body], i) => (
-              <li key={title} className="flex flex-col gap-2 rounded-lg bg-surface-1 p-5">
-                <span className="font-serif text-3xl text-accent-blue">0{i + 1}</span>
-                <p className="font-medium text-ink">{title}</p>
-                <p className="text-sm leading-relaxed text-ink-muted">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className="flex flex-col gap-6">
-          <H2>Data sources</H2>
-          <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-[auto_1fr]">
-            {sources.map(([name, desc]) => (
-              <div key={name} className="contents">
-                <dt className="font-medium text-ink">{name}</dt>
-                <dd className="text-sm leading-relaxed text-ink-muted">{desc}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        <section className="flex flex-col gap-3 border-t border-hairline pt-8">
-          <H2>Disclaimer</H2>
-          <p className="text-sm leading-relaxed text-ink-muted">
-            This service is not legal advice and does not make applicability determinations. Final decisions
-            rest with the facility and its qualified advisors. Always read the cited section before relying on
-            it.
-          </p>
-        </section>
-      </div>
-    </main>
-  );
+  const letters = series.letters_by_year;
+  return <main className="flex-1 px-6 py-16 sm:px-10"><div className="mx-auto max-w-5xl space-y-24 sm:space-y-32">
+    <header className="space-y-8"><p className="text-xs uppercase tracking-widest text-ink-muted">About / the signature</p>
+      <h1 className="max-w-4xl font-serif text-4xl leading-tight text-ink sm:text-6xl">Every year, someone at your plant signs a legal statement that the plant followed {stats.part63_pages.value} pages of rules no one there has read in full.</h1>
+      <p className="max-w-2xl text-lg leading-relaxed text-ink-muted">The rules changed {stats.rule_changes.value} times since 2018. A false certification can mean up to {stats.prison_years.value} years in prison.</p>
+      <div className="grid gap-8 border-t border-hairline pt-8 sm:grid-cols-3"><Stat name="part63_pages" /><Stat name="rule_changes" /><Stat name="prison_years" /></div>
+    </header>
+    <Section title="The signature"><p className="text-ink-muted">Across a five-year Title V permit term, reporting continues between signatures. Deviations can require notice within hours.</p>
+      <Chart name="obligation-timeline" title="A five-year permit term" source="40 CFR 70.6(a)(3)(iii)(A), 70.6(c)(5), 70.5(d), 71.6(a)(3)(iii)(B), 70.5(a)(1)(iii); CAA §113(c)(2)"><line x1="50" x2="560" y1="95" y2="95" stroke="#777" />{Array.from({ length: 11 }, (_, i) => <g key={i}><circle cx={50 + i * 51} cy="95" r="4" fill="#eee" />{i % 2 === 0 && <text x={45 + i * 51} y="125" fill="#aaa" fontSize="11">{i / 2}</text>}</g>)}<text x="50" y="30" fill="#aaa" fontSize="12">10 semiannual reports · 5 annual certifications</text><text x="250" y="155" fill="#aaa" fontSize="12">1 renewal, 6–18 months before expiry</text><text x="50" y="195" fill="#aaa" fontSize="12">Unscheduled: 24h / 48h notices</text></Chart>
+    </Section>
+    <Section title="Why no one can answer it"><div className="space-y-14">
+      <div className="space-y-4"><h3 className="font-serif text-2xl text-ink">Too big to hold in context</h3><div className="grid gap-6 sm:grid-cols-2"><Stat name="part63_tokens_max" /><Stat name="llm_context_tokens" /></div><Chart name="corpus-size" title="Part 63 tokens versus model context" source={stats.part63_tokens_max.source}><Bars values={[stats.part63_tokens_max.value, stats.llm_context_tokens.value]} labels={["Part 63", "Context"]} format={(n) => `${n / 1000000}M`} /></Chart></div>
+      <div className="space-y-4"><h3 className="font-serif text-2xl text-ink">It keeps changing</h3><div className="grid gap-6 sm:grid-cols-2"><Stat name="rule_changes" /><Stat name="sections_changed_pct" label={`${stats.sections_changed_pct.value}%`} /></div><Chart name="rule-changes-by-year" title="Part 63 rules published by year" source={series.rule_changes_by_year.source}><Trend data={series.rule_changes_by_year.data} /></Chart><Chart name="sections-changed" title="Share of sections changed" source={stats.sections_changed_pct.source}><Squares percent={stats.sections_changed_pct.value} /></Chart></div>
+      <div className="space-y-4"><h3 className="font-serif text-2xl text-ink">Help arrives too slowly</h3><p className="text-ink-muted">In a sample of {stats.epa_letters_sample.value} letters, the median EPA response took:</p><Stat name="epa_median_days" /><Chart name="epa-wait" title="Notice windows versus median response" source={stats.epa_median_days.source}><Bars values={[1, 2, stats.epa_median_days.value * 24]} labels={["24h", "48h", "EPA median"]} format={(n) => `${n}h`} /></Chart></div>
+    </div></Section>
+    <Section title={`The same question, ${stats.letters_total.value.toLocaleString("en-US")} times`}><p className="text-ink-muted">EPA determination letters show how often a facility asked whether a rule applied. This series groups letters by date.</p><Stat name="letters_total" /><Chart name="letters-by-year" title="Part 63 determination letters, 1993–2025" source={letters.source}><Trend data={letters.data} /></Chart><p className="text-xs text-ink-muted">{letters.before_1993} letters before 1993; {letters.unknown} without a usable date.</p></Section>
+    <Section title="The cost of a wrong answer"><p className="text-ink-muted">Among {stats.facilities.value.toLocaleString("en-US")} ECHO facilities, violation records carry real costs. Penalties can accrue per day, per violation (CAA §113(b)).</p><div className="grid gap-6 sm:grid-cols-3"><Stat name="violation_pct" label={`${stats.violation_pct.value}%`} /><Stat name="penalty_total_usd" label={`$${(stats.penalty_total_usd.value / 1000000).toFixed(1)}M`} /><Stat name="penalty_max_usd" label={`$${stats.penalty_max_usd.value / 1000000}M`} /></div><Chart name="violation-share" title="Facilities with a violation record" source={stats.violation_pct.source}><Squares percent={stats.violation_pct.value} /></Chart><Chart name="penalty-by-subpart" title="Recorded penalties by subpart" source={series.penalty_by_subpart.source}><Bars values={series.penalty_by_subpart.data.map((r) => r.penalty_total_usd)} labels={series.penalty_by_subpart.data.map((r) => r.code)} format={(n) => `$${(n / 1000000).toFixed(0)}M`} /></Chart></Section>
+    <Section title="How we solved it: RAG"><p className="text-ink-muted">Retrieval augmented generation narrows the rule text first, then builds an answer with citations. Measured on {stats.rag_eval_cases.value} real EPA questions.</p><div className="grid gap-6 sm:grid-cols-3"><Stat name="rag_chunks" /><Stat name="rag_eval_cases" /><Stat name="rag_hit20_pct" label={`${stats.rag_hit20_pct.value}%`} /></div>
+      <div className="grid border-y border-hairline sm:grid-cols-2">{[["Too big", `${stats.rag_chunks.value.toLocaleString("en-US")} searchable chunks and Hit@20 retrieval.`], ["Too slow", `nDCG rose from ${series.rag_ndcg_steps.data[0].ndcg} to ${series.rag_ndcg_steps.data.at(-1)?.ndcg} with reranking.`], ["A signature needs evidence", "Cited rule text and measured citation grounding."], ["Rules change", "Source date, eCFR link, and connected Federal Register amendment."]].map(([problem, solution]) => <div key={problem} className="border-b border-hairline-soft p-5 sm:odd:border-r"><p className="text-xs uppercase tracking-widest text-ink-muted">{problem}</p><p className="mt-3 text-ink">{solution}</p></div>)}</div>
+      <Chart name="rag-ndcg-steps" title="Retrieval quality by iteration" source={series.rag_ndcg_steps.source}><Bars values={series.rag_ndcg_steps.data.map((r) => r.ndcg)} labels={series.rag_ndcg_steps.data.map((r) => r.step)} format={(n) => n.toFixed(3)} /></Chart>
+      <Chart name="rag-funnel" title="From chunks to answer context" source={series.rag_funnel.source}><Bars values={series.rag_funnel.data.map((r) => r.count)} labels={series.rag_funnel.data.map((r) => r.stage)} /></Chart>
+      <Chart name="rag-scores" title="Hit@20 and citation grounding" source={stats.rag_citation_grounded_pct.source}><text x="10" y="12" fill="#aaa" fontSize="11">Hit@20 {stats.rag_hit20_pct.value}% · grounded citations {stats.rag_citation_grounded_pct.value}%</text><g transform="translate(0 20) scale(1 .8)"><Squares percent={stats.rag_hit20_pct.value} /></g><g transform="translate(0 115) scale(1 .5)"><Squares percent={stats.rag_citation_grounded_pct.value} /></g></Chart>
+      <div className="grid gap-6 sm:grid-cols-2"><Stat name="rag_subpart_pct" label={`${stats.rag_subpart_pct.value}%`} /><Stat name="rag_citation_grounded_pct" label={`${stats.rag_citation_grounded_pct.value}%`} /></div>
+      <blockquote className="border-l border-ink pl-6 font-serif text-2xl leading-snug text-ink">A general AI answers from memory. We answer from the current rule text, and show you the line.</blockquote>
+    </Section>
+    <Section title="What you get"><ul className="grid gap-4 sm:grid-cols-2">{["Candidate sections that may apply", "The criteria and cited rule text", "A checklist to confirm at your facility", "Similar EPA precedents", "Recent amendment indicators"].map((x) => <li key={x} className="border-t border-hairline-soft pt-3 text-ink-muted">{x}</li>)}</ul></Section>
+    <Section title="What we don't do"><p className="text-ink-muted">We do not make a final applicability determination or give legal advice. Verify the cited text with qualified advisors before signing.</p></Section>
+    <Section title="Also for regulators"><p className="text-ink-muted">The cited trail helps reviewers see which rule and precedent informed a facility&apos;s question.</p></Section>
+    <Section title="Sources"><dl className="grid gap-5 sm:grid-cols-2">{[["eCFR", "40 CFR Part 63 text"], ["Federal Register", "Amendments and effective dates"], ["ECHO", "Facility compliance records"], ["ADI", "EPA applicability decisions"]].map(([name, desc]) => <div key={name} className="border-t border-hairline-soft pt-3"><dt className="text-ink">{name}</dt><dd className="text-sm text-ink-muted">{desc}</dd></div>)}</dl></Section>
+    <Section title="Disclaimer"><p className="text-sm text-ink-muted">This service is not legal advice and does not make final applicability determinations. Check every citation against the governing text before relying on it.</p></Section>
+  </div></main>;
 }
