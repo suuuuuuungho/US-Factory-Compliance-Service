@@ -56,48 +56,53 @@ def rule_years(conn: psycopg.Connection, release_id: str) -> list[dict]:
     return data
 
 
-def letter_years(conn: psycopg.Connection, release_id: str) -> tuple[list[dict], int]:
+def letter_years(conn: psycopg.Connection, release_id: str) -> tuple[list[dict], int, int]:
+    dashboard = json.loads((PUBLIC / "decision-letters.json").read_text(encoding="utf-8"))["letters"]
+    dashboard_dates = {row["source_key"]: datetime.fromisoformat(row["date"]).year for row in dashboard}
+    if len(dashboard_dates) != 132 or len(dashboard) != 132:
+        raise RuntimeError("Decision letter export does not contain 132 distinct Dashboard entries")
     with conn.cursor() as cur:
         cur.execute(
-            """select e.source_system, e.letter_date_raw,
-                      array_agg(distinct v.signed_on) filter (where v.signed_on is not null)
+            """select e.source_system, e.source_key, e.letter_date_raw
                from adi_source_entry e
-               left join adi_entry_document link
-                 on link.release_id = e.release_id
-                and link.source_system = e.source_system and link.source_key = e.source_key
-               left join adi_document_version v on v.version_id = link.version_id
                where e.release_id = %s and e.scope_status = 'part63_candidate'
-               group by e.release_id, e.source_system, e.source_key, e.letter_date_raw""",
+               """,
             (release_id,),
         )
         rows = cur.fetchall()
     counts: Counter[int] = Counter()
     unknown = 0
-    for system, raw_date, signed_dates in rows:
+    seen_dashboard: set[str] = set()
+    for system, source_key, raw_date in rows:
         if system == "adi":
             if not raw_date or raw_date == "12/30/1899":
                 unknown += 1
                 continue
             year = datetime.strptime(raw_date, "%m/%d/%Y").year
         elif system == "caa_dashboard":
-            dates = signed_dates or []
-            years = {day.year for day in dates}
-            if len(years) > 1:
-                raise RuntimeError("Dashboard entry has conflicting signed_on years")
-            if not years:
-                unknown += 1
-                continue
-            year = years.pop()
+            if source_key not in dashboard_dates or source_key in seen_dashboard:
+                raise RuntimeError(f"Missing or duplicate Dashboard date for {source_key}")
+            seen_dashboard.add(source_key)
+            year = dashboard_dates[source_key]
         else:
             raise RuntimeError(f"Unexpected ADI source system: {system}")
         counts[year] += 1
-    data = [{"year": year, "count": counts[year]} for year in sorted(counts)]
+    if seen_dashboard != set(dashboard_dates):
+        raise RuntimeError(
+            f"Dashboard export and current ADI release do not match: "
+            f"DB={len(seen_dashboard)}, export={len(dashboard_dates)}, "
+            f"missing={len(dashboard_dates.keys() - seen_dashboard)}"
+        )
+    before_1993 = sum(count for year, count in counts.items() if year < 1993)
+    data = [{"year": year, "count": counts[year]} for year in range(1993, 2026)]
     if sum(counts.values()) + unknown != 1127:
         raise RuntimeError("Current ADI release letter count is not 1127; refusing to write JSON")
-    return data, unknown
+    if sum(row["count"] for row in data) + before_1993 + unknown != 1127:
+        raise RuntimeError("Letter years fall outside 1993–2025")
+    return data, before_1993, unknown
 
 
-def build_stats(rules: list[dict], letters: list[dict], unknown: int, echo: dict) -> dict:
+def build_stats(rules: list[dict], letters: list[dict], before_1993: int, unknown: int, echo: dict) -> dict:
     stats = {}
 
     def add(key: str, value: int | float, unit: str, source: str) -> None:
@@ -138,7 +143,7 @@ def build_stats(rules: list[dict], letters: list[dict], unknown: int, echo: dict
     subparts = sorted(echo["subparts"], key=lambda row: (-row["penalty_total_usd"], row["code"]))[:10]
     series = {
         "rule_changes_by_year": {"data": rules, "source": "DB fr_document (current FR release, Rule / part63_list)"},
-        "letters_by_year": {"data": letters, "unknown": unknown, "source": "DB adi_source_entry; CAA dates from adi_document_version.signed_on (current ADI release)"},
+        "letters_by_year": {"data": letters, "before_1993": before_1993, "unknown": unknown, "source": "DB adi_source_entry; CAA dates from decision-letters.json by source_key (current ADI release)"},
         "penalty_by_subpart": {
             "data": [{key: row[key] for key in ("code", "desc", "penalty_total_usd")} for row in subparts],
             "source": "echo-stats.json subparts (ECHO, 2015~)",
@@ -172,8 +177,8 @@ def main() -> None:
         fr_release = current_release(conn, "fr", "part63_metadata")
         adi_release = current_release(conn, "adi", "adi+caa_dashboard")
         rules = rule_years(conn, fr_release)
-        letters, unknown = letter_years(conn, adi_release)
-    result = build_stats(rules, letters, unknown, echo)
+        letters, before_1993, unknown = letter_years(conn, adi_release)
+    result = build_stats(rules, letters, before_1993, unknown, echo)
     OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {OUT} (FR {fr_release}, ADI {adi_release})")
 

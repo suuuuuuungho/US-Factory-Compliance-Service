@@ -39,8 +39,21 @@ it("연도별 규칙 개정을 더하면 136, 연도별 판정서한 + 날짜 �
   expect(stats.rule_changes.value).toBe(136);
 
   const letters = series.letters_by_year;
-  expect(sum(letters.data) + letters.unknown).toBe(1127);
+  expect(sum(letters.data) + letters.before_1993 + letters.unknown).toBe(1127);
   expect(stats.letters_total.value).toBe(1127);
+});
+
+// SUU-266: CAA Dashboard 132건 날짜를 채워 "날짜 모름"은 엑셀 빈 날짜(12/30/1899) 6건만 남는다. 차트는 1993년부터
+it("판정서한 연도별은 1993~2025, 날짜 모름 6건, 1993년 전은 before_1993으로 따로 센다", () => {
+  const { letters_by_year: letters } = load("about-stats.json").series;
+  const years = letters.data.map((r: { year: number }) => r.year);
+  expect(years[0]).toBe(1993);
+  expect(years.at(-1)).toBe(2025);
+  expect(letters.unknown).toBe(6);
+  expect(letters.before_1993).toBeGreaterThan(0);
+  for (const y of [2021, 2022, 2023, 2024, 2025]) {
+    expect(letters.data.find((r: { year: number }) => r.year === y)?.count, String(y)).toBeGreaterThan(0);
+  }
 });
 
 it("과징금·위반 숫자가 echo-stats.json summary와 같다", () => {
