@@ -58,7 +58,7 @@ Linear 제목 + ` (SUU-번호)`
 ```
 
 - 예: `feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)`
-- 제목은 설계 파일 `[5] tickets/SUU-번호.md` 첫 줄(`# SUU-번호 제목`)의 제목과 **글자까지 같아야** 한다. CI가 비교한다
+- 제목은 설계 파일 `[5] tickets/<영역>/<종류>/SUU-번호.md` 첫 줄(`# SUU-번호 제목`)의 제목과 **글자까지 같아야** 한다. CI가 비교한다
 - **모든 PR에 설계 파일이 있어야 한다.** chore/docs처럼 작은 것도 5줄짜리 설계 파일을 만든다
 - PR 본문은 `.github/pull_request_template.md` 틀을 따른다
 
@@ -84,6 +84,7 @@ Linear 제목 + ` (SUU-번호)`
 | 브랜치 | `종류/suu-번호-영어짧게` | `feat/suu-20-ecfr-ingest` |
 | PR 제목 | Linear 제목 + ` (SUU-번호)` | `feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)` |
 | main 커밋 | PR 제목과 동일 | 위와 같음 |
+| 설계 파일 | `[5] tickets/<영역>/<종류>/SUU-번호.md` | `[5] tickets/1)DB/1_feat/SUU-20.md` (12절) |
 | Supabase 테이블 | `<데이터셋>_<내용>` | `ecfr_node`, `common_ingest_run` (11절) |
 
 ## 8. 테스트
@@ -100,7 +101,7 @@ Linear 제목 + ` (SUU-번호)`
 - 일반 코드와 테스트 파일은 티켓 번호보다 **기능과 책임**을 이름에 쓴다. 코드는 티켓보다 오래 유지되며 여러 티켓에서 함께 수정될 수 있기 때문이다.
 - 파이프라인은 `<데이터셋>_<동작>.py`로 짓는다. 예: `[2] db/pipeline/1_eCFR/ecfr_titles.py`, `echo_refresh.py`.
 - 테스트는 `test_<대상 기능>.py`로 짓는다. 예: `[2] db/tests/1_ecfr/test_ecfr_titles.py`, `test_echo_refresh.py`.
-- 티켓 번호는 설계 문서·커밋·PR에 기록한다. 예: `[5] tickets/SUU-31.md`, `feat(db): ... (SUU-31)`.
+- 티켓 번호는 설계 문서·커밋·PR에 기록한다. 예: `[5] tickets/1)DB/1_feat/SUU-31.md`, `feat(db): ... (SUU-31)`.
 - 티켓 하나에만 존재하는 일회성 산출물이나 마이그레이션은 예외적으로 `SUU-31_<설명>.sql`처럼 티켓 번호를 앞에 붙일 수 있다.
 - 한 파일이 두 개 이상의 티켓과 관련되는 것은 허용한다. 파일명을 매번 바꾸지 말고, 주 티켓은 커밋·PR 제목에, 추가 티켓은 PR 본문에 적는다.
 - 한 파일의 책임이 서로 달라지면 티켓 번호를 붙이는 대신 기능별 파일로 나눈다.
@@ -113,7 +114,7 @@ PR 제목: ^(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} 
 ```
 
 - 브랜치의 `suu-번호`와 PR 제목의 `(SUU-번호)`가 같아야 한다
-- `[5] tickets/SUU-번호.md`가 있어야 하고, PR 제목 = 그 첫 줄에서 `# SUU-번호 ` 뒤의 제목 + ` (SUU-번호)`
+- `[5] tickets/<영역>/<종류>/SUU-번호.md`가 있어야 하고, PR 제목 = 그 첫 줄에서 `# SUU-번호 ` 뒤의 제목 + ` (SUU-번호)`
 
 ## 11. Supabase 테이블 이름
 
@@ -136,3 +137,18 @@ PR 제목: ^(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} 
 - 새 데이터셋이 생기면 **이 표에 먼저 추가**하고 테이블을 만든다
 - 컬럼 이름에는 접두사를 붙이지 않는다. `ecfr_node.node_key` ✅ / `ecfr_node.ecfr_node_key` ❌
 - 각 테이블의 정의는 `[1] docs/2) db/db 구축 계획/` 아래 데이터셋별 계획 문서 3-5절에 있다
+
+## 12. 설계 파일 위치
+
+```
+[5] tickets/<영역>/<종류>/SUU-번호.md
+```
+
+| 제목의 칸 | 값 → 폴더 |
+|---|---|
+| 영역 | `db`→`1)DB` · `rag`→`2)RAG` · `backend`→`3)Backend` · `frontend`→`4)Frontend` · `ci`→`5)CI` |
+| 종류 | `feat`→`1_feat` · `fix`→`2_fix` · `chore`→`3_chore` · `docs`→`4_docs` · `test`→`5_test` |
+
+- 예: `feat(db): eCFR Part 63 원문을 Supabase에 적재` → `[5] tickets/1)DB/1_feat/SUU-20.md`
+- 폴더가 없으면 만든다. `[5] tickets` 바로 아래에는 파일을 두지 않는다
+- CI는 `[5] tickets` 아래 전체에서 `SUU-번호.md`를 찾는다. 같은 번호 파일을 두 곳에 두지 않는다

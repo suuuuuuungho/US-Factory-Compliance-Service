@@ -7,7 +7,7 @@
 1. `[1] docs/4) workflow/2_rules.md` 를 읽는다.
 2. 사람이 준 티켓 번호(SUU-N)로:
    - `git fetch` 후 `<종류>/suu-N-*` 브랜치로 checkout (브랜치는 이미 있다)
-   - `[5] tickets/SUU-N.md` 를 읽는다 (설계)
+   - `[5] tickets/<영역>/<종류>/SUU-N.md` 를 읽는다 (설계)
    - 거기 적힌 테스트 파일을 읽는다
 3. `python -m pytest` 로 지금 빨강인 것을 확인한다.
 
@@ -27,7 +27,7 @@
 ## 끝낼 때
 
 1. `python -m pytest` 전부 초록 확인
-2. commit — 첫 줄: `[5] tickets/SUU-N.md` 첫 줄에서 `# SUU-N ` 뒤의 제목을 **글자 그대로** 복사하고 끝에 ` (SUU-N)`을 붙인다. 제목을 새로 짓거나 바꾸지 않는다
+2. commit — 첫 줄: `[5] tickets/<영역>/<종류>/SUU-N.md` 첫 줄에서 `# SUU-N ` 뒤의 제목을 **글자 그대로** 복사하고 끝에 ` (SUU-N)`을 붙인다. 제목을 새로 짓거나 바꾸지 않는다
 3. push
 4. PR 생성: `gh pr create --base main --title "<설계 파일 첫 줄 제목> (SUU-N)"` — 커밋 첫 줄과 같은 제목. 본문은 `.github/pull_request_template.md` 형식
 5. PR을 만든 뒤 `gh pr checks <PR번호> --watch`로 CI가 모두 통과할 때까지 확인한다.

@@ -33,17 +33,18 @@ jobs:
           if not re.fullmatch(r"(feat|fix|test|chore|docs)\((db|rag|backend|frontend|ci)\): .{1,40} \(SUU-[0-9]+\)", title):
               errors.append(f"PR 제목 위반: '{title}'  →  예: feat(db): eCFR Part 63 원문을 Supabase에 적재 (SUU-20)")
 
-          # 설계 파일 첫 줄 = PR 제목 (SUU-45). 브랜치의 suu-N 으로 [5] tickets/SUU-N.md 를 찾는다
+          # 설계 파일 첫 줄 = PR 제목 (SUU-45). 브랜치의 suu-N 으로 [5] tickets/<영역>/<종류>/SUU-N.md 를 찾는다
           m_branch = re.search(r"suu-([0-9]+)", branch)
           m_title = re.search(r"\(SUU-([0-9]+)\)$", title)
           if m_branch and m_title and m_branch.group(1) != m_title.group(1):
               errors.append(f"번호 불일치: 브랜치 suu-{m_branch.group(1)} vs 제목 (SUU-{m_title.group(1)})")
           if m_branch:
               n = m_branch.group(1)
-              design = pathlib.Path(f"[5] tickets/SUU-{n}.md")
-              if not design.exists():
-                  errors.append(f"설계 파일 없음: {design}  →  모든 PR에 설계 파일이 있어야 한다 (chore/docs도)")
+              found = list(pathlib.Path("[5] tickets").rglob(f"SUU-{n}.md"))
+              if not found:
+                  errors.append(f"설계 파일 없음: [5] tickets/<영역>/<종류>/SUU-{n}.md  →  모든 PR에 설계 파일이 있어야 한다 (chore/docs도)")
               else:
+                  design = found[0]
                   first = design.read_text(encoding="utf-8-sig").splitlines()[0].strip()
                   m_first = re.fullmatch(rf"# SUU-{n} (.+)", first)
                   if not m_first:

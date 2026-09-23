@@ -25,7 +25,7 @@
    ▼
 [Claude] ├─ 티켓 읽고 "무엇을, 어디까지, 어떻게 확인할지" 정리
          ├─ 실패하는 테스트 코드 작성                  ← TDD "빨강"
-         ├─ 설계 파일 저장: [5] tickets/SUU-20.md
+         ├─ 설계 파일 저장: [5] tickets/1)DB/1_feat/SUU-20.md
          └─ 브랜치 feat/suu-20-xxx 에 push + Linear 댓글
    │                                            ─▶ Linear: In Progress (/spec이 바꿈)
    ▼
@@ -77,7 +77,7 @@
 | 누가 | Claude Code |
 | 입력 | Linear 이슈 번호 |
 | Claude가 하는 일 | 1) 이슈 읽기 2) 건드릴 파일·범위 정하기 3) 완료 기준 쓰기 4) **실패하는 테스트 코드** 작성 (`<영역>/tests/test_*.py`, pytest) 5) `main`에서 브랜치 만들기 6) 설계 파일 + 테스트 commit·push 7) Linear 댓글로 요약 |
-| 결과물 | 브랜치 `feat/suu-20-xxx`, 설계 파일 `[5] tickets/SUU-20.md`, 실패하는 테스트 |
+| 결과물 | 브랜치 `feat/suu-20-xxx`, 설계 파일 `[5] tickets/1)DB/1_feat/SUU-20.md`, 실패하는 테스트 |
 | Linear | `/spec`이 상태를 In Progress로 바꿈 (Linear 자동화는 PR 열림·merge만 다룸) |
 | 완료 확인 | 테스트 돌리면 빨강 (아직 구현 없으니 당연) |
 
@@ -137,7 +137,7 @@
 
 + `CLAUDE.md`에 "규칙 파일을 읽는다" 한 줄 추가.
 
-설계 결과물은 `[5] tickets/SUU-번호.md` 로 레포 안에 남긴다. (`[1] docs`, `[2] db` 처럼 최상위 폴더. Codex가 Linear 없이도 읽을 수 있게)
+설계 결과물은 `[5] tickets/<영역>/<종류>/SUU-번호.md` 로 레포 안에 남긴다. (`[1] docs`, `[2] db` 처럼 최상위 폴더. Codex가 Linear 없이도 읽을 수 있게) 폴더 고르는 법은 `2_rules.md` 12번.
 
 ## 6. 설정만 하면 되는 것 (코드 0줄)
 
