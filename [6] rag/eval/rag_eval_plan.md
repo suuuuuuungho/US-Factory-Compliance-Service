@@ -274,7 +274,7 @@ v1은 파일. 나중에 DB 테이블(`rag_eval_run`, `rag_eval_result`)로 옮�
 
 - reranker → hybrid: 31건 동일, 1건 좋아짐, 0건 나빠짐. 32건으로는 판정 불가 → hybrid 채택은 평가셋을 늘린 뒤. 세부: `results/rag_eval_result.md`.
 - 후보 풀 스윕(SUU-130, `results/rrf_sweep.csv`): w 0.3~0.5·depth 300에서 recall@150 0.900, 기본 0.889. k 영향 없음. adi-M200005는 후보 안에 있음(SUU-119의 '후보 밖' 판단 정정).
-- 창·규칙 시뮬(SUU-132, `results/rules_sweep.csv`): 리랭크 뒤 창 60에서 표 뒤로 + 5등 안 Subpart 상위 2·A 우선 → nDCG@10 0.565 → 0.631, miss@20 7 → 4. $0. 다음 티켓에서 `search_sections` 후처리로 넣는다.
+- 창·규칙 시뮬(SUU-132, `results/rules_sweep.csv`): 리랭크 뒤 창 60에서 표 뒤로 + 5등 안 Subpart 상위 2·A 우선 → nDCG@10 0.565 → 0.631, miss@20 7 → 4. $0. SUU-134에서 `search_sections` 후처리로 넣었다.
 - 리랭커 비교(SUU-131, 로컬 GPU $0): Kanon > nemotron > bge > vector, 어느 조합에서나 같은 순서. 세 리랭커 공통 실패 5건 중 4건은 Subpart A 정답 → Kanon 유지, 다음은 Subpart A 규칙·조문 단위 리랭크.
 - baseline(SUU-133, bge-m3 로컬 $0): 컨텍스트 없음 0.264 → 컨텍스트 +0.033 → Kanon 임베더 +0.140. 임베더 효과가 컨텍스트의 4배. Kanon 기준 컨텍스트 효과는 미측정(재임베딩 ≈ $2).
 - v2 102건(SUU-129): reranker → hybrid 98건 동일, 3건 좋아짐, 1건 나빠짐. 공통 top-20 실패 7건 중 4건은 정답이 Subpart A 일반 규정(63.8·63.9·63.91). 세부: `results/rag_eval_result.md`.
@@ -344,7 +344,7 @@ Claude(실행):
 1. ~~합격선~~ → SUU-137에서 확정. **nDCG@10 ≥ 0.66, Hit@20 ≥ 0.95(top-20 실패율 ≤ 5%), Subpart 적중률@20 ≥ 0.95**(v2 102건, 기본 조합 점수 0.692/0.961/0.980에서 동점 폭 0.03을 뺀 퇴보 방지선). `pass_line.py`가 `runs.jsonl`의 기본 조합(hybrid v2 + 규칙 + gpt-5-mini) 최신 run을 검사하고 `test_pass_line.py`로 CI가 매 PR마다 돈다.
 2. `baseline` 임베딩을 어디에 저장할지(별도 테이블 vs 컬럼 추가). 재임베딩 티켓에서 정한다.
 3. ~~평가셋을 어떻게 만들지~~ → v2 102건으로 확정(SUU-120). 더 늘릴 때는 같은 방법(초안 → 100% 근거 일치 → 사람 대조).
-4. hybrid 채택 여부. BM25로 바뀐 뒤(SUU-116) 아직 안 쟀다.
+4. ~~hybrid 채택 여부~~ → v2에서 쟀다(SUU-129, reranker 0.561 → hybrid 0.568, 동점). 기본 조합에 hybrid를 쓴다(SUU-136).
 5. RRF 가중치. 지금은 1:1. 평가셋이 커진 뒤 Recall@150이 부족하면 조정.
 
 ---
@@ -374,7 +374,7 @@ Claude(실행):
 |---|---|---|
 | A-1 | 채점기 코드 | 완료(SUU-146). `ecfr_answer_score.py`: Subpart 적중·인용 Recall·인용 근거율($0) + 판정 기준 점수(gpt-5-mini 심판, `notes` 기준 0·1·2) |
 | A-2 | 1차 측정 baseline | 완료(SUU-147, $1.45). 상위 5조문 전문 → gpt-5-mini → 판정 기준표 JSON. **Subpart 0.863 / 인용 Recall 0.685 / 근거율 1.000 / 판정 기준 1.667**, 실패 15. 지어낸 인용 0. run은 `answer_runs.jsonl`(runs.jsonl과 분리) |
-| A-3 | 심판 사람 검증 | 예정(SUU-148). 10건 사람이 읽어 일치율. 70% 미만이면 심판 프롬프트 수정 |
+| A-3 | 심판 사람 검증 | 미실행(SUU-148, 이슈는 2026-09-22 보관됨). 10건 사람이 읽어 일치율. 70% 미만이면 심판 프롬프트 수정 |
 | A-4 | 실패 원인 분류 | 완료(SUU-149, $0). 채점기가 `"Subpart M"`→`M` 정규화 → replay: **Subpart 0.912**, 실패 15→10. 분류: 지어냄 0 / 검색 3 / 형식 2 / 답 5 → A-5는 프롬프트 수정 먼저, 조문 수 확대 다음 |
 | A-5 ① | 프롬프트 v2 | 완료(SUU-150, $1.38). subpart 코드만·다 적기 → **0.922 / 0.707 / 0.998 / 1.686**, 실패 11. `format` 0이 됐지만 전부 동점 폭 안, 지어냄 1건 새로 생김. 채택 안 함(기록만). 다음 A-5 ② 조문 수 확대 |
 | (채점기) | 정답 여럿이면 하나만 맞아도 적중 | 완료(SUU-151, $0). `gold_subparts[0]`만 보던 것을 A 뺀 정답 중 하나로. replay: baseline **0.931**(실패 9), v2 0.941(실패 9) |

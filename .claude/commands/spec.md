@@ -16,10 +16,10 @@ argument-hint: SUU-번호
 2. 티켓을 읽고 정리한다: 건드릴 파일, 안 건드릴 것, 완료 기준. **애매하면 질문하고 멈춘다.**
 3. `git checkout main && git pull` 후 브랜치를 만든다: `종류/suu-번호-영어짧게`
 4. **실패하는 테스트**를 쓴다.
-   - 위치: `<영역 폴더>/tests/test_<이름>.py` (예: `[3] backend/tests/test_calc.py`)
+   - 위치: `<영역 폴더>/tests/test_<이름>.py` (예: `[3] backend/tests/test_calc.py`). 프론트는 `[4]frontend/tests/<이름>.test.tsx` (vitest)
    - 완료 기준 하나당 테스트 함수 하나
    - **구현 코드는 쓰지 않는다.** 테스트가 부를 함수·모듈 이름만 정한다
-5. `python -m pytest` 로 빨강을 확인한다.
+5. `python -m pytest` 로 빨강을 확인한다. 프론트는 `[4]frontend`에서 `npm test`.
 6. 설계 파일 `[5] tickets/<영역>/<종류>/SUU-번호.md` 를 아래 형식으로 쓴다. 폴더는 제목의 `종류(영역)`으로 고른다 (2_rules.md 12번).
 7. commit → push. 커밋 제목: `Linear 제목 (SUU-번호)`
 8. Linear에 댓글(`save_comment`): 브랜치 이름, 설계 파일 경로, 테스트 파일 경로, 완료 기준 요약.

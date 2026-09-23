@@ -9,7 +9,7 @@
    - `git fetch` 후 `<종류>/suu-N-*` 브랜치로 checkout (브랜치는 이미 있다)
    - `[5] tickets/<영역>/<종류>/SUU-N.md` 를 읽는다 (설계)
    - 거기 적힌 테스트 파일을 읽는다
-3. `python -m pytest` 로 지금 빨강인 것을 확인한다.
+3. `python -m pytest` 로 지금 빨강인 것을 확인한다. 프론트 티켓이면 `[4]frontend`에서 `npm test`.
 
 ## 하는 일
 
@@ -19,14 +19,14 @@
 
 ## 하면 안 되는 것
 
-- `tests/` 아래 파일 수정·삭제
+- `tests/` 아래 파일 수정·삭제 (`[4]frontend/tests/` 포함)
 - `main`에 직접 push
 - 설계 범위 밖 파일 수정, 리팩터링, 포맷 정리
 - 새 의존성 추가 (필요하면 사람에게 묻는다)
 
 ## 끝낼 때
 
-1. `python -m pytest` 전부 초록 확인
+1. `python -m pytest` 전부 초록 확인. 프론트를 고쳤으면 `[4]frontend`에서 `npm test`도 초록
 2. commit — 첫 줄: `[5] tickets/<영역>/<종류>/SUU-N.md` 첫 줄에서 `# SUU-N ` 뒤의 제목을 **글자 그대로** 복사하고 끝에 ` (SUU-N)`을 붙인다. 제목을 새로 짓거나 바꾸지 않는다
 3. push
 4. PR 생성: `gh pr create --base main --title "<설계 파일 첫 줄 제목> (SUU-N)"` — 커밋 첫 줄과 같은 제목. 본문은 `.github/pull_request_template.md` 형식
@@ -38,3 +38,4 @@
 
 - Python 3.12, pytest. 설정은 `pyproject.toml`
 - 테스트 실행: 레포 루트에서 `python -m pytest`
+- 프론트: Next.js + vitest. `[4]frontend`에서 `npm test`
