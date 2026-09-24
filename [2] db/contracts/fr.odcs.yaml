@@ -1,0 +1,451 @@
+# Federal Register — 규정 변경 소식
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
+apiVersion: v3.1.0
+kind: DataContract
+id: us-factory-compliance-fr
+name: Federal Register — 규정 변경 소식
+version: 1.0.0
+status: active
+domain: air-compliance
+description:
+  purpose: Part 63을 바꾸는 FR 문서 목록과 날짜·번호를 저장한다. '언제부터 바뀌었나'를 답할 때 쓴다
+  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
+servers:
+- server: supabase
+  type: postgresql
+  environment: prod
+  host: db.husqnrcuoaogdkbpjnep.supabase.co
+  port: 5432
+  database: postgres
+  schema: public
+schema:
+- name: fr_cfr_reference
+  physicalName: fr_cfr_reference
+  physicalType: table
+  logicalType: object
+  description: FR 문서가 건드리는 CFR 위치
+  properties:
+  - name: reference_id
+    logicalType: string
+    physicalType: uuid
+    description: 인용 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+  - name: document_key
+    logicalType: string
+    physicalType: text
+    description: 'FR 문서 열쇠. ''{발행일}/{문서번호}'' 예: 2026-02-24/2026-03638'
+    required: true
+  - name: title
+    logicalType: integer
+    physicalType: integer
+    description: CFR Title 번호 (여기서는 40)
+    required: true
+  - name: part
+    logicalType: string
+    physicalType: text
+    description: CFR Part 번호 (여기서는 63)
+    required: false
+  - name: subpart
+    logicalType: string
+    physicalType: text
+    description: 'CFR Subpart 글자. 예: DDDDD'
+    required: false
+  - name: section
+    logicalType: string
+    physicalType: text
+    description: 'CFR 조문 번호. 예: 63.7485'
+    required: false
+  - name: paragraph
+    logicalType: string
+    physicalType: text
+    description: 'CFR 문단 번호. 예: (a)(1)'
+    required: false
+  - name: relation_type
+    logicalType: string
+    physicalType: text
+    description: 문서와 조문의 관계. 지금은 모두 affects (API 값)
+    required: true
+  - name: raw_citation
+    logicalType: string
+    physicalType: text
+    description: '원문에 적힌 인용 글자 그대로. 예: 40 CFR 63.11607'
+    required: false
+  - name: evidence_locator
+    logicalType: string
+    physicalType: text
+    description: 근거 문장이 있던 위치
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  - name: ecfr_release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이어진 eCFR release
+    required: false
+  - name: ecfr_node_key
+    logicalType: string
+    physicalType: text
+    description: 이어진 eCFR 항목 주소
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - fr_cfr_reference.release_id
+    - fr_cfr_reference.document_key
+    to:
+    - fr_document.release_id
+    - fr_document.document_key
+  - type: foreignKey
+    from: fr_cfr_reference.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from:
+    - fr_cfr_reference.ecfr_release_id
+    - fr_cfr_reference.ecfr_node_key
+    to:
+    - ecfr_node.release_id
+    - ecfr_node.node_key
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 2422
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: fr_date_event
+  physicalName: fr_date_event
+  physicalType: table
+  logicalType: object
+  description: FR 문서의 날짜 (시행일 등)
+  properties:
+  - name: event_id
+    logicalType: string
+    physicalType: uuid
+    description: 날짜 기록 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+  - name: document_key
+    logicalType: string
+    physicalType: text
+    description: 'FR 문서 열쇠. ''{발행일}/{문서번호}'' 예: 2026-02-24/2026-03638'
+    required: true
+  - name: event_kind
+    logicalType: string
+    physicalType: text
+    description: 날짜 종류. 지금은 모두 effective (시행일)
+    required: true
+  - name: event_date
+    logicalType: date
+    physicalType: date
+    description: 날짜
+    required: false
+  - name: applies_to
+    logicalType: string
+    physicalType: text
+    description: 이 날짜가 적용되는 대상
+    required: false
+  - name: raw_text
+    logicalType: string
+    physicalType: text
+    description: 날짜가 적힌 원문
+    required: false
+  - name: evidence_locator
+    logicalType: string
+    physicalType: text
+    description: 근거 문장이 있던 위치
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - fr_date_event.release_id
+    - fr_date_event.document_key
+    to:
+    - fr_document.release_id
+    - fr_document.document_key
+  - type: foreignKey
+    from: fr_date_event.release_id
+    to: common_dataset_release.release_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 662
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: fr_document
+  physicalName: fr_document
+  physicalType: table
+  logicalType: object
+  description: Federal Register 문서 1건 = 1행. Part 63을 바꾸는 규칙·제안·정정
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: document_key
+    logicalType: string
+    physicalType: text
+    description: 'FR 문서 열쇠. ''{발행일}/{문서번호}'' 예: 2026-02-24/2026-03638'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: publication_date
+    logicalType: date
+    physicalType: date
+    description: Federal Register 발행일
+    required: true
+  - name: document_number
+    logicalType: string
+    physicalType: text
+    description: FR 문서 번호. 과거 번호 모양을 바꾸지 않는다
+    required: true
+  - name: canonical_url
+    logicalType: string
+    physicalType: text
+    description: 원본의 공식 주소
+    required: true
+  - name: title
+    logicalType: string
+    physicalType: text
+    description: 문서 제목
+    required: false
+  - name: abstract
+    logicalType: string
+    physicalType: text
+    description: 요약
+    required: false
+  - name: type_raw
+    logicalType: string
+    physicalType: text
+    description: 문서 종류. Rule / Proposed Rule / Correction / Uncategorized Document
+    required: false
+  - name: action
+    logicalType: string
+    physicalType: text
+    description: '조치 설명. 예: Final rule.'
+    required: false
+  - name: subtype
+    logicalType: string
+    physicalType: text
+    description: 세부 종류
+    required: false
+  - name: agencies
+    logicalType: object
+    physicalType: jsonb
+    description: 발행 기관 목록 (JSON)
+    required: true
+  - name: citation
+    logicalType: string
+    physicalType: text
+    description: '공식 인용. 예: 91 FR 9088'
+    required: false
+  - name: volume
+    logicalType: integer
+    physicalType: integer
+    description: 권 번호
+    required: false
+  - name: start_page
+    logicalType: integer
+    physicalType: integer
+    description: 시작 쪽
+    required: false
+  - name: end_page
+    logicalType: integer
+    physicalType: integer
+    description: 끝 쪽
+    required: false
+  - name: effective_on
+    logicalType: date
+    physicalType: date
+    description: API가 준 시행일. 조항마다 다를 수 있어서 fr_date_event 도 봐야 한다
+    required: false
+  - name: comments_close_on
+    logicalType: date
+    physicalType: date
+    description: 의견 마감일
+    required: false
+  - name: signing_date
+    logicalType: date
+    physicalType: date
+    description: 서명일
+    required: false
+  - name: docket_ids
+    logicalType: object
+    physicalType: jsonb
+    description: Docket 번호 목록 (JSON)
+    required: false
+  - name: regulation_id_numbers
+    logicalType: object
+    physicalType: jsonb
+    description: RIN 목록 (JSON)
+    required: false
+  - name: full_text_xml_url
+    logicalType: string
+    physicalType: text
+    description: 본문 XML 주소
+    required: false
+  - name: pdf_url
+    logicalType: string
+    physicalType: text
+    description: 공식 PDF 주소
+    required: false
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: false
+  - name: body_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 본문 XML 원본 파일 번호
+    required: false
+  - name: pdf_object_id
+    logicalType: string
+    physicalType: uuid
+    description: PDF 원본 파일 번호
+    required: false
+  - name: content_hash
+    logicalType: string
+    physicalType: text
+    description: 내용 지문(sha256). 내용이 바뀌었는지 비교할 때 쓴다
+    required: true
+  - name: raw_metadata
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 응답 JSON 전체. 아무것도 버리지 않고 보관한다
+    required: true
+  - name: scope_status
+    logicalType: string
+    physicalType: text
+    description: 어떻게 찾은 문서인지. part63_list = Part 63 목록에서
+    required: true
+  - name: body_status
+    logicalType: string
+    physicalType: text
+    description: 본문 상태. xml / pdf_only / missing
+    required: true
+  relationships:
+  - type: foreignKey
+    from: fr_document.source_object_id
+    to: common_raw_object.object_id
+  - type: foreignKey
+    from: fr_document.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from: fr_document.pdf_object_id
+    to: common_raw_object.object_id
+  - type: foreignKey
+    from: fr_document.body_object_id
+    to: common_raw_object.object_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: document_number 하나가 두 행에 쓰일 수 있다 (03-5521). 열쇠는 document_key 다
+    severity: warning
+  - type: text
+    description: Proposed Rule 은 시행 중인 규정이 아니다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 1532
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: fr_identifier
+  physicalName: fr_identifier
+  physicalType: table
+  logicalType: object
+  description: FR 문서의 Docket·RIN 번호
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: document_key
+    logicalType: string
+    physicalType: text
+    description: 'FR 문서 열쇠. ''{발행일}/{문서번호}'' 예: 2026-02-24/2026-03638'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: identifier_kind
+    logicalType: string
+    physicalType: text
+    description: 번호 종류. docket / rin
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: identifier_value
+    logicalType: string
+    physicalType: text
+    description: '번호 값. 예: EPA-HQ-OAR-2018-0794'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  relationships:
+  - type: foreignKey
+    from: fr_identifier.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from:
+    - fr_identifier.release_id
+    - fr_identifier.document_key
+    to:
+    - fr_document.release_id
+    - fr_document.document_key
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 1453
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+contractCreatedTs: '2026-09-24T00:00:00Z'

@@ -1,0 +1,498 @@
+# eCFR — 현재 규정집 원문 (40 CFR Part 63)
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
+apiVersion: v3.1.0
+kind: DataContract
+id: us-factory-compliance-ecfr
+name: eCFR — 현재 규정집 원문 (40 CFR Part 63)
+version: 1.0.0
+status: active
+domain: air-compliance
+description:
+  purpose: eCFR Part 63 원문을 목차·조각으로 저장한다. 서비스 답변의 근거 조문이 여기서 나온다
+  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
+servers:
+- server: supabase
+  type: postgresql
+  environment: prod
+  host: db.husqnrcuoaogdkbpjnep.supabase.co
+  port: 5432
+  database: postgres
+  schema: public
+schema:
+- name: ecfr_asset
+  physicalName: ecfr_asset
+  physicalType: table
+  logicalType: object
+  description: eCFR 본문 속 그림 파일. (비어 있음)
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: node_key
+    logicalType: string
+    physicalType: text
+    description: 'eCFR 항목 주소. 예: 40/63/subpart-A/section-63.1'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: block_no
+    logicalType: integer
+    physicalType: integer
+    description: 항목 안 조각 순서 (0부터)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: asset_no
+    logicalType: integer
+    physicalType: integer
+    description: 조각 안 그림 순서
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: source_url
+    logicalType: string
+    physicalType: text
+    description: 원본을 받은 주소
+    required: true
+  - name: object_id
+    logicalType: string
+    physicalType: uuid
+    description: 원본 파일 번호. common_raw_object.object_id
+    required: false
+  - name: fetch_status
+    logicalType: string
+    physicalType: text
+    description: 그림 파일 받기 상태
+    required: true
+  relationships:
+  - type: foreignKey
+    from: ecfr_asset.object_id
+    to: common_raw_object.object_id
+  - type: foreignKey
+    from:
+    - ecfr_asset.release_id
+    - ecfr_asset.node_key
+    - ecfr_asset.block_no
+    to:
+    - ecfr_block.release_id
+    - ecfr_block.node_key
+    - ecfr_block.block_no
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: ecfr_block
+  physicalName: ecfr_block
+  physicalType: table
+  logicalType: object
+  description: eCFR 본문 조각. 조문을 문단·표·수식·그림 단위로 자른 것
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: node_key
+    logicalType: string
+    physicalType: text
+    description: 'eCFR 항목 주소. 예: 40/63/subpart-A/section-63.1'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: block_no
+    logicalType: integer
+    physicalType: integer
+    description: 항목 안 조각 순서 (0부터)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: kind
+    logicalType: string
+    physicalType: text
+    description: 조각 종류. paragraph / table / formula / image / note / citation 등
+    required: true
+  - name: label_path
+    logicalType: array
+    physicalType: text[]
+    description: '문단 번호 경로. 예: {a,1}'
+    required: false
+  - name: text_content
+    logicalType: string
+    physicalType: text
+    description: 사람이 읽는 본문 글자
+    required: false
+  - name: markup
+    logicalType: string
+    physicalType: text
+    description: 표·수식 같은 원본 모양 (XML/HTML)
+    required: false
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  - name: parse_status
+    logicalType: string
+    physicalType: text
+    description: 읽기 결과 상태
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - ecfr_block.release_id
+    - ecfr_block.node_key
+    to:
+    - ecfr_node.release_id
+    - ecfr_node.node_key
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 71700
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: ecfr_correction
+  physicalName: ecfr_correction
+  physicalType: table
+  logicalType: object
+  description: eCFR 정정 기록. (비어 있음)
+  properties:
+  - name: correction_id
+    logicalType: string
+    physicalType: text
+    description: 정정 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: true
+  - name: cfr_references
+    logicalType: object
+    physicalType: jsonb
+    description: 정정된 조문 목록 (JSON)
+    required: false
+  - name: corrective_action
+    logicalType: string
+    physicalType: text
+    description: 무엇을 고쳤는지
+    required: false
+  - name: error_occurred
+    logicalType: date
+    physicalType: date
+    description: 잘못이 생긴 날
+    required: false
+  - name: error_corrected
+    logicalType: date
+    physicalType: date
+    description: 고친 날
+    required: false
+  - name: last_modified
+    logicalType: date
+    physicalType: date
+    description: 마지막 수정일
+    required: false
+  - name: fr_citation
+    logicalType: string
+    physicalType: text
+    description: 정정을 알린 FR 인용
+    required: false
+  - name: raw_metadata
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 응답 JSON 전체. 아무것도 버리지 않고 보관한다
+    required: false
+  relationships:
+  - type: foreignKey
+    from: ecfr_correction.source_object_id
+    to: common_raw_object.object_id
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: ecfr_history
+  physicalName: ecfr_history
+  physicalType: table
+  logicalType: object
+  description: eCFR 개정 이력. (비어 있음)
+  properties:
+  - name: history_key
+    logicalType: string
+    physicalType: text
+    description: 개정 기록 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: true
+  - name: identifier
+    logicalType: string
+    physicalType: text
+    description: 개정된 항목 번호
+    required: false
+  - name: type
+    logicalType: string
+    physicalType: text
+    description: 항목 종류
+    required: false
+  - name: title
+    logicalType: string
+    physicalType: text
+    description: Title 번호
+    required: false
+  - name: part
+    logicalType: string
+    physicalType: text
+    description: CFR Part 번호 (여기서는 63)
+    required: false
+  - name: subpart
+    logicalType: string
+    physicalType: text
+    description: 'CFR Subpart 글자. 예: DDDDD'
+    required: false
+  - name: date
+    logicalType: date
+    physicalType: date
+    description: 개정 날짜
+    required: false
+  - name: amendment_date
+    logicalType: date
+    physicalType: date
+    description: 개정 시행일
+    required: false
+  - name: issue_date
+    logicalType: date
+    physicalType: date
+    description: 발행일
+    required: false
+  - name: substantive
+    logicalType: boolean
+    physicalType: boolean
+    description: 내용이 실제로 바뀐 개정이면 true
+    required: false
+  - name: removed
+    logicalType: boolean
+    physicalType: boolean
+    description: 삭제된 항목이면 true
+    required: false
+  - name: raw_metadata
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 응답 JSON 전체. 아무것도 버리지 않고 보관한다
+    required: false
+  relationships:
+  - type: foreignKey
+    from: ecfr_history.source_object_id
+    to: common_raw_object.object_id
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: ecfr_node
+  physicalName: ecfr_node
+  physicalType: table
+  logicalType: object
+  description: eCFR 목차. Part 63의 Part·Subpart·조문·부록을 나무 모양으로 담는다
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: node_key
+    logicalType: string
+    physicalType: text
+    description: 'eCFR 항목 주소. 예: 40/63/subpart-A/section-63.1'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: parent_key
+    logicalType: string
+    physicalType: text
+    description: 부모 항목 주소. part 는 비어 있다
+    required: false
+  - name: node_type
+    logicalType: string
+    physicalType: text
+    description: 항목 종류. part / subpart / subject_group / section / appendix
+    required: true
+  - name: identifier
+    logicalType: string
+    physicalType: text
+    description: '항목 번호. 예: 63.1, A'
+    required: false
+  - name: heading
+    logicalType: string
+    physicalType: text
+    description: '항목 제목. 예: § 63.1 Applicability.'
+    required: false
+  - name: reserved
+    logicalType: boolean
+    physicalType: boolean
+    description: 예약(빈 자리) 항목이면 true
+    required: true
+  - name: sort_order
+    logicalType: integer
+    physicalType: integer
+    description: 목차 순서
+    required: true
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: true
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  - name: xml_fragment
+    logicalType: string
+    physicalType: text
+    description: 이 항목의 원본 XML 조각
+    required: false
+  - name: content_hash
+    logicalType: string
+    physicalType: text
+    description: 내용 지문(sha256). 내용이 바뀌었는지 비교할 때 쓴다
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - ecfr_node.release_id
+    - ecfr_node.parent_key
+    to:
+    - ecfr_node.release_id
+    - ecfr_node.node_key
+  - type: foreignKey
+    from: ecfr_node.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from: ecfr_node.source_object_id
+    to: common_raw_object.object_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: XXXXXX 는 진짜 Subpart 이름이다. 빈칸 표시(placeholder)가 아니다
+    severity: warning
+  - type: text
+    description: node_type = appendix 에는 'Table 1 to Subpart A' 같은 표도 들어 있다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 3771
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: ecfr_reference
+  physicalName: ecfr_reference
+  physicalType: table
+  logicalType: object
+  description: eCFR 본문 안의 다른 조문 인용. (비어 있음)
+  properties:
+  - name: reference_id
+    logicalType: string
+    physicalType: uuid
+    description: 인용 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+  - name: node_key
+    logicalType: string
+    physicalType: text
+    description: 'eCFR 항목 주소. 예: 40/63/subpart-A/section-63.1'
+    required: true
+  - name: block_no
+    logicalType: integer
+    physicalType: integer
+    description: 항목 안 조각 순서 (0부터)
+    required: true
+  - name: raw_citation
+    logicalType: string
+    physicalType: text
+    description: '원문에 적힌 인용 글자 그대로. 예: 40 CFR 63.11607'
+    required: true
+  - name: target_title
+    logicalType: integer
+    physicalType: integer
+    description: 가리키는 Title
+    required: false
+  - name: target_part
+    logicalType: string
+    physicalType: text
+    description: 가리키는 Part
+    required: false
+  - name: target_subpart
+    logicalType: string
+    physicalType: text
+    description: 가리키는 Subpart
+    required: false
+  - name: target_section
+    logicalType: string
+    physicalType: text
+    description: 가리키는 조문
+    required: false
+  - name: target_paragraph
+    logicalType: string
+    physicalType: text
+    description: 가리키는 문단
+    required: false
+  - name: target_node_key
+    logicalType: string
+    physicalType: text
+    description: 가리키는 eCFR 항목 주소
+    required: false
+  - name: resolution_status
+    logicalType: string
+    physicalType: text
+    description: 주소 찾기 성공 여부
+    required: true
+  - name: evidence_locator
+    logicalType: string
+    physicalType: text
+    description: 근거 문장이 있던 위치
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - ecfr_reference.release_id
+    - ecfr_reference.node_key
+    - ecfr_reference.block_no
+    to:
+    - ecfr_block.release_id
+    - ecfr_block.node_key
+    - ecfr_block.block_no
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+contractCreatedTs: '2026-09-24T00:00:00Z'
