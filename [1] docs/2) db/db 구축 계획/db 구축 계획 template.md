@@ -1,6 +1,6 @@
 DB 구축 계획 Template.
 
-- 각 데이터셋에대한 설명은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db\db overview\1_db descriptions.md`에 있다.
+- 각 데이터셋에대한 설명은 `C:\Users\Admin\Desktop\US Factory Compliance Service\[1] docs\2) db\db overview\Data Specification_v1.md`에 있다.
 - 5살도 보고 이해할 수 있게 아주 쉽게 설명한다. 
 - 간결하게 작성한다. 
 - 아래 형식을 맞추되 너무 얽매이지는 않는다. 아래 형식을 뼈대 삼되 필요하면 새로운 카테고리를 형성해도 된다. 

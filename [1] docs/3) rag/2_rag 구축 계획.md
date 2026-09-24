@@ -375,5 +375,5 @@
 2) [Isaacus — Introducing Kanon 2 Embedder](https://isaacus.com/blog/introducing-kanon-2-embedder): 16,384토큰, 1,792차원, Matryoshka, MLEB 순위, AWS Marketplace.
 3) [Isaacus — Embedding API](https://isaacus.com/docs/api-reference/embeddings/embedding): `task`, `overflow_strategy`, `dimensions`, 128개 제한.
 4) [Isaacus — Kanon 2 Reranker](https://isaacus.com/blog/kanon-2-reranker): 리랭커 존재, 가격.
-5) [DB 전수조사 결과](<../2) db/db overview/2_db 전수조사 결과.md>), [eCFR 구축 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>), [FR 구축 계획](<../2) db/db 구축 계획/2_Federal Register 구축 계획.md>), [ECHO 구축 계획](<../2) db/db 구축 계획/3_ECHO 구축 계획.md>), [ADI+CAA 구축 계획](<../2) db/db 구축 계획/4_ADI+CAA 구축 계획.md>): 데이터 수치와 테이블 이름.
+5) [데이터 명세](<../2) db/db overview/Data Specification_v1.md>), [eCFR 구축 계획](<../2) db/db 구축 계획/1_eCFR 구축 계획.md>), [FR 구축 계획](<../2) db/db 구축 계획/2_Federal Register 구축 계획.md>), [ECHO 구축 계획](<../2) db/db 구축 계획/3_ECHO 구축 계획.md>), [ADI+CAA 구축 계획](<../2) db/db 구축 계획/4_ADI+CAA 구축 계획.md>): 데이터 수치와 테이블 이름.
 6) 모두 2026-09-14 확인.

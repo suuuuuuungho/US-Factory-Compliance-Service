@@ -1,6 +1,6 @@
 # ECHO DB 구축 계획
 
-[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 2026-09-17 release를 2026-09-21에 Supabase에 적재·공개했다 (3-4절).
+[데이터 명세](<../db overview/Data Specification_v1.md>)를 바탕으로 시설·점검·위반·처분을 연결한다. 기본 수집은 전국 ICIS-Air 10개 CSV와 CAA Pipeline 1개 CSV다. 서비스 조회에서 Part 63·제조업 후보를 구분한다. `★`는 검색·연결용 채택 필드이며, 모든 원본 열은 보존한다. 2026-09-17 release를 2026-09-21에 Supabase에 적재·공개했다 (3-4절).
 
 ## [1] Step.1 수집
 
