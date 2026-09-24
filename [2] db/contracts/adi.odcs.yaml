@@ -1,0 +1,712 @@
+# ADI + CAA Dashboard — EPA 판정 회신
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
+apiVersion: v3.1.0
+kind: DataContract
+id: us-factory-compliance-adi
+name: ADI + CAA Dashboard — EPA 판정 회신
+version: 1.0.0
+status: active
+domain: air-compliance
+description:
+  purpose: EPA가 '이 규정이 우리 공장에 적용되나요?'에 직접 답한 편지. 비슷한 질문의 선례로 쓴다
+  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
+servers:
+- server: supabase
+  type: postgresql
+  environment: prod
+  host: db.husqnrcuoaogdkbpjnep.supabase.co
+  port: 5432
+  database: postgres
+  schema: public
+schema:
+- name: adi_block
+  physicalName: adi_block
+  physicalType: table
+  logicalType: object
+  description: 회신을 질문·답변·서명 등으로 나눈 조각
+  properties:
+  - name: version_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 파일 버전 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: block_no
+    logicalType: integer
+    physicalType: integer
+    description: 항목 안 조각 순서 (0부터)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: page_no
+    logicalType: integer
+    physicalType: integer
+    description: PDF 쪽 번호 (1부터)
+    required: false
+  - name: kind
+    logicalType: string
+    physicalType: text
+    description: 조각 종류. question / answer / condition / signature / header / body
+    required: true
+  - name: text_content
+    logicalType: string
+    physicalType: text
+    description: 사람이 읽는 본문 글자
+    required: true
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from: adi_block.version_id
+    to: adi_document_version.version_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 1960
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_cfr_reference
+  physicalName: adi_cfr_reference
+  physicalType: table
+  logicalType: object
+  description: 회신 안에 나온 CFR 인용
+  properties:
+  - name: reference_id
+    logicalType: string
+    physicalType: uuid
+    description: 인용 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: version_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 파일 버전 번호
+    required: true
+  - name: block_no
+    logicalType: integer
+    physicalType: integer
+    description: 항목 안 조각 순서 (0부터)
+    required: false
+  - name: raw_citation
+    logicalType: string
+    physicalType: text
+    description: '원문에 적힌 인용 글자 그대로. 예: 40 CFR 63.11607'
+    required: true
+  - name: title
+    logicalType: integer
+    physicalType: integer
+    description: CFR Title 번호 (여기서는 40)
+    required: false
+  - name: part
+    logicalType: string
+    physicalType: text
+    description: CFR Part 번호 (여기서는 63)
+    required: false
+  - name: subpart
+    logicalType: string
+    physicalType: text
+    description: 'CFR Subpart 글자. 예: DDDDD'
+    required: false
+  - name: section
+    logicalType: string
+    physicalType: text
+    description: 'CFR 조문 번호. 예: 63.7485'
+    required: false
+  - name: paragraph
+    logicalType: string
+    physicalType: text
+    description: 'CFR 문단 번호. 예: (a)(1)'
+    required: false
+  - name: reference_role
+    logicalType: string
+    physicalType: text
+    description: 인용 역할. 지금은 모두 mention (단순 언급)
+    required: true
+  - name: evidence_locator
+    logicalType: string
+    physicalType: text
+    description: 근거 문장이 있던 위치
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  - name: historical_ecfr_release_id
+    logicalType: string
+    physicalType: uuid
+    description: 회신 당시 eCFR release. 없으면 비어 있다
+    required: false
+  - name: historical_node_key
+    logicalType: string
+    physicalType: text
+    description: 회신 당시 eCFR 항목 주소
+    required: false
+  - name: current_ecfr_release_id
+    logicalType: string
+    physicalType: uuid
+    description: 지금 eCFR release
+    required: false
+  - name: current_node_key
+    logicalType: string
+    physicalType: text
+    description: 지금 eCFR 항목 주소
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - adi_cfr_reference.current_ecfr_release_id
+    - adi_cfr_reference.current_node_key
+    to:
+    - ecfr_node.release_id
+    - ecfr_node.node_key
+  - type: foreignKey
+    from:
+    - adi_cfr_reference.historical_ecfr_release_id
+    - adi_cfr_reference.historical_node_key
+    to:
+    - ecfr_node.release_id
+    - ecfr_node.node_key
+  - type: foreignKey
+    from:
+    - adi_cfr_reference.version_id
+    - adi_cfr_reference.block_no
+    to:
+    - adi_block.version_id
+    - adi_block.block_no
+  - type: foreignKey
+    from: adi_cfr_reference.version_id
+    to: adi_document_version.version_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 7342
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_document
+  physicalName: adi_document
+  physicalType: table
+  logicalType: object
+  description: EPA 회신 문서 1건 (같은 파일은 하나로)
+  properties:
+  - name: document_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 문서 번호 (내용 지문으로 만든다)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: canonical_identity
+    logicalType: string
+    physicalType: text
+    description: 문서 정체성. 'sha256:{지문}'
+    required: true
+  - name: created_at
+    logicalType: timestamp
+    physicalType: timestamp with time zone
+    description: 행을 만든 시각
+    required: true
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 701
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_document_relation
+  physicalName: adi_document_relation
+  physicalType: table
+  logicalType: object
+  description: 회신끼리의 관계 (개정·철회 등). (비어 있음)
+  properties:
+  - name: from_document_id
+    logicalType: string
+    physicalType: uuid
+    description: 관계의 출발 문서
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: to_document_id
+    logicalType: string
+    physicalType: uuid
+    description: 관계의 도착 문서
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: relation_type
+    logicalType: string
+    physicalType: text
+    description: same_document / amends / withdraws / supersedes
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: evidence_version_id
+    logicalType: string
+    physicalType: uuid
+    description: 근거 문서 버전
+    required: false
+  - name: evidence_locator
+    logicalType: string
+    physicalType: text
+    description: 근거 문장이 있던 위치
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from: adi_document_relation.to_document_id
+    to: adi_document.document_id
+  - type: foreignKey
+    from: adi_document_relation.from_document_id
+    to: adi_document.document_id
+  - type: foreignKey
+    from: adi_document_relation.evidence_version_id
+    to: adi_document_version.version_id
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_document_version
+  physicalName: adi_document_version
+  physicalType: table
+  logicalType: object
+  description: 회신 파일 1개와 뽑은 글자
+  properties:
+  - name: version_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 파일 버전 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: document_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 문서 번호 (내용 지문으로 만든다)
+    required: true
+  - name: object_id
+    logicalType: string
+    physicalType: uuid
+    description: 원본 파일 번호. common_raw_object.object_id
+    required: false
+  - name: sha256
+    logicalType: string
+    physicalType: text
+    description: 파일 내용 지문(sha256). 같으면 같은 파일
+    required: true
+  - name: signed_on
+    logicalType: date
+    physicalType: date
+    description: 서명 날짜. ⚠️ 지금은 701건 모두 비어 있다 (본문 확인 전)
+    required: false
+  - name: signed_on_raw
+    logicalType: string
+    physicalType: text
+    description: 서명 날짜 원본 글자
+    required: false
+  - name: date_source
+    logicalType: string
+    physicalType: text
+    description: 날짜를 어디서 얻었나
+    required: false
+  - name: text_content
+    logicalType: string
+    physicalType: text
+    description: 사람이 읽는 본문 글자
+    required: false
+  - name: extraction_method
+    logicalType: string
+    physicalType: text
+    description: 글자를 뽑은 방법. pypdf / ocr / text
+    required: true
+  - name: parser_version
+    logicalType: string
+    physicalType: text
+    description: 원본을 읽은 프로그램 버전
+    required: true
+  - name: quality_status
+    logicalType: string
+    physicalType: text
+    description: 글자 뽑기 품질. ok / partial / no_text
+    required: true
+  - name: legal_status
+    logicalType: string
+    physicalType: text
+    description: 지금도 유효한 회신인지. 지금은 모두 unknown
+    required: true
+  relationships:
+  - type: foreignKey
+    from: adi_document_version.document_id
+    to: adi_document.document_id
+  - type: foreignKey
+    from: adi_document_version.object_id
+    to: common_raw_object.object_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: signed_on 은 지금 모두 비어 있다. 날짜가 필요하면 adi_source_entry.letter_date_raw 를 본다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 701
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_entry_document
+  physicalName: adi_entry_document
+  physicalType: table
+  logicalType: object
+  description: 목록 행과 회신 파일의 연결
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: source_system
+    logicalType: string
+    physicalType: text
+    description: 어디 목록에서 왔나. adi / caa_dashboard
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: source_key
+    logicalType: string
+    physicalType: text
+    description: 목록 행 열쇠. ADI는 control_number
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: version_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 파일 버전 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: match_method
+    logicalType: string
+    physicalType: text
+    description: 목록 행과 파일을 이은 방법
+    required: true
+  - name: match_status
+    logicalType: string
+    physicalType: text
+    description: 이음 검토 상태
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - adi_entry_document.release_id
+    - adi_entry_document.source_system
+    - adi_entry_document.source_key
+    to:
+    - adi_source_entry.release_id
+    - adi_source_entry.source_system
+    - adi_source_entry.source_key
+  - type: foreignKey
+    from: adi_entry_document.version_id
+    to: adi_document_version.version_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 701
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_facility_candidate
+  physicalName: adi_facility_candidate
+  physicalType: table
+  logicalType: object
+  description: 회신과 ECHO 시설을 이은 후보
+  properties:
+  - name: document_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 문서 번호 (내용 지문으로 만든다)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: echo_release_id
+    logicalType: string
+    physicalType: uuid
+    description: ECHO release
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: echo_pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: 후보 ECHO 시설 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: match_evidence
+    logicalType: string
+    physicalType: text
+    description: 후보로 본 근거
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - adi_facility_candidate.echo_release_id
+    - adi_facility_candidate.echo_pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  - type: foreignKey
+    from: adi_facility_candidate.document_id
+    to: adi_document.document_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 31
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_page
+  physicalName: adi_page
+  physicalType: table
+  logicalType: object
+  description: 회신 PDF의 쪽별 글자
+  properties:
+  - name: version_id
+    logicalType: string
+    physicalType: uuid
+    description: ADI 회신 파일 버전 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: page_no
+    logicalType: integer
+    physicalType: integer
+    description: PDF 쪽 번호 (1부터)
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: text_content
+    logicalType: string
+    physicalType: text
+    description: 사람이 읽는 본문 글자
+    required: true
+  - name: extraction_method
+    logicalType: string
+    physicalType: text
+    description: 글자를 뽑은 방법. pypdf / ocr / text
+    required: true
+  - name: ocr_confidence
+    logicalType: number
+    physicalType: numeric
+    description: OCR 신뢰도. 점수가 없으면 비어 있다
+    required: false
+  - name: status
+    logicalType: string
+    physicalType: text
+    description: 쪽 읽기 결과. ok / empty / failed
+    required: true
+  - name: failure_reason
+    logicalType: string
+    physicalType: text
+    description: 실패 이유
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from: adi_page.version_id
+    to: adi_document_version.version_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 2333
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: adi_source_entry
+  physicalName: adi_source_entry
+  physicalType: table
+  logicalType: object
+  description: ADI·CAA Dashboard 목록의 한 행
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: source_system
+    logicalType: string
+    physicalType: text
+    description: 어디 목록에서 왔나. adi / caa_dashboard
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: source_key
+    logicalType: string
+    physicalType: text
+    description: 목록 행 열쇠. ADI는 control_number
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: control_number
+    logicalType: string
+    physicalType: text
+    description: ADI 관리 번호. Dashboard는 비어 있다
+    required: false
+  - name: facility_name
+    logicalType: string
+    physicalType: text
+    description: 문의한 시설 이름
+    required: false
+  - name: title
+    logicalType: string
+    physicalType: text
+    description: 회신 제목
+    required: false
+  - name: categories
+    logicalType: object
+    physicalType: jsonb
+    description: '분류 목록. 예: [MACT, NESHAP]. Dashboard는 []'
+    required: true
+  - name: office
+    logicalType: string
+    physicalType: text
+    description: 회신한 EPA 부서
+    required: false
+  - name: author
+    logicalType: string
+    physicalType: text
+    description: 작성자
+    required: false
+  - name: recipient
+    logicalType: string
+    physicalType: text
+    description: 받는 사람
+    required: false
+  - name: letter_date_raw
+    logicalType: string
+    physicalType: text
+    description: 목록에 적힌 날짜 글자 그대로
+    required: false
+  - name: link_text
+    logicalType: string
+    physicalType: text
+    description: Dashboard 링크 글자. 날짜가 아니다
+    required: false
+  - name: affected_subpart_raw
+    logicalType: string
+    physicalType: text
+    description: Dashboard 'Affected Subpart' 원본 글자
+    required: false
+  - name: abstract
+    logicalType: string
+    physicalType: text
+    description: 요약
+    required: false
+  - name: source_url
+    logicalType: string
+    physicalType: text
+    description: 원본을 받은 주소
+    required: false
+  - name: canonical_url
+    logicalType: string
+    physicalType: text
+    description: 원본의 공식 주소
+    required: false
+  - name: list_sha256
+    logicalType: string
+    physicalType: text
+    description: 목록 원본 지문
+    required: true
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: false
+  - name: scope_status
+    logicalType: string
+    physicalType: text
+    description: Part 63 관련인지. part63_candidate / out_of_scope
+    required: true
+  relationships:
+  - type: foreignKey
+    from: adi_source_entry.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from: adi_source_entry.source_object_id
+    to: common_raw_object.object_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 4061
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+contractCreatedTs: '2026-09-24T00:00:00Z'

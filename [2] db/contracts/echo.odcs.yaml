@@ -1,0 +1,1166 @@
+# ECHO — 시설·점검·위반·처분
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
+apiVersion: v3.1.0
+kind: DataContract
+id: us-factory-compliance-echo
+name: ECHO — 시설·점검·위반·처분
+version: 1.0.1
+status: active
+domain: air-compliance
+description:
+  purpose: EPA ICIS-Air 전국 자료와 CAA Pipeline. '어떤 시설이 무엇을 어겨 얼마를 냈나'를 답할 때 쓴다
+  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
+servers:
+- server: supabase
+  type: postgresql
+  environment: prod
+  host: db.husqnrcuoaogdkbpjnep.supabase.co
+  port: 5432
+  database: postgres
+  schema: public
+schema:
+- name: echo_activity
+  physicalName: echo_activity
+  physicalType: table
+  logicalType: object
+  description: 점검·굴뚝시험·Title V 인증·공식처분·비공식처분을 한 표에 담는다
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: activity_kind
+    logicalType: string
+    physicalType: text
+    description: 활동 종류. inspection / stack_test / titlev / formal / informal
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: activity_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 활동 번호. activity_kind 와 함께 써야 하나로 정해진다
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: type_code
+    logicalType: string
+    physicalType: text
+    description: 활동 세부 종류 코드
+    required: false
+  - name: type_desc
+    logicalType: string
+    physicalType: text
+    description: 활동 세부 종류 설명
+    required: false
+  - name: lead_flag
+    logicalType: string
+    physicalType: text
+    description: 주관 기관 표시 (주정부 / EPA)
+    required: false
+  - name: monitor_code
+    logicalType: string
+    physicalType: text
+    description: 점검 방식 코드
+    required: false
+  - name: monitor_desc
+    logicalType: string
+    physicalType: text
+    description: 점검 방식 설명
+    required: false
+  - name: activity_date
+    logicalType: date
+    physicalType: date
+    description: 활동 날짜. 1900년 전·2100년 후 가짜 날짜는 빈값으로 바꿨다. 원본 글자는 raw_date
+    required: false
+  - name: raw_date
+    logicalType: string
+    physicalType: text
+    description: 원본 날짜 글자 그대로
+    required: false
+  - name: attributes
+    logicalType: object
+    physicalType: jsonb
+    description: 표 칸으로 뽑지 않은 나머지 원본 값 (JSON)
+    required: false
+  relationships:
+  - type: foreignKey
+    from: echo_activity.release_id
+    to: common_dataset_release.release_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: activity_date 가 1900-01-01 전이거나 2100-01-01 이후면 안 된다. 가짜 날짜는 빈값으로 둔다
+    severity: warning
+  - type: text
+    description: activity_id 만으로는 하나로 정해지지 않는다. 항상 activity_kind 와 같이 쓴다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 3242036
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_activity_facility
+  physicalName: echo_activity_facility
+  physicalType: table
+  logicalType: object
+  description: 활동과 시설의 연결
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: activity_kind
+    logicalType: string
+    physicalType: text
+    description: 활동 종류. inspection / stack_test / titlev / formal / informal
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: activity_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 활동 번호. activity_kind 와 함께 써야 하나로 정해진다
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_activity_facility.release_id
+    - echo_activity_facility.activity_kind
+    - echo_activity_facility.activity_id
+    to:
+    - echo_activity.release_id
+    - echo_activity.activity_kind
+    - echo_activity.activity_id
+  - type: foreignKey
+    from:
+    - echo_activity_facility.release_id
+    - echo_activity_facility.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 3246696
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_code_map
+  physicalName: echo_code_map
+  physicalType: table
+  logicalType: object
+  description: ECHO Subpart 코드 → CFR Subpart 변환표
+  properties:
+  - name: dictionary_version
+    logicalType: string
+    physicalType: text
+    description: ECHO 코드 사전 버전
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: program_code
+    logicalType: string
+    physicalType: text
+    description: '대기 규제 프로그램 코드. 예: MACT, NSPS, TVP'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: raw_subpart_code
+    logicalType: string
+    physicalType: text
+    description: ECHO 원본 Subpart 코드
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: raw_description
+    logicalType: string
+    physicalType: text
+    description: ECHO 원본 설명
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: cfr_title
+    logicalType: integer
+    physicalType: integer
+    description: CFR Title 번호
+    required: false
+  - name: cfr_part
+    logicalType: string
+    physicalType: text
+    description: CFR Part 번호
+    required: false
+  - name: cfr_subpart
+    logicalType: string
+    physicalType: text
+    description: CFR Subpart 글자
+    required: false
+  - name: source_url
+    logicalType: string
+    physicalType: text
+    description: 원본을 받은 주소
+    required: true
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: ok / conflict (같은 코드가 둘 이상으로 풀림)
+    required: true
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 306
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_facility
+  physicalName: echo_facility
+  physicalType: table
+  logicalType: object
+  description: ECHO 대기 시설 1곳 = 1행 (ICIS-Air)
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: registry_id
+    logicalType: string
+    physicalType: text
+    description: EPA 시설 통합 번호 (FRS). 다른 프로그램 자료와 잇는 열쇠
+    required: false
+  - name: name
+    logicalType: string
+    physicalType: text
+    description: 시설 이름
+    required: false
+  - name: address
+    logicalType: string
+    physicalType: text
+    description: 주소
+    required: false
+  - name: city
+    logicalType: string
+    physicalType: text
+    description: 도시
+    required: false
+  - name: county
+    logicalType: string
+    physicalType: text
+    description: 카운티
+    required: false
+  - name: state
+    logicalType: string
+    physicalType: text
+    description: '주(州) 약자. 예: TX'
+    required: false
+  - name: zip
+    logicalType: string
+    physicalType: text
+    description: 우편번호
+    required: false
+  - name: epa_region
+    logicalType: string
+    physicalType: text
+    description: EPA 지역 번호 (01~10)
+    required: false
+  - name: facility_type
+    logicalType: string
+    physicalType: text
+    description: 시설 소유 종류 코드
+    required: false
+  - name: source_class
+    logicalType: string
+    physicalType: text
+    description: '배출 규모 코드. 예: MAJ(대형)'
+    required: false
+  - name: source_class_desc
+    logicalType: string
+    physicalType: text
+    description: 배출 규모 설명
+    required: false
+  - name: operating_status
+    logicalType: string
+    physicalType: text
+    description: 가동 상태 코드
+    required: false
+  - name: operating_status_desc
+    logicalType: string
+    physicalType: text
+    description: '가동 상태 설명. 예: Operating, Permanently Closed'
+    required: false
+  - name: current_hpv
+    logicalType: string
+    physicalType: text
+    description: 지금 중대 위반(HPV) 상태
+    required: false
+  - name: local_control_region_code
+    logicalType: string
+    physicalType: text
+    description: 지역 관할 기관 코드
+    required: false
+  - name: local_control_region_name
+    logicalType: string
+    physicalType: text
+    description: 지역 관할 기관 이름
+    required: false
+  relationships:
+  - type: foreignKey
+    from: echo_facility.release_id
+    to: common_dataset_release.release_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 280071
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_facility_identifier
+  physicalName: echo_facility_identifier
+  physicalType: table
+  logicalType: object
+  description: ECHO 시설 번호와 EPA 통합 번호(FRS)의 연결
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: program_system
+    logicalType: string
+    physicalType: text
+    description: 번호를 준 시스템 이름
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: registry_id
+    logicalType: string
+    physicalType: text
+    description: EPA 시설 통합 번호 (FRS). 다른 프로그램 자료와 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: mapping_source
+    logicalType: string
+    physicalType: text
+    description: 두 번호를 이은 근거
+    required: true
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from: echo_facility_identifier.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from:
+    - echo_facility_identifier.release_id
+    - echo_facility_identifier.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 279995
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_industry
+  physicalName: echo_industry
+  physicalType: table
+  logicalType: object
+  description: 시설 산업 코드 (NAICS / SIC)
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: code_system
+    logicalType: string
+    physicalType: text
+    description: 산업 코드 종류. NAICS / SIC
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: code
+    logicalType: string
+    physicalType: text
+    description: 산업 코드 값
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_industry.release_id
+    - echo_industry.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 536235
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_penalty
+  physicalName: echo_penalty
+  physicalType: table
+  logicalType: object
+  description: 공식처분의 벌금 금액
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: penalty_key
+    logicalType: string
+    physicalType: text
+    description: 벌금 행 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: activity_kind
+    logicalType: string
+    physicalType: text
+    description: 활동 종류. inspection / stack_test / titlev / formal / informal
+    required: true
+  - name: activity_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 활동 번호. activity_kind 와 함께 써야 하나로 정해진다
+    required: true
+  - name: amount
+    logicalType: number
+    physicalType: numeric
+    description: 금액 (달러)
+    required: false
+  - name: amount_kind
+    logicalType: string
+    physicalType: text
+    description: 금액 종류. 지금은 모두 penalty
+    required: true
+  - name: currency
+    logicalType: string
+    physicalType: text
+    description: 통화. USD
+    required: true
+  - name: amount_scope
+    logicalType: string
+    physicalType: text
+    description: 금액 범위. 지금은 모두 row (원본 한 행 기준)
+    required: true
+  - name: raw_amount
+    logicalType: string
+    physicalType: text
+    description: 원본 금액 글자
+    required: false
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_penalty.release_id
+    - echo_penalty.activity_kind
+    - echo_penalty.activity_id
+    to:
+    - echo_activity.release_id
+    - echo_activity.activity_kind
+    - echo_activity.activity_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: 같은 처분이 echo_pipeline_link 여러 행에 나온다. 벌금 합계는 echo_penalty 에서 activity 단위로 한 번만 더한다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 106520
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_pipeline_link
+  physicalName: echo_pipeline_link
+  physicalType: table
+  logicalType: object
+  description: CAA Pipeline. 점검 → 위반 → 처분을 한 줄로 잇는다
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: link_key
+    logicalType: string
+    physicalType: text
+    description: 연결 행 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+  - name: eval_activity_id
+    logicalType: string
+    physicalType: text
+    description: 원본 점검 번호
+    required: false
+  - name: violation_activity_id
+    logicalType: string
+    physicalType: text
+    description: 원본 위반 번호
+    required: false
+  - name: ea_activity_id
+    logicalType: string
+    physicalType: text
+    description: 원본 처분 번호
+    required: false
+  - name: ea_fea_activity_id
+    logicalType: string
+    physicalType: text
+    description: 원본 연방 처분 번호
+    required: false
+  - name: flags
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 표시값 모음 (JSON)
+    required: true
+  - name: synthetic_violation
+    logicalType: boolean
+    physicalType: boolean
+    description: 원본에 없는 위반을 연결용으로 만든 것이면 true
+    required: true
+  - name: resolution_status
+    logicalType: string
+    physicalType: text
+    description: 다른 ECHO 표와 잇기 성공 여부. resolved / unresolved
+    required: true
+  - name: resolved_eval_kind
+    logicalType: string
+    physicalType: text
+    description: 이어진 점검의 activity_kind
+    required: false
+  - name: resolved_eval_id
+    logicalType: string
+    physicalType: text
+    description: 이어진 점검 번호
+    required: false
+  - name: resolved_violation_id
+    logicalType: string
+    physicalType: text
+    description: 이어진 위반 번호
+    required: false
+  - name: resolved_ea_kind
+    logicalType: string
+    physicalType: text
+    description: 이어진 처분의 activity_kind
+    required: false
+  - name: resolved_ea_id
+    logicalType: string
+    physicalType: text
+    description: 이어진 처분 번호
+    required: false
+  - name: source_row_no
+    logicalType: integer
+    physicalType: bigint
+    description: 원본 CSV 행 번호
+    required: true
+  - name: attributes
+    logicalType: object
+    physicalType: jsonb
+    description: 표 칸으로 뽑지 않은 나머지 원본 값 (JSON)
+    required: false
+  relationships:
+  - type: foreignKey
+    from: echo_pipeline_link.release_id
+    to: common_dataset_release.release_id
+  - type: foreignKey
+    from:
+    - echo_pipeline_link.release_id
+    - echo_pipeline_link.resolved_violation_id
+    to:
+    - echo_violation.release_id
+    - echo_violation.violation_id
+  - type: foreignKey
+    from:
+    - echo_pipeline_link.release_id
+    - echo_pipeline_link.resolved_eval_kind
+    - echo_pipeline_link.resolved_eval_id
+    to:
+    - echo_activity.release_id
+    - echo_activity.activity_kind
+    - echo_activity.activity_id
+  - type: foreignKey
+    from:
+    - echo_pipeline_link.release_id
+    - echo_pipeline_link.resolved_ea_kind
+    - echo_pipeline_link.resolved_ea_id
+    to:
+    - echo_activity.release_id
+    - echo_activity.activity_kind
+    - echo_activity.activity_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 67123
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_pollutant
+  physicalName: echo_pollutant
+  physicalType: table
+  logicalType: object
+  description: 시설이 다루는 오염물질
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: pollutant_key
+    logicalType: string
+    physicalType: text
+    description: 오염물질 행 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: pollutant_code
+    logicalType: string
+    physicalType: text
+    description: 오염물질 코드
+    required: false
+  - name: description
+    logicalType: string
+    physicalType: text
+    description: 원본 설명 글자
+    required: false
+  - name: srs_id
+    logicalType: string
+    physicalType: text
+    description: EPA 물질 등록 번호
+    required: false
+  - name: cas_number
+    logicalType: string
+    physicalType: text
+    description: CAS 번호 (화학물질 국제 번호)
+    required: false
+  - name: class_code
+    logicalType: string
+    physicalType: text
+    description: 오염물질 분류 코드
+    required: false
+  - name: class_desc
+    logicalType: string
+    physicalType: text
+    description: 오염물질 분류 설명
+    required: false
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  - name: review_status
+    logicalType: string
+    physicalType: text
+    description: 사람 검토 상태. 기계가 자동으로 확정하지 않는다
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_pollutant.release_id
+    - echo_pollutant.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 864562
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_program
+  physicalName: echo_program
+  physicalType: table
+  logicalType: object
+  description: 시설에 걸린 대기 규제 프로그램
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: program_code
+    logicalType: string
+    physicalType: text
+    description: '대기 규제 프로그램 코드. 예: MACT, NSPS, TVP'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: description
+    logicalType: string
+    physicalType: text
+    description: 원본 설명 글자
+    required: false
+  - name: status_code
+    logicalType: string
+    physicalType: text
+    description: 프로그램 적용 상태 코드
+    required: false
+  - name: status_desc
+    logicalType: string
+    physicalType: text
+    description: 프로그램 적용 상태 설명
+    required: false
+  - name: begin_date
+    logicalType: date
+    physicalType: date
+    description: 적용 시작일
+    required: false
+  - name: updated_date
+    logicalType: date
+    physicalType: date
+    description: 원본 수정일
+    required: false
+  - name: raw_dates
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 날짜 글자 그대로 (JSON). 날짜로 못 바꾼 값 확인용
+    required: false
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_program.release_id
+    - echo_program.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 458109
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_program_subpart
+  physicalName: echo_program_subpart
+  physicalType: table
+  logicalType: object
+  description: 시설에 걸린 규제 Subpart. CFR Subpart로 바꾼 값도 담는다
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: program_code
+    logicalType: string
+    physicalType: text
+    description: '대기 규제 프로그램 코드. 예: MACT, NSPS, TVP'
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: subpart_code
+    logicalType: string
+    physicalType: text
+    description: ECHO 원본 Subpart 코드
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 4
+  - name: subpart_desc
+    logicalType: string
+    physicalType: text
+    description: ECHO 원본 Subpart 설명
+    required: false
+  - name: cfr_title
+    logicalType: integer
+    physicalType: integer
+    description: CFR Title 번호
+    required: false
+  - name: cfr_part
+    logicalType: string
+    physicalType: text
+    description: CFR Part 번호
+    required: false
+  - name: cfr_subpart
+    logicalType: string
+    physicalType: text
+    description: CFR Subpart 글자
+    required: false
+  - name: mapping_status
+    logicalType: string
+    physicalType: text
+    description: CFR Subpart로 바꾸기 성공 여부. mapped / unresolved
+    required: true
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_program_subpart.release_id
+    - echo_program_subpart.pgm_sys_id
+    - echo_program_subpart.program_code
+    to:
+    - echo_program.release_id
+    - echo_program.pgm_sys_id
+    - echo_program.program_code
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: mapping_status = unresolved (35,831행)는 cfr_subpart 가 비어 있다. 지어내지 않는다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 191226
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_source_row
+  physicalName: echo_source_row
+  physicalType: table
+  logicalType: object
+  description: 읽기 실패한 원본 행 보관. (비어 있음 = 실패 없음)
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: source_file
+    logicalType: string
+    physicalType: text
+    description: 원본 CSV 파일 이름
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: source_row_no
+    logicalType: integer
+    physicalType: bigint
+    description: 원본 CSV 행 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  - name: raw_payload
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 행 전체 (JSON)
+    required: true
+  - name: row_hash
+    logicalType: string
+    physicalType: text
+    description: 원본 행 지문
+    required: true
+  - name: parse_status
+    logicalType: string
+    physicalType: text
+    description: 읽기 결과
+    required: true
+  - name: error
+    logicalType: string
+    physicalType: text
+    description: 읽기 오류 내용
+    required: false
+  - name: source_object_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행의 원본 파일 번호. common_raw_object.object_id
+    required: false
+  relationships:
+  - type: foreignKey
+    from: echo_source_row.source_object_id
+    to: common_raw_object.object_id
+  - type: foreignKey
+    from: echo_source_row.release_id
+    to: common_dataset_release.release_id
+  customProperties:
+  - property: rowCount
+    value: 0
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_violation
+  physicalName: echo_violation
+  physicalType: table
+  logicalType: object
+  description: 위반 (HPV·FRV) 기록
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: violation_id
+    logicalType: string
+    physicalType: text
+    description: 위반 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: determination_uid
+    logicalType: string
+    physicalType: text
+    description: 위반 판정 번호
+    required: false
+  - name: policy_code
+    logicalType: string
+    physicalType: text
+    description: 위반 종류 코드. HPV / FRV
+    required: false
+  - name: agency
+    logicalType: string
+    physicalType: text
+    description: 판정 기관
+    required: false
+  - name: state
+    logicalType: string
+    physicalType: text
+    description: '주(州) 약자. 예: TX'
+    required: false
+  - name: first_frv_date
+    logicalType: date
+    physicalType: date
+    description: 처음 위반(FRV)으로 본 날
+    required: false
+  - name: hpv_dayzero_date
+    logicalType: date
+    physicalType: date
+    description: 중대 위반(HPV) 시작일
+    required: false
+  - name: resolved_date
+    logicalType: date
+    physicalType: date
+    description: 해결된 날
+    required: false
+  - name: programs
+    logicalType: object
+    physicalType: jsonb
+    description: 관련 프로그램 목록 (JSON)
+    required: false
+  - name: pollutants
+    logicalType: object
+    physicalType: jsonb
+    description: 관련 오염물질 목록 (JSON)
+    required: false
+  - name: raw_dates
+    logicalType: object
+    physicalType: jsonb
+    description: 원본 날짜 글자 그대로 (JSON). 날짜로 못 바꾼 값 확인용
+    required: false
+  - name: attributes
+    logicalType: object
+    physicalType: jsonb
+    description: 표 칸으로 뽑지 않은 나머지 원본 값 (JSON)
+    required: false
+  relationships:
+  - type: foreignKey
+    from: echo_violation.release_id
+    to: common_dataset_release.release_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 102676
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: echo_violation_facility
+  physicalName: echo_violation_facility
+  physicalType: table
+  logicalType: object
+  description: 위반과 시설의 연결
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: violation_id
+    logicalType: string
+    physicalType: text
+    description: 위반 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: pgm_sys_id
+    logicalType: string
+    physicalType: text
+    description: ECHO 시설 번호 (ICIS-Air 기준). ECHO 표끼리 잇는 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 3
+  relationships:
+  - type: foreignKey
+    from:
+    - echo_violation_facility.release_id
+    - echo_violation_facility.violation_id
+    to:
+    - echo_violation.release_id
+    - echo_violation.violation_id
+  - type: foreignKey
+    from:
+    - echo_violation_facility.release_id
+    - echo_violation_facility.pgm_sys_id
+    to:
+    - echo_facility.release_id
+    - echo_facility.pgm_sys_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 102676
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+contractCreatedTs: '2026-09-24T00:00:00Z'

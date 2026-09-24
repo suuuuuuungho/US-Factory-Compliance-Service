@@ -1,0 +1,238 @@
+# RAG — 검색 조각과 답변 기록
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
+apiVersion: v3.1.0
+kind: DataContract
+id: us-factory-compliance-rag
+name: RAG — 검색 조각과 답변 기록
+version: 1.0.0
+status: active
+domain: air-compliance
+description:
+  purpose: eCFR·ADI 본문을 잘라 임베딩한 검색 색인, 그리고 서비스 답변 기록
+  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
+servers:
+- server: supabase
+  type: postgresql
+  environment: prod
+  host: db.husqnrcuoaogdkbpjnep.supabase.co
+  port: 5432
+  database: postgres
+  schema: public
+schema:
+- name: rag_answer_log
+  physicalName: rag_answer_log
+  physicalType: table
+  logicalType: object
+  description: 서비스가 답한 질문과 답, 비용 기록
+  properties:
+  - name: id
+    logicalType: integer
+    physicalType: bigint
+    description: 기록 번호
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: created_at
+    logicalType: timestamp
+    physicalType: timestamp with time zone
+    description: 행을 만든 시각
+    required: true
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+  - name: question
+    logicalType: string
+    physicalType: text
+    description: 사용자 질문
+    required: true
+  - name: answer
+    logicalType: object
+    physicalType: jsonb
+    description: AI 답변 (JSON)
+    required: false
+  - name: sections
+    logicalType: object
+    physicalType: jsonb
+    description: 답에 쓴 근거 조문 목록 (JSON)
+    required: true
+  - name: issues
+    logicalType: object
+    physicalType: jsonb
+    description: 검사에서 찾은 문제 목록 (JSON)
+    required: true
+  - name: prompt_tokens
+    logicalType: integer
+    physicalType: integer
+    description: 입력 토큰 수
+    required: true
+  - name: completion_tokens
+    logicalType: integer
+    physicalType: integer
+    description: 출력 토큰 수
+    required: true
+  - name: cost_usd
+    logicalType: number
+    physicalType: numeric
+    description: 비용 (달러)
+    required: true
+  - name: ms
+    logicalType: integer
+    physicalType: integer
+    description: 걸린 시간 (밀리초)
+    required: true
+  relationships:
+  - type: foreignKey
+    from: rag_answer_log.release_id
+    to: common_dataset_release.release_id
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  customProperties:
+  - property: rowCount
+    value: 49
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+- name: rag_chunk
+  physicalName: rag_chunk
+  physicalType: table
+  logicalType: object
+  description: 검색용 조각과 임베딩. eCFR·ADI 본문을 잘라 벡터로 만든 것
+  properties:
+  - name: release_id
+    logicalType: string
+    physicalType: uuid
+    description: 이 행이 속한 적재 묶음(release) 번호. common_dataset_release.release_id
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+  - name: chunk_key
+    logicalType: string
+    physicalType: text
+    description: 조각 열쇠
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 2
+  - name: dataset
+    logicalType: string
+    physicalType: text
+    description: 어느 자료의 조각인가. ecfr / adi
+    required: true
+  - name: doc_key
+    logicalType: string
+    physicalType: text
+    description: 원본 문서 열쇠
+    required: true
+  - name: node_key
+    logicalType: string
+    physicalType: text
+    description: 원본 항목 주소
+    required: true
+  - name: block_from
+    logicalType: integer
+    physicalType: integer
+    description: 시작 조각 번호
+    required: true
+  - name: block_to
+    logicalType: integer
+    physicalType: integer
+    description: 끝 조각 번호
+    required: true
+  - name: hierarchy_path
+    logicalType: string
+    physicalType: text
+    description: '목차 경로. 예: Part 63 > Subpart A > § 63.1'
+    required: false
+  - name: heading
+    logicalType: string
+    physicalType: text
+    description: 제목
+    required: false
+  - name: citation
+    logicalType: string
+    physicalType: text
+    description: 인용 표시
+    required: false
+  - name: source_locator
+    logicalType: string
+    physicalType: text
+    description: 원본 안에서 이 내용이 있던 위치 (행 번호, XML 경로 등)
+    required: false
+  - name: chunk_text
+    logicalType: string
+    physicalType: text
+    description: 검색에 쓰는 본문 조각
+    required: true
+  - name: context_text
+    logicalType: string
+    physicalType: text
+    description: 조각 앞에 붙인 설명 문장 (AI가 씀)
+    required: false
+  - name: chunk_tokens
+    logicalType: integer
+    physicalType: integer
+    description: 본문 토큰 수
+    required: false
+  - name: context_tokens
+    logicalType: integer
+    physicalType: integer
+    description: 설명 토큰 수
+    required: false
+  - name: content_hash
+    logicalType: string
+    physicalType: text
+    description: 내용 지문(sha256). 내용이 바뀌었는지 비교할 때 쓴다
+    required: false
+  - name: contextualizer_model
+    logicalType: string
+    physicalType: text
+    description: 설명을 쓴 AI 모델
+    required: false
+  - name: context_prompt_version
+    logicalType: string
+    physicalType: text
+    description: 설명 지시문 버전
+    required: false
+  - name: embed_model
+    logicalType: string
+    physicalType: text
+    description: 임베딩 모델. kanon-2-embedder
+    required: false
+  - name: embed_dims
+    logicalType: integer
+    physicalType: integer
+    description: 임베딩 길이. 1792
+    required: false
+  - name: embedding
+    logicalType: array
+    physicalType: vector(1792)
+    description: 검색용 숫자 벡터 (pgvector)
+    required: false
+  - name: index_status
+    logicalType: string
+    physicalType: text
+    description: 색인 상태. embedded 면 검색 가능
+    required: false
+  quality:
+  - name: not_empty
+    type: library
+    metric: rowCount
+    mustBeGreaterThan: 0
+    description: 적재된 표는 비어 있으면 안 된다
+    dimension: completeness
+    severity: error
+  - type: text
+    description: 서비스는 common_dataset_current 가 가리키는 release 의 조각만 검색한다
+    severity: warning
+  customProperties:
+  - property: rowCount
+    value: 6157
+    description: 2026-09-24 기준 실제 행 수 (count(*))
+contractCreatedTs: '2026-09-24T00:00:00Z'

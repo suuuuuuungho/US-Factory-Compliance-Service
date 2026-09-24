@@ -1,6 +1,6 @@
 # ADI + CAA Dashboard DB 구축 계획
 
-[전수조사 결과](<../db overview/2_db 전수조사 결과.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 2026-09-17 수집본을 2026-09-22에 파싱·적재·공개했다(SUU-225).
+[데이터 명세](<../db overview/Data Specification_v1.md>)에 따라 EPA의 규정 해석·적용 회신을 모은다. CAA Dashboard는 **EPA Determinations of Compliance and Applicability under CAA 111, 112, and 129**를 뜻한다. ECHO의 Air Dashboard나 CAA Pipeline과는 다른 자료다. `★`는 검색·연결용으로 채택한 원본 필드다. 2026-09-17 수집본을 2026-09-22에 파싱·적재·공개했다(SUU-225).
 
 ## [1] Step.1 수집
 
