@@ -5,7 +5,7 @@ apiVersion: v3.1.0
 kind: DataContract
 id: us-factory-compliance-rag
 name: RAG — 검색 조각과 답변 기록
-version: 1.0.0
+version: 1.0.1
 status: active
 domain: air-compliance
 description:
@@ -76,7 +76,7 @@ schema:
     required: true
   - name: cost_usd
     logicalType: number
-    physicalType: numeric
+    physicalType: numeric(10,6)
     description: 비용 (달러)
     required: true
   - name: ms

@@ -78,6 +78,23 @@ jobs:
       - name: pytest (테스트가 0개면 통과)
         run: python -m pytest || [ $? -eq 5 ]
 
+  contracts:
+    name: 데이터 계약 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: 설치
+        run: pip install -q -r requirements.txt
+      # 규칙 원본: [2] db/contracts/*.odcs.yaml (SUU-269)
+      - name: YAML 계약 vs 실제 DB
+        run: python "[2] db/contracts/contract_check.py"
+
   frontend:
     name: 프론트 (vitest)
     runs-on: ubuntu-latest
