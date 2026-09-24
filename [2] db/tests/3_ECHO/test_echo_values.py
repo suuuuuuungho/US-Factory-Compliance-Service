@@ -23,6 +23,19 @@ def test_parse_date_accepts_both_us_formats_and_rejects_the_rest():
         assert parse_date(raw) is None, raw  # 모호하거나 다른 형식은 None — 원문은 호출자가 그대로 남긴다
 
 
+
+# SUU-270: 원본의 가짜 날짜(1900년 전, 2100년 후)는 날짜로 믿지 않는다. 원문은 호출자가 raw 칸에 남긴다
+
+def test_parse_date_returns_none_for_fake_dates_before_1900_or_from_2100():
+    for raw in ("01/01/0001", "01/01/8888", "11/02/0215", "12/31/1899", "01/01/2100", "11-12-2104"):
+        assert parse_date(raw) is None, raw
+
+
+def test_parse_date_keeps_boundary_and_near_future_dates():
+    assert parse_date("01/01/1900") == date(1900, 1, 1)
+    assert parse_date("12/31/2099") == date(2099, 12, 31)
+    assert parse_date("11/07/2027") == date(2027, 11, 7)  # 계획 중인 시설일 수 있어 그대로 둔다
+
 def test_missing_markers_and_amount_keeps_zero_apart_from_empty():
     assert is_missing("") is True
     assert is_missing("   ") is True

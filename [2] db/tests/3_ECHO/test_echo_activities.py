@@ -94,3 +94,10 @@ def test_activity_facility_shares_kind_id_and_pgm_sys_id():
 
     with pytest.raises(ValueError):
         activity_rows("formal", INSPECTION)  # 처분은 SUU-108
+
+
+def test_fake_date_becomes_none_but_raw_date_is_kept():
+    # SUU-270: 실제 DB 에 있던 가짜 날짜. 날짜 칸은 비우고 원문은 raw_date 에 남는다
+    activity, _ = activity_rows("inspection", {**INSPECTION, "ACTUAL_END_DATE": "01/01/8888"})
+    assert activity["activity_date"] is None
+    assert activity["raw_date"] == "01/01/8888"
