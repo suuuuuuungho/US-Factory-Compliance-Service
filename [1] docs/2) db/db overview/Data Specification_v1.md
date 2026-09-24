@@ -296,7 +296,21 @@ common_dataset_release ─┬─ ecfr_node ── ecfr_block
 | 1 | `fr_diff` 표가 DB에 **없어요** | `[2] db/migrations/SUU-230_fr_diff.sql` 파일은 있는데 적용이 안 됐어요 |
 | 2 | `rag_chunk`의 `create table` 파일이 **없어요** | DB에는 있어요. 새로 만들 때 똑같이 재현하기 어려워요 |
 | 3 | 빈 표 9개 | `ecfr_asset`, `ecfr_reference`, `ecfr_history`, `ecfr_correction`, `adi_document_relation`, `common_change_log`, `common_ingest_checkpoint`는 아직 안 채웠어요. `echo_source_row`, `common_ingest_error`는 비어 있는 게 정상이에요 |
-| 4 | ECHO 원본 CSV와 표의 개수가 달라요 | 예: Title V 인증 CSV 2,583,180행 → 표 490,810행, 비공식처분 339,879 → 173,992, 오염물질 977,624 → 864,562. 중복 제거 때문인지 **아직 확인 안 했어요** |
+
+### ECHO 원본 CSV보다 표의 행이 적은 이유 (확인 완료)
+
+- ECHO는 **Part 63만 고르지 않고 전국 대기 시설 전부**를 넣었어요. (시설 280,071곳 = 원본 CSV 행 수와 같음)
+- 원본 행은 하나도 버리지 않았어요. 11개 파일 모두 `read = ok`, 실패(`held`) 0건이에요.
+- 줄어든 이유는 **같은 번호가 여러 줄에 나와서 한 줄로 합쳤기 때문**이에요. (열쇠: `activity_kind + activity_id`, 오염물질은 `pgm_sys_id + pollutant_key`)
+
+| 원본 CSV | 원본 행 | 번호 중복 | 표 행 (= 원본 − 중복) |
+|---|---:|---:|---:|
+| Title V 인증 | 2,583,180 | 2,092,370 | 490,810 |
+| 비공식처분 | 339,879 | 165,887 | 173,992 |
+| 오염물질 | 977,624 | 113,062 | 864,562 |
+
+- 근거: `[2] db/3) ECHO/parsed/2026-09-17/report.json`의 `files`, `identifiers`, `duplicates`
+- ⚠️ 번호는 같은데 내용이 다른 활동이 50,869건 있어요(`conflicts.echo_activity`). 합칠 때 첫 줄만 남았어요.
 
 ---
 
