@@ -5,7 +5,7 @@ apiVersion: v3.1.0
 kind: DataContract
 id: us-factory-compliance-echo
 name: ECHO — 시설·점검·위반·처분
-version: 1.0.0
+version: 1.0.1
 status: active
 domain: air-compliance
 description:
@@ -76,7 +76,7 @@ schema:
   - name: activity_date
     logicalType: date
     physicalType: date
-    description: 활동 날짜. ⚠️ 0001-01-01, 8888-01-01 같은 가짜 날짜가 섞여 있다
+    description: 활동 날짜. 1900년 전·2100년 후 가짜 날짜는 빈값으로 바꿨다. 원본 글자는 raw_date
     required: false
   - name: raw_date
     logicalType: string
@@ -101,7 +101,7 @@ schema:
     dimension: completeness
     severity: error
   - type: text
-    description: activity_date 에 0001-01-01, 8888-01-01 같은 가짜 날짜가 있다. 기간 통계 전에 걸러낸다
+    description: activity_date 가 1900-01-01 전이거나 2100-01-01 이후면 안 된다. 가짜 날짜는 빈값으로 둔다
     severity: warning
   - type: text
     description: activity_id 만으로는 하나로 정해지지 않는다. 항상 activity_kind 와 같이 쓴다
