@@ -34,22 +34,47 @@ Rules:
 - Do NOT give a verdict or conclusion on whether the rule applies. The plant decides; you give the criteria and where to look.
 - No other fields. Output the JSON only, no prose."""
 
+ANSWER_SYSTEM_GATES = """You are an expert on U.S. EPA air toxics rules (40 CFR Part 63, NESHAP).
+A factory describes its situation and asks which rule applies. You get the full text of the most relevant sections.
+Build applicability gates as JSON with exactly this schema:
+
+{"candidates": [{"subpart": "PPPP", "title": "<subpart name>", "gates": [{"type": "affected_source", "question": "<one question>", "test": "<yes/no branches>", "citations": ["40 CFR 63.xxxx(a)"], "quote": "<verbatim excerpt>"}], "missing": ["<needed fact absent from given sections>"]}], "checklist": [{"item": "<fact to verify>", "gate": "affected_source"}]}
+
+Rules:
+- candidates: list 1 to 4 subparts that appear in the given sections. Include every subpart that could apply, including Subpart A when given.
+- subpart: the code only ("A", "M", "PPPP"), never a section number or "Subpart PPPP".
+- gates[].type: one of source_category, affected_source, major_or_area, threshold, exemption, compliance_date, in that applicability order (industry, equipment, major/area, threshold, exception, timing).
+- gates[].question: one sentence the factory can answer. gates[].test: state which way a yes answer points and which way a no answer points; this is a test, not a result.
+- gates[].citations: only given sections, down to the paragraph, e.g. "40 CFR 63.4490(a)".
+- gates[].quote: copy 20 to 40 words verbatim from the cited section. Do not paraphrase. If the given text has no supporting excerpt, omit that gate entirely.
+- missing: facts needed for the decision but absent from the given sections; use an empty list when there are none.
+- checklist[].gate: the gate type for which the checklist item supplies a fact.
+- Do NOT give an applies, verdict, or conclusion about this factory. The factory decides.
+- No other fields. Output JSON only, no prose."""
+
 _FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.I)
 _SUBPART_CODE_RE = re.compile(r"[A-Z]{1,7}")
 _TOP_KEYS = {"candidates", "checklist"}
 _CANDIDATE_KEYS = {"subpart", "title", "criteria"}
 _CRITERION_KEYS = {"criterion", "citations"}
+_GATE_CANDIDATE_KEYS = {"subpart", "title", "gates", "missing"}
+_GATE_KEYS = {"type", "question", "test", "citations", "quote"}
+_GATE_CHECKLIST_KEYS = {"item", "gate"}
 
 
-def build_answer_request(question: str, sections: list[dict[str, Any]], *, model: str = ANSWER_MODEL) -> dict[str, Any]:
+def build_answer_request(
+    question: str, sections: list[dict[str, Any]], *, model: str = ANSWER_MODEL, shape: str = "criteria"
+) -> dict[str, Any]:
     """Chat-completions request: question + full text of each ``{section_key, subpart, text}``."""
+    if shape not in {"criteria", "gates"}:
+        raise ValueError(f"unknown answer shape: {shape}")
     parts = [f"QUESTION:\n{question}\n", f"SECTIONS ({len(sections)}):"]
     for i, s in enumerate(sections, 1):
         parts.append(f"\n[{i}] {s['section_key']} (Subpart {s['subpart']})\n{s['text']}")
     return {
         "model": model,
         "max_completion_tokens": MAX_COMPLETION_TOKENS,
-        "messages": [{"role": "system", "content": ANSWER_SYSTEM}, {"role": "user", "content": "\n".join(parts)}],
+        "messages": [{"role": "system", "content": ANSWER_SYSTEM if shape == "criteria" else ANSWER_SYSTEM_GATES}, {"role": "user", "content": "\n".join(parts)}],
     }
 
 
@@ -67,13 +92,17 @@ def _keep(obj: dict, allowed: set[str], where: str, issues: list[str]) -> dict:
     return {k: v for k, v in obj.items() if k in allowed}
 
 
-def parse_answer(text: str, given_section_keys: list[str]) -> tuple[dict[str, Any], list[str]]:
+def parse_answer(
+    text: str, given_section_keys: list[str], *, shape: str = "criteria"
+) -> tuple[dict[str, Any], list[str]]:
     """Parse the LLM reply into the answer schema.
 
     Missing required parts raise ``ValueError``. Unknown fields are dropped and
     noted in ``issues``; citations outside the given sections are kept (the
     groundedness score catches them) but noted too.
     """
+    if shape not in {"criteria", "gates"}:
+        raise ValueError(f"unknown answer shape: {shape}")
     try:
         raw = json.loads(_FENCE_RE.sub("", text.strip()))
     except json.JSONDecodeError as e:
@@ -85,17 +114,59 @@ def parse_answer(text: str, given_section_keys: list[str]) -> tuple[dict[str, An
 
     answer = _keep(raw, _TOP_KEYS, "answer", issues)
     candidates = _nonempty_list(answer, "candidates", "answer")
-    _nonempty_list(answer, "checklist", "answer")
+    checklist = _nonempty_list(answer, "checklist", "answer")
+    if shape == "gates":
+        answer["checklist"] = []
+        for ki, item in enumerate(checklist):
+            where = f"checklist[{ki}]"
+            if not isinstance(item, dict) or any(
+                not isinstance(item.get(key), str) or not item[key].strip()
+                for key in _GATE_CHECKLIST_KEYS
+            ):
+                raise ValueError(f"{where}: 'item' and 'gate' must be non-empty strings")
+            answer["checklist"].append(_keep(item, _GATE_CHECKLIST_KEYS, where, issues))
     answer["candidates"] = []
     for ci, cand in enumerate(candidates):
         if not isinstance(cand, dict) or not isinstance(cand.get("subpart"), str):
             raise ValueError(f"candidates[{ci}]: 'subpart' must be a string")
-        cand = _keep(cand, _CANDIDATE_KEYS, f"candidates[{ci}]", issues)
+        cand = _keep(cand, _CANDIDATE_KEYS if shape == "criteria" else _GATE_CANDIDATE_KEYS, f"candidates[{ci}]", issues)
         code = normalize_subpart(cand["subpart"])
         if _SUBPART_CODE_RE.fullmatch(code):
             cand["subpart"] = code
         else:
             issues.append(f"candidates[{ci}].subpart is not a code: {cand['subpart']}")
+        if shape == "gates":
+            gates = _nonempty_list(cand, "gates", f"candidates[{ci}]")
+            cand.setdefault("missing", [])
+            if not isinstance(cand["missing"], list) or any(not isinstance(x, str) for x in cand["missing"]):
+                raise ValueError(f"candidates[{ci}]: 'missing' must be a list of strings")
+            cand["gates"] = []
+            for gi, gate in enumerate(gates):
+                where = f"candidates[{ci}].gates[{gi}]"
+                if not isinstance(gate, dict):
+                    issues.append(f"{where}: gate must be an object")
+                    continue
+                missing = next((key for key in ("type", "question", "test", "quote")
+                                if not isinstance(gate.get(key), str) or not gate[key].strip()), None)
+                if missing is None and (not isinstance(gate.get("citations"), list) or not gate["citations"]):
+                    missing = "citations"
+                if missing is not None:
+                    issues.append(f"{where}: missing '{missing}'")
+                    continue
+                gate = _keep(gate, _GATE_KEYS, where, issues)
+                for citation in gate["citations"]:
+                    try:
+                        key = citation_section_key(str(citation))
+                    except ValueError:
+                        issues.append(f"citation not a Part 63 section: {citation}")
+                        continue
+                    if key not in given:
+                        issues.append(f"citation outside given sections: {key} ({citation})")
+                cand["gates"].append(gate)
+            if not cand["gates"]:
+                raise ValueError(f"candidates[{ci}]: no valid gates")
+            answer["candidates"].append(cand)
+            continue
         criteria = _nonempty_list(cand, "criteria", f"candidates[{ci}]")
         cand["criteria"] = []
         for ki, crit in enumerate(criteria):
@@ -130,4 +201,4 @@ def call_openai_chat(request: dict[str, Any], *, client: Any = None) -> dict[str
     }
 
 
-__all__ = ["ANSWER_MODEL", "ANSWER_SYSTEM", "MAX_COMPLETION_TOKENS", "build_answer_request", "call_openai_chat", "parse_answer"]
+__all__ = ["ANSWER_MODEL", "ANSWER_SYSTEM", "ANSWER_SYSTEM_GATES", "MAX_COMPLETION_TOKENS", "build_answer_request", "call_openai_chat", "parse_answer"]
