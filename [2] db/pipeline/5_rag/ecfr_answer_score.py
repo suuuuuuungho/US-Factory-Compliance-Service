@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+from statistics import median
 from typing import Any
 
 from ecfr_eval import citation_section_key
@@ -47,7 +48,7 @@ def _answer_sections(answer: dict[str, Any]) -> list[str]:
     """답에 나온 인용을 조문 단위로, 등장 순서대로, 중복 없이. 63.xxxx가 아닌 인용(표·부록)은 건너뛴다."""
     keys: list[str] = []
     for cand in answer.get("candidates", []):
-        for crit in cand.get("criteria", []):
+        for crit in [*cand.get("criteria", []), *cand.get("gates", [])]:
             for citation in crit.get("citations", []):
                 try:
                     key = citation_section_key(citation)
@@ -85,6 +86,78 @@ def score_citation_grounded(answer: dict[str, Any], given_section_keys: list[str
     given = set(given_section_keys)
     outside = [k for k in cited if k not in given]
     return (len(cited) - len(outside)) / len(cited), outside
+
+
+def score_quote_match(answer: dict, section_texts: dict[str, str]) -> tuple[float, list[str]]:
+    """Share of gates whose quote appears in one of their cited sections."""
+    count = 0
+    matched = 0
+    mismatched: list[str] = []
+    for candidate in answer.get("candidates", []):
+        for gate in candidate.get("gates", []):
+            count += 1
+            quote = " ".join(gate.get("quote", "").split()).lower()
+            sources = []
+            for citation in gate.get("citations", []):
+                try:
+                    key = citation_section_key(citation)
+                except ValueError:
+                    continue
+                if key in section_texts:
+                    sources.append(" ".join(section_texts[key].split()).lower())
+            if quote and quote in " ".join(sources):
+                matched += 1
+            else:
+                mismatched.append(f"{candidate.get('subpart', '')}/{gate.get('type', '')}")
+    return (matched / count if count else 0.0), mismatched
+
+
+def score_checklist_link(answer: dict) -> float:
+    """Share of checklist items referring to a gate type in the answer."""
+    checklist = answer.get("checklist", [])
+    if not checklist:
+        return 0.0
+    types = {gate.get("type") for candidate in answer.get("candidates", []) for gate in candidate.get("gates", [])}
+    return sum(item.get("gate") in types for item in checklist) / len(checklist)
+
+
+def score_answer_v2(answer: dict, case: dict, section_texts: dict[str, str]) -> dict:
+    """Score the gate-shaped answer using deterministic rules."""
+    grounded, outside = score_citation_grounded(answer, list(section_texts))
+    quote, mismatched = score_quote_match(answer, section_texts)
+    subpart = score_subpart(answer, case)
+    return {
+        "case_id": case["case_id"],
+        "scorer_version": "v2",
+        "g0_grounded": grounded,
+        "g0_outside": outside,
+        "g1_quote": quote,
+        "g1_mismatched": mismatched,
+        "g2_subpart": subpart,
+        "g3_citation_recall": score_citation_recall(answer, case),
+        "g4_checklist": score_checklist_link(answer),
+        "failed": grounded < 1 or subpart == 0,
+    }
+
+
+def aggregate_v2(rows: list[dict]) -> dict:
+    """Aggregate v2 metrics, using the median for latency."""
+    n = len(rows)
+    def mean(key: str) -> float:
+        return sum(row.get(key, 0.0) for row in rows) / n if n else 0.0
+
+    return {
+        "scorer_version": "v2",
+        "n": n,
+        "g0_grounded": mean("g0_grounded"),
+        "g1_quote": mean("g1_quote"),
+        "g2_subpart": mean("g2_subpart"),
+        "g3_citation_recall": mean("g3_citation_recall"),
+        "g4_checklist": mean("g4_checklist"),
+        "g5_cost_usd": mean("cost_usd"),
+        "g5_latency_s": median(row.get("latency_s", 0.0) for row in rows) if n else 0.0,
+        "failed": [row["case_id"] for row in rows if row["failed"]],
+    }
 
 
 def build_judge_request(answer: dict[str, Any], case: dict[str, Any], *, model: str = JUDGE_MODEL) -> dict[str, Any]:
@@ -133,6 +206,7 @@ def aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 __all__ = [
     "JUDGE_MODEL", "JUDGE_SYSTEM", "MAX_COMPLETION_TOKENS",
-    "aggregate", "build_judge_request", "normalize_subpart", "parse_judge",
+    "aggregate", "aggregate_v2", "build_judge_request", "normalize_subpart", "parse_judge",
     "score_citation_grounded", "score_citation_recall", "score_subpart",
+    "score_quote_match", "score_checklist_link", "score_answer_v2",
 ]
