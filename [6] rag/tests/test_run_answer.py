@@ -236,7 +236,7 @@ def test_answer_run_record_keeps_the_output_cap():
     assert answer_run_record("r", _rows(), max_completion_tokens=20000, **kw)["max_completion_tokens"] == 20000
 
 
-def test_saved_gates_rerun_with_20k_cap_has_no_empty_answer_and_keeps_the_old_run():
+def test_saved_gates_rerun_with_20k_cap_has_no_empty_output_and_keeps_the_old_run():
     gates = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"]
     old = [r for r in gates if r.get("max_completion_tokens", 10000) == 10000]
     new = [r for r in gates if r.get("max_completion_tokens") == 20000]
@@ -251,7 +251,10 @@ def test_saved_gates_rerun_with_20k_cap_has_no_empty_answer_and_keeps_the_old_ru
     subset = set(json.loads(SUBSET_PATH.read_text(encoding="utf-8"))["subset"])
     rows = [json.loads(l) for l in (RESULTS / f"{rec['run_id']}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
     assert {r["case_id"] for r in rows} == subset
-    assert [r["case_id"] for r in rows if r["answer"] is None] == []  # 빈 답 0건
+    # 빈 출력(상한 소진) 0건. 모델이 JSON 모양을 틀린 것(parse error)은 진짜 format 실패라 남겨 두고 0점으로 센다
+    assert [r["case_id"] for r in rows if not r["raw_answer"].strip()] == []
     for row in rows:
         assert row["scorer_version"] == "v2" and 0 < row["completion_tokens"] < 20000, row["case_id"]
+        if row["answer"] is None:
+            assert row["failed"] is True and any("parse error" in i for i in row["issues"]), row["case_id"]
     assert (RESULTS / f"{old[0]['run_id']}.jsonl").exists()  # 옛 결과 파일도 남긴다
