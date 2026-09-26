@@ -32,11 +32,13 @@ import Waiting from "../Waiting";
 // SUU-214: 질문 칸은 react-bits PromptBar (npx shadcn add @react-bits/PromptBar-TS-CSS). 메뉴는 전부 비우고 Send 만 쓴다.
 import PromptBar from "../../components/PromptBar";
 
-// SUU-215: 제목은 다른 페이지와 같은 28px. Ask 전 화면은 가운데 정렬. PromptBar 는 640px, 안내문 'Ask what you want to know'. 아래 예시 질문 3개(manual_test_questions.md A-1~A-3)를 누르면 PromptBar 에 올라간다.
-const EXAMPLES = [
-  "Our medical device plant in Indiana is a major source of HAP. On the breathing-circuit assembly lines we bond polymer sub-assemblies by applying methylene chloride so the plastic softens and fuses as the solvent evaporates; nothing with solids is applied and no dry film is left behind. We are adding six more of these lines. Does the NESHAP for surface coating of plastic parts cover this solvent welding step?",
-  "We run a small perchloroethylene dry cleaning shop in Michigan. There is an apartment above the shop that is currently unoccupied, and the machine is often idle because the location is mainly a pick-up and drop-off store. Does the requirement to eliminate perc emissions from dry cleaning systems located in a building with a residence after December 21, 2020 apply to us?",
-  "At our gas plant in Utah, an area source of HAP, we operate three existing 800 hp four-stroke lean-burn natural gas engines that have met the geographic criteria for a remote location since October 2013. We never sent the state a notification of remote status. Can we meet the work practice standards for remote engines instead of doing performance tests?",
+// SUU-215: 제목은 다른 페이지와 같은 28px. Ask 전 화면은 가운데 정렬. PromptBar 는 640px, 안내문 'Ask what you want to know'.
+// 예시 질문 3개는 뺐다. 대신 PromptBar 아래에 짧은 작성 안내(HOW_TO)를 둔다.
+const HOW_TO: [string, string][] = [
+  ["Where", "State, and what the plant makes"],
+  ["Size", "Major or area source of HAP"],
+  ["Process", "Equipment, materials, and how it runs"],
+  ["Question", "Which rule or requirement you want checked"],
 ];
 
 const CARD = "flex-1 min-h-0 overflow-y-auto rounded-lg border border-hairline bg-surface-1";
@@ -47,7 +49,6 @@ type OpenedSection = { section: Section | null; error: string | null; paragraph:
 
 export default function ApplicabilityPage() {
   const [asked, setAsked] = useState(false);
-  const [preset, setPreset] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +121,6 @@ export default function ApplicabilityPage() {
   const form = (
     <PromptBar
       width={640}
-      value={preset}
       placeholder="Ask what you want to know"
       sources={[]}
       commands={[]}
@@ -171,19 +171,19 @@ export default function ApplicabilityPage() {
       <div className="flex w-full flex-col items-center gap-6 md:min-h-0 md:flex-1">
         {!answer && form}
         {!answer && (
-          <ul aria-label="Example questions" className="flex w-full max-w-[640px] flex-col gap-2">
-            {EXAMPLES.map((q) => (
-              <li key={q}>
-                <button
-                  type="button"
-                  onClick={() => setPreset(q)}
-                  className="w-full rounded-md border border-hairline bg-surface-1 px-4 py-3 text-left text-sm text-ink-muted hover:text-ink"
-                >
-                  {q}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <section
+            aria-label="How to write your question"
+            className="w-full max-w-[640px] rounded-md border border-hairline bg-surface-1 px-5 py-4 text-left text-sm"
+          >
+            <p className="mb-2 font-semibold text-ink">How to write your question</p>
+            <ol className="list-decimal space-y-1 pl-5 text-ink-muted">
+              {HOW_TO.map(([label, hint]) => (
+                <li key={label}>
+                  <span className="font-medium text-ink">{label}</span> — {hint}
+                </li>
+              ))}
+            </ol>
+          </section>
         )}
         {!answer && status}
 

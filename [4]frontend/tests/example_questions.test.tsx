@@ -1,6 +1,6 @@
-// SUU-215: /applicability 제목은 28px 굵게, PromptBar 는 640px, 아래 예시 질문 3개를 누르면 Prompt 칸에 올라간다.
+// SUU-215: /applicability 제목은 28px 굵게, PromptBar 는 640px. 예시 질문 3개는 뺐고 대신 작성 안내(How to write)가 있다.
 // SUU-217: About h1이 큰 serif 제목이 되어, 기준을 About 대신 클래스 문자열로 바꿈.
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import Applicability from "../src/app/applicability/page";
 
@@ -14,18 +14,18 @@ it("PromptBar 너비가 640px 다", () => {
   expect(container.querySelector<HTMLElement>(".prompt-bar")!.getAttribute("style")).toContain("--pb-w: 640px");
 });
 
-it("예시 질문 3개가 있고, 누르면 Prompt 칸에 그 글이 들어가고 Send 가 켜진다", () => {
+it("예시 질문 목록은 없고, PromptBar 아래에 작성 안내 4줄(Where·Size·Process·Question)이 있다", () => {
   render(<Applicability />);
-  const examples = screen.getByRole("list", { name: "Example questions" });
-  const buttons = examples.querySelectorAll("button");
-  expect(buttons.length).toBe(3);
-  const send = screen.getByRole("button", { name: "Send" }) as HTMLButtonElement;
-  expect(send.disabled).toBe(true);
-  fireEvent.click(buttons[1]);
-  const box = screen.getByRole("textbox", { name: "Prompt" }) as HTMLTextAreaElement;
-  expect(box.value).toBe(buttons[1].textContent);
-  expect(box.value).toMatch(/perchloroethylene dry cleaning/);
-  expect(send.disabled).toBe(false);
+  expect(screen.queryByRole("list", { name: "Example questions" })).toBeNull();
+  const howTo = screen.getByRole("region", { name: "How to write your question" });
+  const items = howTo.querySelectorAll("li");
+  expect(items.length).toBe(4);
+  expect(Array.from(items).map((li) => li.textContent)).toEqual([
+    "Where — State, and what the plant makes",
+    "Size — Major or area source of HAP",
+    "Process — Equipment, materials, and how it runs",
+    "Question — Which rule or requirement you want checked",
+  ]);
 });
 
 it("Ask 전에는 main 이 가운데 정렬(items-center text-center)이고 Prompt 안내문은 'Ask what you want to know' 다", () => {
