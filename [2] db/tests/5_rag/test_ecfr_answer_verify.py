@@ -78,7 +78,7 @@ def test_verified_answer_scores_g0_g1_g4_one():
     answer = _answer([OK_SOURCE, OUTSIDE, BAD_QUOTE, OK_MAJOR],
                      [{"item": "접착제 여부", "gate": "affected_source"}, {"item": "문턱값", "gate": "threshold"}])
     raw = score_answer_v2(answer, CASE, TEXTS)
-    assert raw["g0_grounded"] < 1.0 and raw["g1_quote"] < 1.0 and raw["g4_checklist"] < 1.0 and raw["failed"] is True
+    assert raw["g0_grounded"] < 1.0 and raw["g1_quote"] < 1.0 and raw["failed"] is True  # G4는 검증 전에도 1.0(모든 항목이 있는 관문을 가리킴)
     scores = score_answer_v2(verify_answer(answer, GIVEN, TEXTS), CASE, TEXTS)
     assert scores["g0_grounded"] == 1.0 and scores["g0_outside"] == []
     assert scores["g1_quote"] == 1.0 and scores["g1_mismatched"] == []
