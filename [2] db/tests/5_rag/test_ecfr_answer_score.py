@@ -1,6 +1,6 @@
 """SUU-146: 판정 기준표 답 JSON 하나를 4개 지표로 채점한다.
 Subpart 적중·인용 Recall·인용 근거율은 $0 규칙, 판정 기준 점수는 심판 LLM 요청 만들기·파싱만(호출 없음).
-답 모양·채점표는 `[1] docs/3) rag/4_rag 답변 품질 개선 과정.md` 1·2절.
+답 모양·채점표는 `[1] docs/1) project/1_Project_full.md` "RAG 답변 품질 개선 과정" 절.
 """
 import pytest
 

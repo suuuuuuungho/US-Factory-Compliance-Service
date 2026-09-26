@@ -1,5 +1,5 @@
 -- SUU-64: eCFR 전용 테이블.
--- 계획 문서: [1] docs/2) db/db 구축 계획/1_eCFR 구축 계획.md 3-5절(두 번째) "테이블 스키마 — eCFR 전용"
+-- 계획 문서: [1] docs/2) db/1_eCFR 구축 계획.md 3-5절(두 번째) "테이블 스키마 — eCFR 전용"
 
 create table ecfr_node (
     release_id uuid not null references common_dataset_release(release_id),

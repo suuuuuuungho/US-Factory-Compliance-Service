@@ -1,5 +1,5 @@
 -- SUU-121: ECHO 전용 테이블 14개 (파서 산출 13개 + echo_code_map).
--- 계획 문서: [1] docs/2) db/db 구축 계획/3_ECHO 구축 계획.md 3-5절 "테이블 스키마"
+-- 계획 문서: [1] docs/2) db/3_ECHO 구축 계획.md 3-5절 "테이블 스키마"
 -- 열 이름은 parsed/{as_of}/*.jsonl 키와 같다 (SUU-111/112). 정책 없이 RLS만 켠다 (SUU-63 패턴).
 
 create table echo_source_row (

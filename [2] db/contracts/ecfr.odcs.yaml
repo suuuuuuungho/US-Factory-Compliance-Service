@@ -1,5 +1,5 @@
 # eCFR — 현재 규정집 원문 (40 CFR Part 63)
-# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/0_Data Specification_v1.md
 # 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
 apiVersion: v3.1.0
 kind: DataContract
@@ -10,7 +10,7 @@ status: active
 domain: air-compliance
 description:
   purpose: eCFR Part 63 원문을 목차·조각으로 저장한다. 서비스 답변의 근거 조문이 여기서 나온다
-  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  usage: 쉬운 설명은 [1] docs/2) db/0_Data Specification_v1.md 를 본다
   limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
 servers:
 - server: supabase

@@ -1,5 +1,5 @@
 -- SUU-208: Federal Register 전용 테이블 4개 (1차: API 메타데이터만).
--- 계획 문서: [1] docs/2) db/db 구축 계획/2_Federal Register 구축 계획.md 3-5절 "테이블 스키마"
+-- 계획 문서: [1] docs/2) db/2_Federal Register 구축 계획.md 3-5절 "테이블 스키마"
 -- 열 이름은 SUU-207 파서가 만들 parsed/{as_of}/fr_*.jsonl 키의 원본이다. 정책 없이 RLS만 켠다 (SUU-63 패턴).
 -- fr_block · fr_relation · fr_public_inspection 은 본문 파싱 회차에 만든다.
 

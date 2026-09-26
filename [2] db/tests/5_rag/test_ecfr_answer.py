@@ -1,5 +1,5 @@
 """SUU-147: 검색 상위 조문 전문 → LLM → 판정 기준표 JSON. 요청 만들기·파싱만(호출 없음).
-답 모양은 `[1] docs/3) rag/4_rag 답변 품질 개선 과정.md` 1절.
+답 모양은 `[1] docs/1) project/1_Project_full.md` "RAG 답변 품질 개선 과정" 절.
 """
 import json
 

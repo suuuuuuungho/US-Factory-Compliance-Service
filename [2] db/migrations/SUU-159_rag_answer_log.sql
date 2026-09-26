@@ -1,5 +1,5 @@
 -- SUU-159: 서비스 질문 로그. /ask 한 번에 한 줄. 정책 없이 RLS만 켠다 (SUU-63 패턴).
--- 계획 문서: [1] docs/3) rag/2_rag 구축 계획.md [8]절
+-- 계획 문서: [1] docs/2) db/0_Data Specification_v1.md (rag_answer_log)
 
 create table rag_answer_log (
     id bigint generated always as identity primary key,

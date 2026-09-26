@@ -1,5 +1,5 @@
 -- SUU-223: ADI + CAA Dashboard 전용 테이블 9개.
--- 계획 문서: [1] docs/2) db/db 구축 계획/4_ADI+CAA 구축 계획.md 3-5절 "테이블 스키마"
+-- 계획 문서: [1] docs/2) db/4_ADI+CAA 구축 계획.md 3-5절 "테이블 스키마"
 -- 열 이름은 SUU-221 파서가 만들 parsed/{as_of}/adi_*.jsonl 키의 원본이다. 정책 없이 RLS만 켠다 (SUU-63 패턴).
 -- Dashboard 회신도 별도 표 없이 source_system = 'caa_dashboard' 로 같은 표에 들어간다.
 

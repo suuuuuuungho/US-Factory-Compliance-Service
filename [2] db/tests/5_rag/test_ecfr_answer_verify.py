@@ -1,6 +1,6 @@
 """SUU-278: 나가기 전 검증문 — 답이 나온 뒤 $0 규칙으로 관문마다 G0·G1을 검사해 미달 관문을 지우고 `missing`으로 옮긴다.
 
-계획 `[1] docs/3) rag/2_rag 구축 계획.md` [6]-7 5단계. LLM을 쓰지 않는다. 채점기(`ecfr_answer_score`)와 같은 판정이다:
+계획 `[1] docs/1) project/1_Project_full.md` "RAG 답변 품질 개선 과정" 절. LLM을 쓰지 않는다. 채점기(`ecfr_answer_score`)와 같은 판정이다:
 - G0: 관문 인용이 넘겨준 조문(given) 밖이면 그 관문을 지운다. 63.xxxx 모양이 아닌 인용(표·부록)은 채점기처럼 무시한다
 - G1: 관문 발췌(quote)가 인용 조문 원문에 없으면(공백·대소문자 무시) 그 관문을 지운다
 - 지운 관문은 `missing`에 "{type}: {question}"으로 남긴다. 지운 관문만 가리키던 checklist 항목도 지운다

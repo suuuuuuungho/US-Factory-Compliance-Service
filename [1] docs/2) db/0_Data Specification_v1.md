@@ -17,14 +17,12 @@
 이 원본을 잘라서 AI 검색용 조각(`rag_*`)을 만들고, 받은 기록은 운영 표(`common_*`)에 남김.
 법률 자문용이 아님. 담당자가 **확인할 후보와 근거를 찾는 용도**.
 
-| | |
-|---|---|
-| Dataset Link | Supabase `public` 스키마 (프로젝트 `husqnrcuoaogdkbpjnep`) |
-| Data Card Author | 박성호 (Owner) |
-| 기준일 | 2026-09-24 (이날 `count(*)`로 직접 셈) |
-| 조사 범위 | `public` 표 43개 전부. 로컬 폴더(`[2] db/*/raw`)는 뺌 |
-| 기계용 명세 | `[2] db/contracts/*.odcs.yaml` (6개 파일, [부록 A](#부록-a-yaml-데이터-계약-odcs)) |
-| 티켓 | SUU-268 |
+Dataset Link:  Supabase `public` 스키마 (프로젝트 `husqnrcuoaogdkbpjnep`) |
+Data Card Author: Park Seong Ho
+기준일: 2026-09-24 
+조사 범위: `public` 표 43개 전부
+기계용 명세: `[2] db/contracts/*.odcs.yaml` (6개 파일, [부록 A](#부록-a-yaml-데이터-계약-odcs))
+티켓: SUU-268
 
 **신입이 먼저 읽을 곳**
 
@@ -61,7 +59,7 @@
 | 전체 크기 | 3,142 MB (표 + 색인) |
 | 표 수 | 43 |
 | 전체 행 수 | 9,593,649 |
-| 칸(컬럼) 수 | 430 |
+| 컬럼 수 | 430 |
 | 외래키(FK) 수 | 69 |
 | 라벨 | 없음 (사람이 라벨 붙인 데이터 아님) |
 
