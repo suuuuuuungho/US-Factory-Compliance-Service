@@ -7,7 +7,7 @@ from __future__ import annotations
 import time
 from typing import Callable
 
-from ecfr_answer import build_answer_request, parse_answer
+from ecfr_answer import build_answer_request, drop_outside_citations, parse_answer
 from ecfr_search import search_sections
 
 from app.index import Index
@@ -74,6 +74,8 @@ def answer_question(
     text = count(chat(request))
     try:
         answer, issues = parse_answer(text, [s["section_key"] for s in found])
+        answer, dropped = drop_outside_citations(answer, [s["section_key"] for s in found])
+        issues.extend(dropped)
     except ValueError as e:
         answer, issues = None, [f"parse error: {e}"]
 

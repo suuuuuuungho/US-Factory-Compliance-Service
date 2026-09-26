@@ -41,6 +41,46 @@ def verify_answer(answer: dict, given: list[str], texts: dict[str, str]) -> dict
     return out
 
 
+def drop_outside_citations(answer: dict, given_section_keys: list[str]) -> tuple[dict, list[str]]:
+    """Remove criteria citations that do not belong to the supplied sections."""
+    out = copy.deepcopy(answer)
+    if any("gates" in cand for cand in out.get("candidates", [])):
+        return out, []
+
+    given = set(given_section_keys)
+    dropped: list[str] = []
+    kept_candidates = []
+    for ci, candidate in enumerate(out.get("candidates", [])):
+        kept_criteria = []
+        for ki, criterion in enumerate(candidate.get("criteria", [])):
+            where = f"candidates[{ci}].criteria[{ki}]"
+            kept_citations = []
+            for citation in criterion.get("citations", []):
+                try:
+                    key = citation_section_key(str(citation))
+                except ValueError:
+                    dropped.append(f"citation not a Part 63 section: {citation} at {where}")
+                    continue
+                if key not in given:
+                    dropped.append(f"citation outside given sections: {key} ({citation}) at {where}")
+                    continue
+                kept_citations.append(citation)
+            criterion["citations"] = kept_citations
+            if kept_citations:
+                kept_criteria.append(criterion)
+            else:
+                dropped.append(f"criterion dropped (no citation left): {where}")
+        candidate["criteria"] = kept_criteria
+        if kept_criteria:
+            kept_candidates.append(candidate)
+        else:
+            dropped.append(
+                f"candidate dropped (no criterion left): candidates[{ci}] {candidate.get('subpart', '')}"
+            )
+    out["candidates"] = kept_candidates
+    return out, dropped
+
+
 MAX_COMPLETION_TOKENS = 10000  # gpt-5 계열은 추론 토큰이 출력에 포함된다. 6000이면 102건 중 3건이 빈 답(SUU-147)
 
 ANSWER_SYSTEM = """You are an expert on U.S. EPA air toxics rules (40 CFR Part 63, NESHAP).
@@ -226,4 +266,4 @@ def call_openai_chat(request: dict[str, Any], *, client: Any = None) -> dict[str
     }
 
 
-__all__ = ["ANSWER_MODEL", "ANSWER_SYSTEM", "ANSWER_SYSTEM_GATES", "MAX_COMPLETION_TOKENS", "build_answer_request", "call_openai_chat", "parse_answer"]
+__all__ = ["ANSWER_MODEL", "ANSWER_SYSTEM", "ANSWER_SYSTEM_GATES", "MAX_COMPLETION_TOKENS", "build_answer_request", "call_openai_chat", "drop_outside_citations", "parse_answer"]
