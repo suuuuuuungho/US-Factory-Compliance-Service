@@ -1,5 +1,5 @@
 -- SUU-61: 4개 데이터셋(eCFR/FR/ECHO/ADI+CAA)이 공유하는 운영 테이블.
--- 계획 문서: [1] docs/2) db/db 구축 계획/1_eCFR 구축 계획.md 3-5절 "테이블 스키마 — 네 데이터셋 공통"
+-- 계획 문서: [1] docs/2) db/1_eCFR 구축 계획.md 3-5절 "테이블 스키마 — 네 데이터셋 공통"
 
 create table common_ingest_run (
     run_id uuid primary key,

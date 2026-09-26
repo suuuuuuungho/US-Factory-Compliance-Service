@@ -1,4 +1,4 @@
-"""SUU-274: 답 생성기가 관문(gate) 모양(`[1] docs/3) rag/2_rag 구축 계획.md` [4]-3)의 요청·파싱도 한다.
+"""SUU-274: 답 생성기가 관문(gate) 모양(`[1] docs/1) project/1_Project_full.md` "RAG 답변 품질 개선 과정" 절)의 요청·파싱도 한다.
 
 `shape="criteria"`(후보 A, 지금 그대로)와 `shape="gates"`(후보 B)를 인자로 고른다. 호출은 하지 않는다.
 """

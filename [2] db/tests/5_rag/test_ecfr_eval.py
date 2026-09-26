@@ -1,5 +1,5 @@
 """SUU-81: 평가셋으로 검색 정확도를 재는 순수 함수들.
-규칙은 `[6] rag/eval/rag_eval_plan.md` [3]·[8]을 따른다. 네트워크·DB는 쓰지 않는다.
+규칙은 `[1] docs/1) project/1_Project_full.md` "RAG 검색 품질 개선 과정" 절을 따른다. 네트워크·DB는 쓰지 않는다.
 """
 import math
 

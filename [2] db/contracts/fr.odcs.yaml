@@ -1,5 +1,5 @@
 # Federal Register — 규정 변경 소식
-# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/db overview/Data Specification_v1.md
+# 데이터 계약 (ODCS v3.1.0). 쉬운 설명: [1] docs/2) db/0_Data Specification_v1.md
 # 버전 규칙: 칸 추가 = 1.x.0 / 칸 삭제·뜻 변경 = x.0.0 / 설명만 고침 = 1.0.x
 apiVersion: v3.1.0
 kind: DataContract
@@ -10,7 +10,7 @@ status: active
 domain: air-compliance
 description:
   purpose: Part 63을 바꾸는 FR 문서 목록과 날짜·번호를 저장한다. '언제부터 바뀌었나'를 답할 때 쓴다
-  usage: 쉬운 설명은 [1] docs/2) db/db overview/Data Specification_v1.md 를 본다
+  usage: 쉬운 설명은 [1] docs/2) db/0_Data Specification_v1.md 를 본다
   limitations: 행 수는 customProperties.rowCount 기준일 값이다. 새 release를 적재하면 바뀐다
 servers:
 - server: supabase
