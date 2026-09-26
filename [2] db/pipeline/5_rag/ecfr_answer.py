@@ -8,15 +8,39 @@ to the given sections only) and a checklist for the plant. No verdict.
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
 from typing import Any
 
-from ecfr_answer_score import normalize_subpart
+from ecfr_answer_score import normalize_subpart, score_citation_grounded, score_quote_match
 from ecfr_eval import citation_section_key
 
 ANSWER_MODEL = "gpt-5-mini"
+
+
+def verify_answer(answer: dict, given: list[str], texts: dict[str, str]) -> dict:
+    """Move gates failing the scorer's grounding or quote rules to missing."""
+    out = copy.deepcopy(answer)
+    if not any("gates" in cand for cand in out.get("candidates", [])):
+        return out
+    for cand in out["candidates"]:
+        kept = []
+        for gate in cand.get("gates", []):
+            single = {"candidates": [{"subpart": cand["subpart"], "gates": [gate]}]}
+            _, outside = score_citation_grounded(single, given)
+            _, mismatched = score_quote_match(single, texts)
+            if outside or mismatched:
+                cand.setdefault("missing", []).append(f"{gate['type']}: {gate['question']}")
+            else:
+                kept.append(gate)
+        cand["gates"] = kept
+    types = {gate["type"] for cand in out["candidates"] for gate in cand["gates"]}
+    out["checklist"] = [item for item in out.get("checklist", []) if item.get("gate") in types]
+    return out
+
+
 MAX_COMPLETION_TOKENS = 10000  # gpt-5 계열은 추론 토큰이 출력에 포함된다. 6000이면 102건 중 3건이 빈 답(SUU-147)
 
 ANSWER_SYSTEM = """You are an expert on U.S. EPA air toxics rules (40 CFR Part 63, NESHAP).

@@ -25,7 +25,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE.parent.parent / "[2] db/pipeline/5_rag"))
-from ecfr_answer import MAX_COMPLETION_TOKENS, build_answer_request, call_openai_chat, parse_answer  # noqa: E402
+from ecfr_answer import MAX_COMPLETION_TOKENS, build_answer_request, call_openai_chat, parse_answer, verify_answer  # noqa: E402
 from ecfr_answer_score import aggregate_v2, score_answer_v2  # noqa: E402
 from llm_rerank import PRICE_PER_M  # noqa: E402
 from run_eval import load_env  # noqa: E402
@@ -102,16 +102,17 @@ def score_line(case: dict, answer: dict | None, *, given: list[str], texts: dict
 
 
 def default_run_id(shape: str, model: str, *, subset: bool, max_completion_tokens: int,
-                   day: str | None = None) -> str:
+                   verified: bool = False, day: str | None = None) -> str:
     if day is None:
         day = f"{datetime.now(timezone.utc):%Y-%m-%d}"
     return (f"{day}_answer_{shape}_{model}" + ("_subset51" if subset else "")
-            + (f"_out{max_completion_tokens // 1000}k" if max_completion_tokens != MAX_COMPLETION_TOKENS else ""))
+            + (f"_out{max_completion_tokens // 1000}k" if max_completion_tokens != MAX_COMPLETION_TOKENS else "")
+            + ("_verified" if verified else ""))
 
 
 def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, model: str, shape: str, top_n: int,
                       subset: bool, cost: float, always: tuple[str, ...] = (), tokens: dict | None = None,
-                      max_completion_tokens: int = MAX_COMPLETION_TOKENS) -> dict:
+                      max_completion_tokens: int = MAX_COMPLETION_TOKENS, verified: bool = False) -> dict:
     tokens = tokens or {}
     prompt_tokens = int(tokens.get("prompt_tokens", 0))
     completion_tokens = int(tokens.get("completion_tokens", 0))
@@ -135,6 +136,7 @@ def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, mode
         "metrics": aggregate_v2(outs),
         "cost_usd": {"per_query": cost / len(outs) if outs else 0.0, "total": cost},
         "max_completion_tokens": max_completion_tokens,
+        "verified": verified,
     }
 
 
@@ -160,18 +162,21 @@ def main():
     ap.add_argument("--limit", type=int)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--replay", action="store_true")
+    ap.add_argument("--replay-from")
+    ap.add_argument("--verify", action="store_true")
     ap.add_argument("--retry-empty", action="store_true")
     ap.add_argument("--run-id")
     args = ap.parse_args()
     if args.run_id is None:
         args.run_id = default_run_id(args.shape, args.model, subset=args.subset,
-                                     max_completion_tokens=args.max_completion_tokens)
+                                     max_completion_tokens=args.max_completion_tokens, verified=args.verify)
     load_env()
     always = ALWAYS_SECTIONS if args.always_a else ()
     out_path = RESULTS / f"{args.run_id}.jsonl"
     saved: dict[str, dict] = {}
-    if args.replay or args.retry_empty:
-        saved = {o["case_id"]: o for o in map(json.loads, filter(None, out_path.read_text(encoding="utf-8").splitlines()))}
+    if args.replay or args.replay_from or args.retry_empty:
+        saved_path = RESULTS / f"{args.replay_from}.jsonl" if args.replay_from else out_path
+        saved = {o["case_id"]: o for o in map(json.loads, filter(None, saved_path.read_text(encoding="utf-8").splitlines()))}
         required = {"raw_answer", "prompt_tokens", "completion_tokens", "cost_usd", "latency_s"}
         if any(o.get("scorer_version") != "v2" or not required <= o.keys() for o in saved.values()):
             raise ValueError("replay/retry requires saved v2 rows with tokens, cost and latency")
@@ -181,7 +186,7 @@ def main():
     ids = json.loads(SUBSET_PATH.read_text(encoding="utf-8"))["subset"] if args.subset else None
     lines = select_cases(lines, ids)
     lines = lines[: args.limit] if args.limit else lines
-    if args.replay and any(line["case_id"] not in saved for line in lines):
+    if (args.replay or args.replay_from) and any(line["case_id"] not in saved for line in lines):
         raise ValueError("replay requires a saved row for every selected case")
     texts = fetch_texts(sorted({s["section_key"] for l in lines for s in top_sections(l, args.top_n, always)}))
     pin, pout = PRICE_PER_M.get(args.model, (0, 0))
@@ -191,7 +196,7 @@ def main():
         sections = top_sections(line, args.top_n, always)
         given = [s["section_key"] for s in sections]
         prev = saved.get(case["case_id"])
-        reuse = prev is not None and (args.replay or (args.retry_empty and prev.get("answer") is not None))
+        reuse = prev is not None and (args.replay or args.replay_from or (args.retry_empty and prev.get("answer") is not None))
         if reuse:
             raw_answer = prev["raw_answer"]
             tokens = {"prompt_tokens": prev["prompt_tokens"], "completion_tokens": prev["completion_tokens"]}
@@ -210,6 +215,8 @@ def main():
             answer, issues = parse_answer(raw_answer, given, shape=args.shape)
         except ValueError as e:
             answer, issues = None, [f"parse error: {e}"]
+        if args.verify and answer is not None:
+            answer = verify_answer(answer, given, {k: texts[k] for k in given if k in texts})
         out = score_line(case, answer, given=given, texts=texts, issues=issues, tokens=tokens,
                          cost_usd=cost_usd, latency_s=latency_s)
         out["raw_answer"] = raw_answer
@@ -232,7 +239,8 @@ def main():
     if not args.limit:
         write_run_record(ANSWER_RUNS, answer_run_record(args.run_id, outs, search_run_id=SEARCH_RUN_ID,
                          model=args.model, shape=args.shape, top_n=args.top_n, subset=args.subset,
-                         cost=cost, always=always, tokens=usage, max_completion_tokens=args.max_completion_tokens))
+                         cost=cost, always=always, tokens=usage, max_completion_tokens=args.max_completion_tokens,
+                         verified=args.verify))
         print(f"answer_runs.jsonl updated: {args.run_id}")
 
 

@@ -1,6 +1,7 @@
 """SUU-147: 답변 실행기의 순수 부분 — 조문 전문 합치기, 상위 N 고르기, 결과 한 줄, run 기록.
 SUU-275: 심판 없이 채점기 v2로, 선별셋 51건, 답 모양(criteria/gates)을 run에 남긴다.
 SUU-277: 출력 토큰 상한(`max_completion_tokens`)을 run에 남기고, 관문 답을 20,000으로 다시 돌린 run이 빈 답 없이 있다.
+SUU-278: 검증문(`--verify`)을 run에 남기고(`verified`), 51건 검증 run·102건 run·102건 검증 run이 있다.
 """
 import json
 import sys
@@ -201,7 +202,7 @@ def test_every_saved_answer_run_has_tokens():
 
 
 def test_saved_criteria_and_gates_runs_share_the_same_51_cases():
-    v2 = [r for r in _saved_runs() if r.get("scorer_version") == "v2"]
+    v2 = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r.get("subset")]  # SUU-278부터 102건 run도 섞인다
     by_shape = {r["shape"]: r for r in v2}
     assert {"criteria", "gates"} <= set(by_shape), "나열·관문 run이 한 줄씩 있어야 한다"
     subset = set(json.loads(SUBSET_PATH.read_text(encoding="utf-8"))["subset"])
@@ -239,7 +240,8 @@ def test_answer_run_record_keeps_the_output_cap():
 def test_saved_gates_rerun_with_20k_cap_has_no_empty_output_and_keeps_the_old_run():
     gates = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"]
     old = [r for r in gates if r.get("max_completion_tokens", 10000) == 10000]
-    new = [r for r in gates if r.get("max_completion_tokens") == 20000]
+    # SUU-278부터는 검증 run·102건 run도 상한 20,000이라 51건·검증 전 것만 고른다
+    new = [r for r in gates if r.get("max_completion_tokens") == 20000 and r.get("subset") and not r.get("verified", False)]
     assert len(old) >= 1, "빈 답 10건이 난 SUU-275 관문 run 줄은 지우지 않는다"
     assert len(new) == 1, "상한 20,000 관문 run이 한 줄 있어야 한다"
     rec = new[0]
@@ -258,3 +260,78 @@ def test_saved_gates_rerun_with_20k_cap_has_no_empty_output_and_keeps_the_old_ru
         if row["answer"] is None:
             assert row["failed"] is True and any("parse error" in i for i in row["issues"]), row["case_id"]
     assert (RESULTS / f"{old[0]['run_id']}.jsonl").exists()  # 옛 결과 파일도 남긴다
+
+
+# ---- SUU-278: 검증문(--verify)을 run에 남기고, 102건 전체 run과 검증 run이 있다 ----
+
+
+def test_default_run_id_marks_a_verified_run():
+    assert default_run_id("gates", "gpt-5-mini", subset=True, max_completion_tokens=20000, verified=True, day="2026-09-26") == \
+        "2026-09-26_answer_gates_gpt-5-mini_subset51_out20k_verified"
+    assert default_run_id("gates", "gpt-5-mini", subset=False, max_completion_tokens=20000, verified=True, day="2026-09-27") == \
+        "2026-09-27_answer_gates_gpt-5-mini_out20k_verified"
+    # 생략 = 검증 안 함 = SUU-277 run_id 그대로
+    assert default_run_id("gates", "gpt-5-mini", subset=True, max_completion_tokens=20000, day="2026-09-26") == \
+        "2026-09-26_answer_gates_gpt-5-mini_subset51_out20k"
+
+
+def test_answer_run_record_keeps_verified_flag():
+    kw = dict(search_run_id="s", model="gpt-5-mini", shape="gates", top_n=10, subset=True, cost=0.06,
+              tokens={"prompt_tokens": 50000, "completion_tokens": 10000}, max_completion_tokens=20000)
+    assert answer_run_record("r", _rows(), **kw)["verified"] is False
+    assert answer_run_record("r", _rows(), verified=True, **kw)["verified"] is True
+
+
+def _rows_of(run_id):
+    return [json.loads(l) for l in (RESULTS / f"{run_id}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+
+
+def _verified_rows_are_clean(rows):
+    # 검증한 답: 파싱됐고 관문이 하나라도 남았으면 G0 1.0·G1 1.0. 관문이 다 지워진 답은 채점기가 0으로 세므로 제외
+    for row in rows:
+        assert row["raw_answer"].strip(), row["case_id"]
+        answer = row["answer"]
+        if answer is not None and any(c.get("gates") for c in answer["candidates"]):
+            assert row["g0_grounded"] == 1.0 and row["g0_outside"] == [], row["case_id"]
+            assert row["g1_quote"] == 1.0 and row["g1_mismatched"] == [], row["case_id"]
+
+
+def test_saved_verified_51_run_is_a_free_replay_of_the_out20k_control():
+    gates = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"
+             and r.get("max_completion_tokens") == 20000 and r.get("subset")]
+    control = [r for r in gates if not r.get("verified", False)]
+    verified = [r for r in gates if r.get("verified") is True]
+    assert len(control) == 1 and len(verified) == 1, "51건 out20k 대조군 한 줄 + 검증 run 한 줄"
+    ctl, ver = control[0], verified[0]
+    assert ver["run_id"].endswith("_verified") and ver["n_cases"] == 51 and ver["top_n"] == 10 and ver["metrics"]["n"] == 51
+    for key in ("search_run_id", "answer_model", "always_sections", "shape", "max_completion_tokens"):
+        assert ver[key] == ctl[key], key
+    assert ver["tokens"] == ctl["tokens"] and ver["cost_usd"] == ctl["cost_usd"]  # OpenAI를 안 불렀다($0)
+    rows = _rows_of(ver["run_id"])
+    assert {r["case_id"] for r in rows} == set(json.loads(SUBSET_PATH.read_text(encoding="utf-8"))["subset"])
+    _verified_rows_are_clean(rows)
+    assert (RESULTS / f"{ctl['run_id']}.jsonl").exists()
+
+
+def test_saved_full_102_runs_exist_raw_and_verified():
+    full = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"
+            and r.get("max_completion_tokens") == 20000 and r.get("subset") is False]
+    raw = [r for r in full if not r.get("verified", False)]
+    verified = [r for r in full if r.get("verified") is True]
+    assert len(raw) == 1 and len(verified) == 1, "102건 관문 run 한 줄 + 그 검증 run 한 줄"
+    raw, ver = raw[0], verified[0]
+    all_ids = {json.loads(l)["case_id"] for l in (RAG / "eval" / "rag_eval_case_v2.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    assert len(all_ids) == 102
+    subset51 = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"
+                and r.get("max_completion_tokens") == 20000 and r.get("subset") and not r.get("verified", False)][0]
+    for rec in (raw, ver):
+        assert rec["n_cases"] == 102 and rec["metrics"]["n"] == 102 and rec["top_n"] == 10 and rec["always_sections"] == []
+        assert rec["search_run_id"] == subset51["search_run_id"] and rec["answer_model"] == "gpt-5-mini"
+        assert "_subset51" not in rec["run_id"] and rec["run_id"].endswith("_out20k" if rec is raw else "_out20k_verified")
+        rows = _rows_of(rec["run_id"])
+        assert {r["case_id"] for r in rows} == all_ids
+        for row in rows:
+            assert row["scorer_version"] == "v2" and row["raw_answer"].strip() and 0 < row["completion_tokens"] < 20000, row["case_id"]
+            assert row["cost_usd"] > 0 and row["latency_s"] > 0 and row["prompt_tokens"] > 0, row["case_id"]
+    assert ver["tokens"] == raw["tokens"] and ver["cost_usd"] == raw["cost_usd"]  # 검증 run은 replay($0)
+    _verified_rows_are_clean(_rows_of(ver["run_id"]))
