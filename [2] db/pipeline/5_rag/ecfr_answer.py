@@ -63,7 +63,8 @@ _GATE_CHECKLIST_KEYS = {"item", "gate"}
 
 
 def build_answer_request(
-    question: str, sections: list[dict[str, Any]], *, model: str = ANSWER_MODEL, shape: str = "criteria"
+    question: str, sections: list[dict[str, Any]], *, model: str = ANSWER_MODEL, shape: str = "criteria",
+    max_completion_tokens: int = MAX_COMPLETION_TOKENS
 ) -> dict[str, Any]:
     """Chat-completions request: question + full text of each ``{section_key, subpart, text}``."""
     if shape not in {"criteria", "gates"}:
@@ -73,7 +74,7 @@ def build_answer_request(
         parts.append(f"\n[{i}] {s['section_key']} (Subpart {s['subpart']})\n{s['text']}")
     return {
         "model": model,
-        "max_completion_tokens": MAX_COMPLETION_TOKENS,
+        "max_completion_tokens": max_completion_tokens,
         "messages": [{"role": "system", "content": ANSWER_SYSTEM if shape == "criteria" else ANSWER_SYSTEM_GATES}, {"role": "user", "content": "\n".join(parts)}],
     }
 

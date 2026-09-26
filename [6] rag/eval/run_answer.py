@@ -25,7 +25,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE.parent.parent / "[2] db/pipeline/5_rag"))
-from ecfr_answer import build_answer_request, call_openai_chat, parse_answer  # noqa: E402
+from ecfr_answer import MAX_COMPLETION_TOKENS, build_answer_request, call_openai_chat, parse_answer  # noqa: E402
 from ecfr_answer_score import aggregate_v2, score_answer_v2  # noqa: E402
 from llm_rerank import PRICE_PER_M  # noqa: E402
 from run_eval import load_env  # noqa: E402
@@ -101,8 +101,17 @@ def score_line(case: dict, answer: dict | None, *, given: list[str], texts: dict
             "completion_tokens": tokens["completion_tokens"]}
 
 
+def default_run_id(shape: str, model: str, *, subset: bool, max_completion_tokens: int,
+                   day: str | None = None) -> str:
+    if day is None:
+        day = f"{datetime.now(timezone.utc):%Y-%m-%d}"
+    return (f"{day}_answer_{shape}_{model}" + ("_subset51" if subset else "")
+            + (f"_out{max_completion_tokens // 1000}k" if max_completion_tokens != MAX_COMPLETION_TOKENS else ""))
+
+
 def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, model: str, shape: str, top_n: int,
-                      subset: bool, cost: float, always: tuple[str, ...] = (), tokens: dict | None = None) -> dict:
+                      subset: bool, cost: float, always: tuple[str, ...] = (), tokens: dict | None = None,
+                      max_completion_tokens: int = MAX_COMPLETION_TOKENS) -> dict:
     tokens = tokens or {}
     prompt_tokens = int(tokens.get("prompt_tokens", 0))
     completion_tokens = int(tokens.get("completion_tokens", 0))
@@ -125,6 +134,7 @@ def answer_run_record(run_id: str, outs: list[dict], *, search_run_id: str, mode
         },
         "metrics": aggregate_v2(outs),
         "cost_usd": {"per_query": cost / len(outs) if outs else 0.0, "total": cost},
+        "max_completion_tokens": max_completion_tokens,
     }
 
 
@@ -144,6 +154,7 @@ def main():
     ap.add_argument("--model", default="gpt-5-mini")
     ap.add_argument("--shape", choices=("criteria", "gates"), default="criteria")
     ap.add_argument("--subset", action="store_true")
+    ap.add_argument("--max-completion-tokens", type=int, default=MAX_COMPLETION_TOKENS)
     ap.add_argument("--top-n", type=int, default=TOP_N)
     ap.add_argument("--always-a", action="store_true")
     ap.add_argument("--limit", type=int)
@@ -153,7 +164,8 @@ def main():
     ap.add_argument("--run-id")
     args = ap.parse_args()
     if args.run_id is None:
-        args.run_id = f"{datetime.now(timezone.utc):%Y-%m-%d}_answer_{args.shape}_{args.model}" + ("_subset51" if args.subset else "")
+        args.run_id = default_run_id(args.shape, args.model, subset=args.subset,
+                                     max_completion_tokens=args.max_completion_tokens)
     load_env()
     always = ALWAYS_SECTIONS if args.always_a else ()
     out_path = RESULTS / f"{args.run_id}.jsonl"
@@ -186,7 +198,8 @@ def main():
             cost_usd, latency_s = prev["cost_usd"], prev["latency_s"]
         else:
             request = build_answer_request(case["question"], [{**s, "text": texts[s["section_key"]]} for s in sections],
-                                           model=args.model, shape=args.shape)
+                                           model=args.model, shape=args.shape,
+                                           max_completion_tokens=args.max_completion_tokens)
             start = time.perf_counter()
             response = call_openai_chat(request)
             latency_s = time.perf_counter() - start
@@ -219,7 +232,7 @@ def main():
     if not args.limit:
         write_run_record(ANSWER_RUNS, answer_run_record(args.run_id, outs, search_run_id=SEARCH_RUN_ID,
                          model=args.model, shape=args.shape, top_n=args.top_n, subset=args.subset,
-                         cost=cost, always=always, tokens=usage))
+                         cost=cost, always=always, tokens=usage, max_completion_tokens=args.max_completion_tokens))
         print(f"answer_runs.jsonl updated: {args.run_id}")
 
 
