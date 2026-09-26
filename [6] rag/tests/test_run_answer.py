@@ -1,5 +1,6 @@
 """SUU-147: 답변 실행기의 순수 부분 — 조문 전문 합치기, 상위 N 고르기, 결과 한 줄, run 기록.
 SUU-275: 심판 없이 채점기 v2로, 선별셋 51건, 답 모양(criteria/gates)을 run에 남긴다.
+SUU-277: 출력 토큰 상한(`max_completion_tokens`)을 run에 남기고, 관문 답을 20,000으로 다시 돌린 run이 빈 답 없이 있다.
 """
 import json
 import sys
@@ -9,8 +10,8 @@ RAG = Path(__file__).parents[1]
 sys.path.insert(0, str(RAG / "eval"))
 
 from run_answer import (  # noqa: E402
-    ANSWER_RUNS, RESULTS, SUBSET_PATH, TOP_N, answer_run_record, join_section_text, score_line, select_cases, top_sections,
-    write_run_record,
+    ANSWER_RUNS, RESULTS, SUBSET_PATH, TOP_N, answer_run_record, default_run_id, join_section_text, score_line, select_cases,
+    top_sections, write_run_record,
 )
 
 
@@ -216,3 +217,44 @@ def test_saved_criteria_and_gates_runs_share_the_same_51_cases():
             assert row["scorer_version"] == "v2" and "judge" not in row, row["case_id"]
             assert row["cost_usd"] > 0 and row["latency_s"] > 0, row["case_id"]
     assert len(search_run_ids) == 1  # 같은 검색 결과에서 출발
+
+
+# ---- SUU-277: 출력 상한을 run에 남기고, 관문 답을 20,000으로 다시 돌린다 ----
+
+
+def test_default_run_id_marks_a_raised_output_cap():
+    assert default_run_id("gates", "gpt-5-mini", subset=True, max_completion_tokens=10000, day="2026-09-26") ==         "2026-09-26_answer_gates_gpt-5-mini_subset51"  # 기본 상한이면 SUU-275 run_id 그대로
+    assert default_run_id("gates", "gpt-5-mini", subset=True, max_completion_tokens=20000, day="2026-09-26") ==         "2026-09-26_answer_gates_gpt-5-mini_subset51_out20k"
+    assert default_run_id("criteria", "gpt-5-mini", subset=False, max_completion_tokens=10000, day="2026-09-26") ==         "2026-09-26_answer_criteria_gpt-5-mini"
+    assert default_run_id("gates", "gpt-5-mini", subset=True, max_completion_tokens=20000).startswith("20")  # day 생략 = 오늘
+
+
+def test_answer_run_record_keeps_the_output_cap():
+    kw = dict(search_run_id="s", model="gpt-5-mini", shape="gates", top_n=10, subset=True, cost=0.06,
+              tokens={"prompt_tokens": 50000, "completion_tokens": 10000})
+    assert answer_run_record("r", _rows(), **kw)["max_completion_tokens"] == 10000  # 생략 = 지금까지의 상한
+    assert answer_run_record("r", _rows(), max_completion_tokens=20000, **kw)["max_completion_tokens"] == 20000
+
+
+def test_saved_gates_rerun_with_20k_cap_has_no_empty_output_and_keeps_the_old_run():
+    gates = [r for r in _saved_runs() if r.get("scorer_version") == "v2" and r["shape"] == "gates"]
+    old = [r for r in gates if r.get("max_completion_tokens", 10000) == 10000]
+    new = [r for r in gates if r.get("max_completion_tokens") == 20000]
+    assert len(old) >= 1, "빈 답 10건이 난 SUU-275 관문 run 줄은 지우지 않는다"
+    assert len(new) == 1, "상한 20,000 관문 run이 한 줄 있어야 한다"
+    rec = new[0]
+    assert rec["run_id"].endswith("_out20k")
+    assert rec["n_cases"] == 51 and rec["top_n"] == 10 and rec["subset"] is True and rec["metrics"]["n"] == 51
+    for key in ("search_run_id", "answer_model", "always_sections"):
+        assert rec[key] == old[0][key], key  # 상한 말고 바뀐 것이 없다
+    assert rec["tokens"]["completion"] > 0 and rec["cost_usd"]["total"] > 0
+    subset = set(json.loads(SUBSET_PATH.read_text(encoding="utf-8"))["subset"])
+    rows = [json.loads(l) for l in (RESULTS / f"{rec['run_id']}.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert {r["case_id"] for r in rows} == subset
+    # 빈 출력(상한 소진) 0건. 모델이 JSON 모양을 틀린 것(parse error)은 진짜 format 실패라 남겨 두고 0점으로 센다
+    assert [r["case_id"] for r in rows if not r["raw_answer"].strip()] == []
+    for row in rows:
+        assert row["scorer_version"] == "v2" and 0 < row["completion_tokens"] < 20000, row["case_id"]
+        if row["answer"] is None:
+            assert row["failed"] is True and any("parse error" in i for i in row["issues"]), row["case_id"]
+    assert (RESULTS / f"{old[0]['run_id']}.jsonl").exists()  # 옛 결과 파일도 남긴다
