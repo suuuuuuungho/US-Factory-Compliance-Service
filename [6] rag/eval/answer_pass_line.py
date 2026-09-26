@@ -17,6 +17,28 @@ DEFAULT_RUN = {"eval_set_version": "v2", "top_n": 10, "always_sections": [],
                "answer_model": "gpt-5-mini", "judge_model": "gpt-5-mini"}
 PASS_LINE = {"subpart": 0.93, "citation_recall": 0.70, "citation_grounded": 0.96, "judge": 1.71}
 
+TIE_BAND_FULL = 0.03  # 계획 [5]-4: 전체셋 102건 동점 폭
+DEFAULT_RUN_V2 = {"scorer_version": "v2", "shape": "gates", "top_n": 10, "always_sections": [], "subset": False,
+                  "answer_model": "gpt-5-mini", "max_completion_tokens": 20000, "verified": True}
+PASS_LINE_V2 = {"g0_grounded": 0.862, "g1_quote": 0.862, "g2_subpart": 0.813,
+                "g3_citation_recall": 0.580, "g4_checklist": 0.862, "g5_cost_usd": 0.0258}
+
+
+def is_default_run_v2(run: dict) -> bool:
+    defaults = {"always_sections": [], "verified": False}
+    return all(run.get(k, defaults.get(k)) == v for k, v in DEFAULT_RUN_V2.items())
+
+
+def latest_default_run_v2(runs: list[dict]) -> dict | None:
+    matches = [r for r in runs if is_default_run_v2(r)]
+    return max(matches, key=lambda r: r["run_at"]) if matches else None
+
+
+def check_pass_line_v2(run: dict) -> dict[str, tuple[float, float, bool]]:
+    m = run["metrics"]
+    return {k: (round(m[k], 3), line, m[k] <= line if k == "g5_cost_usd" else m[k] >= line)
+            for k, line in PASS_LINE_V2.items()}
+
 
 def is_default_run(run: dict) -> bool:
     # SUU-153 이전 run에는 always_sections 키가 없다. 없으면 []로 본다
@@ -48,7 +70,18 @@ def main() -> int:
     for k, (value, line, ok) in result.items():
         print(f"{'OK  ' if ok else 'FAIL'} {k} {value:.3f} >= {line}")
     print(f"run: {run['run_id']}")
-    return 0 if all(ok for _, _, ok in result.values()) else 1
+    passed = all(ok for _, _, ok in result.values())
+    run_v2 = latest_default_run_v2(load_runs())
+    if run_v2 is None:
+        print("v2 기준 조합 run이 answer_runs.jsonl에 없다")
+    else:
+        result_v2 = check_pass_line_v2(run_v2)
+        for k, (value, line, ok) in result_v2.items():
+            op = "<=" if k == "g5_cost_usd" else ">="
+            print(f"{'OK  ' if ok else 'FAIL'} {k} {value:.3f} {op} {line}")
+        print(f"v2 run: {run_v2['run_id']}")
+        passed = passed and all(ok for _, _, ok in result_v2.values())
+    return 0 if passed else 1
 
 
 if __name__ == "__main__":
