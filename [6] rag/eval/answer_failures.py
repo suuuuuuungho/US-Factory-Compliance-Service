@@ -22,6 +22,7 @@ from ecfr_eval import citation_section_key  # noqa: E402
 
 SUBPART_CODE = re.compile(r"^[A-Z]{1,7}$")
 TAGS = ("fabricated", "search", "format", "answer")
+TAGS_V2 = ("format", "fabricated", "quote_mismatch", "search", "answer")
 
 
 def _candidate_subparts(out: dict) -> list[str]:
@@ -42,14 +43,27 @@ def classify(out: dict, case: dict) -> str | None:
     return "answer"
 
 
-def summarize(outs: list[dict], classify_fn) -> dict:
-    cases = {tag: [] for tag in TAGS}
+def classify_v2(out: dict, case: dict) -> str | None:
+    if out["answer"] is None:
+        return "format"
+    if out["g0_outside"]:
+        return "fabricated"
+    if out["g1_mismatched"]:
+        return "quote_mismatch"
+    if out["g2_subpart"] == 0:
+        gold = {citation_section_key(c) for c in case["gold_citations"]}
+        return "answer" if gold & set(out["given"]) else "search"
+    return None
+
+
+def summarize(outs: list[dict], classify_fn, tags: tuple[str, ...] = TAGS) -> dict:
+    cases = {tag: [] for tag in tags}
     for o in outs:
         tag = classify_fn(o)
         if tag is not None:
             cases[tag].append(o["case_id"])
     return {"n_failed": sum(len(v) for v in cases.values()),
-            "counts": {tag: len(cases[tag]) for tag in TAGS}, "cases": cases}
+            "counts": {tag: len(cases[tag]) for tag in tags}, "cases": cases}
 
 
 def main():
@@ -60,21 +74,24 @@ def main():
     outs = read(HERE / "results" / f"{args.run_id}.jsonl")
     cases = {c["case_id"]: c for c in read(HERE / "rag_eval_case_v2.jsonl")}
 
-    table = summarize(outs, lambda o: classify(o, cases[o["case_id"]]))
+    v2 = bool(outs and outs[0].get("scorer_version") == "v2")
+    classify_fn, tags = (classify_v2, TAGS_V2) if v2 else (classify, TAGS)
+    table = summarize(outs, lambda o: classify_fn(o, cases[o["case_id"]]), tags=tags)
     print(f"{args.run_id}: failed {table['n_failed']}/{len(outs)}")
     print("| 태그 | 건수 | case_id |")
     print("|---|---|---|")
-    for tag in TAGS:
+    for tag in tags:
         print(f"| {tag} | {table['counts'][tag]} | {', '.join(table['cases'][tag])} |")
     print()
     for o in outs:
         case = cases[o["case_id"]]
-        tag = classify(o, case)
+        tag = classify_fn(o, case)
         if tag is None:
             continue
         gold = {citation_section_key(c) for c in case["gold_citations"]}
+        metric = f"g1 {o['g1_quote']:.2f} g4 {o['g4_checklist']:.2f}" if v2 else f"judge {o['judge']}"
         print(f"{o['case_id']}, {tag}, gold {case['gold_subparts']}, 후보 {_candidate_subparts(o)}, "
-              f"gold in given {len(gold & set(o['given']))}/{len(gold)}, judge {o['judge']}")
+              f"gold in given {len(gold & set(o['given']))}/{len(gold)}, {metric}")
 
 
 if __name__ == "__main__":
