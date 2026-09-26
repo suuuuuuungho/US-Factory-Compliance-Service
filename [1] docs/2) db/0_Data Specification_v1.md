@@ -555,16 +555,4 @@ order by 1;
 - 표를 바꾸는 migration PR에는 **YAML 수정도 같이** 넣음.
 - 다음 단계(SUU-269): CI에서 `datacontract test`로 "DB가 YAML과 같은지" 자동 검사.
 
----
-
-## 부록 B. Data Cards 양식에서 뺀 섹션
-
-Playbook은 "우리 데이터에 맞는 섹션만 골라 쓰라"고 함 (Ask 모듈 *Assemble Your Template*). 아래는 해당 없어서 뺌.
-
-| 뺀 섹션 | 이유 |
-|---|---|
-| Funding Sources | 외부 지원금 없음 |
-| Human and Other Sensitive Attributes | 사람에 대한 데이터가 아님 (성별·인종 등 없음) |
-| Annotations & Labeling | 사람이 라벨을 붙이지 않음 |
-| Sampling Methods | 표본을 뽑지 않고 전부 넣음 |
-| Known Applications & Benchmarks | RAG 평가는 `[1] docs/3) rag/` 문서에서 다룸 |
+-
