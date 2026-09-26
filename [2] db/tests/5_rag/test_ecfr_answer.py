@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from ecfr_answer import ANSWER_MODEL, build_answer_request, parse_answer
+from ecfr_answer import ANSWER_MODEL, MAX_COMPLETION_TOKENS, build_answer_request, parse_answer
 
 QUESTION = "Does the NESHAP for surface coating of plastic parts cover this solvent welding step?"
 SECTIONS = [
@@ -97,3 +97,16 @@ def test_parse_answer_keeps_section_number_in_subpart_but_flags_it():
     answer, issues = parse_answer(json.dumps(raw), GIVEN)
     assert answer["candidates"][0]["subpart"] == "40 CFR 63.4481"  # 채점기가 미적중으로 잡게 그대로 둔다
     assert any("subpart" in i and "63.4481" in i for i in issues)
+
+
+# ---- SUU-277: 출력 토큰 상한을 요청마다 올릴 수 있다 ----
+
+
+def test_build_answer_request_output_cap_defaults_to_constant_and_can_be_raised():
+    # gpt-5 계열은 추론 토큰이 출력 상한에 포함된다. 관문 답은 10,000이면 51건 중 10건이 빈 답이었다
+    assert MAX_COMPLETION_TOKENS == 10000
+    assert build_answer_request(QUESTION, SECTIONS)["max_completion_tokens"] == 10000
+    assert build_answer_request(QUESTION, SECTIONS, shape="gates")["max_completion_tokens"] == 10000
+    req = build_answer_request(QUESTION, SECTIONS, shape="gates", max_completion_tokens=20000)
+    assert req["max_completion_tokens"] == 20000
+    assert req["messages"] == build_answer_request(QUESTION, SECTIONS, shape="gates")["messages"]  # 상한 말고는 같은 요청
