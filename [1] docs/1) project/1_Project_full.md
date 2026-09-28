@@ -63,9 +63,7 @@ PR 254개마다 테스트 772개가 전부 다시 돌아, 옛 기능이 깨지�
 5. 데이터 파이프라인 구축 
 6. RAG 구축 및 검색/답변 품질 개선
 7. 백엔드/프론트엔드 구축
-8. UI 화면(웹사이트)
-9. 폴더 정리/문서 정리/리팩터링
-10. 발표 준비
+8. UI 화면(웹사이트) 구축
 
 *프로젝트를 혼자 수행했습니다.
 
@@ -107,8 +105,8 @@ Title V 허가 뒤 5년 동안 공장은 규제 준수 인증 문서를 주기�
 
     > 반복해서 발생하는 문제인가
     > 실수요가 증명되는가
-    > 기존 해법과 어떤 차별점이 있는가
     > 실질적인 경제적 손실이 실재하는가
+    > 기존 해법의 한계는 무엇인가
 
 1. 문제 상황이 주기적으로 반복 됩니다. 
   
@@ -272,6 +270,32 @@ Title V 허가를 받은 미국 제조업 공장의 환경·규제 담당자가
     담당자가 막히는 곳은 결론이 아니라 "어디를 봐야 하는지"입니다. EPA 회신도 결론만 쓰지 않고, 어떤 조문의 어떤 조건 때문인지를 함께 설명합니다.
 
 2. 근거 없는 말은 하지 않는다. 모든 기준 문장에 `40 CFR 63.xxxx(a)` 형식의 조문을 답니다.
+
+## 서비스 피드백 요청 콜드메일 
+
+1. 메일 대상 공장 추출
+  1) EPA ECHO 데이터에서 텍사스, 가동 중인 곳 추출(텍사스가 과징금, 위반건수가 가장 큼)
+  2) Part 63 Subpart가 하나 이상 붙은 곳. 이 서비스가 다루는 규정.
+  3) Exxon, Dow, 3M 같은 대기업 이름은 뺌
+  4) 위반 건수 많은 순으로 정렬
+
+2. 메일 추출
+  1) Google에 회사명 + "environmental manager" 또는 "EHS manager"로 검색
+  2) LinkedIn 공개 프로필, ZoomInfo, RocketReach에 이름과 직함이 뜸
+  3) 회사 홈페이지의 경영진 페이지를 읽었어요.
+  4) Texas, TCEQ 공개 문서
+
+3. 메일 양식
+Hi [First name],I'm Sungho, a solo developer in Korea, building a portfolio projectfor my job search. I know you're busy, but could you spare threeminutes?The project is a tool, tested on 102 real EPA determination letters,that finds the exact Part 63 provisions a plant must cite in itsreports. Before I go further I want to check my assumptions withsomeone who actually signs the paperwork. Four questions. One lineeach is plenty, and skipping any is fine.
+
+1) When you write the semiannual report or annual certification, where   do the Subpart [XX] citations come from today: your permit, the   eCFR, a consultant, or memory? And when you're not sure whether a   section applies, what do you do, and how long does that usually take?
+2) How do you keep [Plant name] in compliance with Subpart [XX] today,   step by step? Roughly how many hours a month does it take, and who   does the work?
+3) The last time Subpart [XX] was amended, how did you find out, and   how long before your filings reflected the change?
+4) If a service existed for this, what is the one thing you'd want it   to do for you? And what would it have to show you before you'd   trust it?
+
+I'm not selling anything. I'd be truly grateful for your time.If this isn't your area, could you forward it to the right person?
+
+Thanks, Sungho Park
 
 ## AI에 위임하지 않고 내가 직접 정한 판단한 사항
 
@@ -512,12 +536,9 @@ Contextual retrieval 사용
    - Subpart ≥ 0.93, 인용 Recall ≥ 0.70, 인용 근거율 ≥ 0.96, 판정 기준 점수 ≥ 1.71
    - 평가를 돌린 뒤 선 아래면 GitHub 병합이 막힘. 
 
----
-
 ## TDD 개발 자동화 
 
 ### 흐름
-
 
 [사람]    구현하고 싶은 기능을 Claude Code(Plan Mode)에 초안 생성 요청
   |
@@ -547,8 +568,8 @@ Contextual retrieval 사용
 1. "완성"이 코드보다 먼저 있습니다.
    Claude가 실패하는 테스트를 먼저 씁니다. AI의 말이 아니라 테스트의 초록불이 완료입니다.
 
-2. 시험지를 쓰는 AI와 푸는 AI를 분리했습니다.
-   Codex는 테스트를 고치거나 지울 수 없습니다(작업 규칙으로 금지). 자기 코드에 맞춰 시험지를 고치는 일을 구조로 막았습니다.
+2. 테스트 설계 에이전트와 실행 에이전트를 분리했습니다.
+   Codex는 테스트를 고치거나 지울 수 없습니다(작업 규칙으로 금지). 자기 코드에 맞춰 테스트 시나리오를 고치는 일을 구조로 막았습니다.
 
 3. 옛 기능이 깨지면 병합 전에 압니다.
    PR 254개 × 테스트 772개. 손으로 254번 확인했다면 불가능한 일입니다.
@@ -557,8 +578,6 @@ Contextual retrieval 사용
    "이 테스트가 무엇을 보장하는가"만 보고 병합합니다. 그래서 혼자서 17일에 PR 254개가 가능했습니다.
 
 병합만은 자동화하지 않았습니다. 마지막 판단은 사람이 합니다.
-
-
 
 ### 역할
 
@@ -593,6 +612,3 @@ Contextual retrieval 사용
       "무엇이 완성인가"를 정하는 쪽과 "만드는" 쪽이 달라야 검증이 의미가 있다고 생각합니다.
     > 병합은 왜 사람이 하나? 
       AI에 모든 것을 위임하지 않습니다. 중요한 판단은 사람이 개입하도록 하였습니다. 
----
-
-
