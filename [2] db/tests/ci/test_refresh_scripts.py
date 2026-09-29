@@ -37,3 +37,17 @@ def test_steps_piping_into_tee_use_bash_so_pipefail_is_on(workflow):
     assert piped
     for step in piped:
         assert step.get("shell") == "bash", step["run"]  # GitHub: shell: bash → bash -eo pipefail
+
+
+# ---- SUU-299: actions/cache·upload-artifact 는 경로를 glob 으로 읽는다. `[2]` 는 "글자 2 하나" 라서 아무것도 못 찾았다
+
+@pytest.mark.parametrize("workflow", WORKFLOWS, ids=lambda p: p.name)
+def test_cache_and_artifact_paths_escape_the_bracket_folder(workflow):
+    data = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+    steps = [s for job in data["jobs"].values() for s in job["steps"]
+             if str(s.get("uses", "")).startswith(("actions/cache", "actions/upload-artifact"))]
+
+    assert steps
+    for step in steps:
+        path = str(step["with"]["path"])
+        assert path.startswith("[[]2] db/"), path  # .gitignore 와 같은 방법: [[] = 글자 '['

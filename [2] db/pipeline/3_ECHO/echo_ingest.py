@@ -54,7 +54,7 @@ def run_echo_ingest(
         return {"release_id": existing, "status": "no_change"}
 
     release_id = register_release(root, as_of, client=client)
-    load_release(root, as_of, release_id, code_map_version or as_of, conn=conn)
+    load_release(root, as_of, release_id, code_map_version or _latest_as_of(Path(root) / "code_map"), conn=conn)
     result = check_release(root, as_of, release_id, conn=conn)
     if not result["ok"]:
         client.table("common_dataset_release").update({"status": "failed"}).eq("release_id", release_id).execute()

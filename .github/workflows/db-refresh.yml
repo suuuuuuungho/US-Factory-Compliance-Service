@@ -36,8 +36,8 @@ jobs:
         with:
           name: ecfr-${{ github.run_id }}
           path: |
-            [2] db/1) eCFR/raw
-            [2] db/1) eCFR/parsed
+            [[]2] db/1) eCFR/raw
+            [[]2] db/1) eCFR/parsed
           retention-days: 90
 
   fr:
@@ -52,7 +52,7 @@ jobs:
       - run: pip install -q -r requirements.txt
       - uses: actions/cache@v4
         with:
-          path: "[2] db/2) Federal Register/raw"
+          path: "[[]2] db/2) Federal Register/raw"
           key: fr-raw-${{ github.run_id }}
           restore-keys: fr-raw-
       - run: python "[2] db/pipeline/2_Federal Register/fr_collect.py"
@@ -66,7 +66,7 @@ jobs:
         if: steps.ingest.outputs.status == 'new'
         with:
           name: fr-${{ github.run_id }}
-          path: "[2] db/2) Federal Register/parsed"
+          path: "[[]2] db/2) Federal Register/parsed"
           retention-days: 90
 
   notify:

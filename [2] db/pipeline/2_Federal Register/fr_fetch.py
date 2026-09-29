@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import time
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -23,9 +25,20 @@ class Fetched:
     sha256: str
 
 
-def fetch(url: str) -> Fetched:
-    """Download *url* into memory, retaining response metadata."""
+def fetch(url: str, *, sleep=time.sleep, tries: int = 5) -> Fetched:
+    """Download *url* into memory, retaining response metadata. HTTP 429 waits longer each time and retries."""
 
+    for attempt in range(tries):
+        try:
+            return _fetch_once(url)
+        except HTTPError as exc:
+            if exc.code != 429 or attempt == tries - 1:
+                raise
+            sleep(5 * 2**attempt)
+    raise AssertionError("unreachable")
+
+
+def _fetch_once(url: str) -> Fetched:
     request = Request(url, method="GET")
     with urlopen(request, timeout=60) as response:
         body = response.read()
