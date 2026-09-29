@@ -36,10 +36,24 @@ def _chunks(values: list[Any], size: int):
         yield values[index:index + size]
 
 
+def _manifest_hash(root: Path) -> str:
+    entries = _entries(root)
+    return hashlib.sha256(":".join(sorted(entry["sha256"] for entry in entries)).encode()).hexdigest()
+
+
+def published_release_id(root: Path, as_of: str, *, client: Any) -> str | None:
+    """Return the published release for the current Federal Register raw files."""
+
+    existing = (client.table("common_dataset_release").select("release_id").eq("dataset", DATASET)
+        .eq("scope_key", SCOPE_KEY).eq("manifest_hash", _manifest_hash(Path(root)))
+        .eq("parser_version", PARSER_VERSION).eq("status", "published").execute().data)
+    return str(existing[0]["release_id"]) if existing else None
+
+
 def register_release(root: Path, as_of: str, *, client: Any, now: datetime | None = None) -> str:
     root = Path(root)
     entries = _entries(root)
-    manifest_hash = hashlib.sha256(":".join(sorted(e["sha256"] for e in entries)).encode()).hexdigest()
+    manifest_hash = _manifest_hash(root)
     existing = (client.table("common_dataset_release").select("release_id").eq("dataset", DATASET)
         .eq("scope_key", SCOPE_KEY).eq("manifest_hash", manifest_hash).eq("parser_version", PARSER_VERSION).execute().data)
     if existing:
@@ -79,4 +93,4 @@ def register_release(root: Path, as_of: str, *, client: Any, now: datetime | Non
     return release_id
 
 
-__all__ = ["DATASET", "PARSER_VERSION", "SCOPE_KEY", "register_release"]
+__all__ = ["DATASET", "PARSER_VERSION", "SCOPE_KEY", "published_release_id", "register_release"]

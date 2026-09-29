@@ -1,0 +1,94 @@
+name: DB refresh
+
+on:
+  schedule: [{cron: "17 3 * * *"}]
+  workflow_dispatch:
+
+permissions: {contents: read}
+
+concurrency: {group: db-refresh, cancel-in-progress: false}
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+jobs:
+  ecfr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      status: ${{ steps.ingest.outputs.status }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: pip install -q -r requirements.txt
+      - run: python "[2] db/pipeline/1_eCFR/ecfr_collect.py"
+      - run: python "[2] db/pipeline/1_eCFR/ecfr_parse.py"
+      - id: ingest
+        run: |
+          python "[2] db/pipeline/1_eCFR/ecfr_ingest.py" | tee out.txt
+          echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.ingest.outputs.status == 'new'
+        with:
+          name: ecfr-${{ github.run_id }}
+          path: |
+            [2] db/1) eCFR/raw
+            [2] db/1) eCFR/parsed
+          retention-days: 90
+
+  fr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      status: ${{ steps.ingest.outputs.status }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: pip install -q -r requirements.txt
+      - uses: actions/cache@v4
+        with:
+          path: "[2] db/2) Federal Register/raw"
+          key: fr-raw-${{ github.run_id }}
+          restore-keys: fr-raw-
+      - run: python "[2] db/pipeline/2_Federal Register/fr_collect.py"
+      - run: python "[2] db/pipeline/2_Federal Register/fr_parse.py"
+      - id: ingest
+        run: |
+          python "[2] db/pipeline/2_Federal Register/fr_ingest.py" | tee out.txt
+          echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.ingest.outputs.status == 'new'
+        with:
+          name: fr-${{ github.run_id }}
+          path: "[2] db/2) Federal Register/parsed"
+          retention-days: 90
+
+  notify:
+    needs: [ecfr, fr]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      ECFR_RESULT: ${{ needs.ecfr.result }}
+      ECFR_STATUS: ${{ needs.ecfr.outputs.status }}
+      FR_RESULT: ${{ needs.fr.result }}
+      FR_STATUS: ${{ needs.fr.outputs.status }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Slack에 보내기
+        run: |
+          if [ "$ECFR_RESULT" != success ]; then
+            text="🔴 DB 갱신 실패 — eCFR  <$RUN_URL|로그 보기>"
+          elif [ "$FR_RESULT" != success ]; then
+            text="🔴 DB 갱신 실패 — fr  <$RUN_URL|로그 보기>"
+          elif [ "$ECFR_STATUS" = new ] || [ "$FR_STATUS" = new ]; then
+            text="🟢 DB 갱신 — eCFR ${ECFR_STATUS/new/바뀜} · FR ${FR_STATUS/new/바뀜} → RAG 색인 다시 돌릴지 정하세요  <$RUN_URL|로그>"
+          else
+            text="⚪ DB 갱신 — eCFR 안 바뀜 · FR 안 바뀜"
+          fi
+          jq -n --arg text "$text" '{text: $text}' | curl -sS -f -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"
