@@ -236,9 +236,10 @@ def test_main_skips_docx_when_check_fails(tmp_path):
 
 
 def test_project_docs_build(tmp_path):
-    names = ["0_Project_summary.md", "1_Project_full.md"]
-    for name in names:
-        shutil.copy(PROJECT / name, tmp_path / name)
+    sources = ["0_summary/0_Project_summary.md", "1_full/1_Project_full.md"]
+    names = [Path(s).name for s in sources]
+    for source, name in zip(sources, names):
+        shutil.copy(PROJECT / source, tmp_path / name)
 
     assert main([str(tmp_path / n) for n in names], pdf=False) == 0
     assert not has_toc(Document(tmp_path / "0_Project_summary.docx"))
