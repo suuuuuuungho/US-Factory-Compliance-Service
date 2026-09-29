@@ -51,3 +51,19 @@ def test_cache_and_artifact_paths_escape_the_bracket_folder(workflow):
     for step in steps:
         path = str(step["with"]["path"])
         assert path.startswith("[[]2] db/"), path  # .gitignore 와 같은 방법: [[] = 글자 '['
+
+
+# ---- SUU-303: actions/cache 는 job 이 성공할 때만 저장한다 → 1,525건 받고 8건 실패하자 전부 버려졌다
+
+def test_fr_raw_cache_is_saved_even_when_the_job_fails():
+    data = yaml.safe_load(WORKFLOWS[0].read_text(encoding="utf-8"))
+    steps = data["jobs"]["fr"]["steps"]
+    uses = [str(s.get("uses", "")) for s in steps]
+    restore = steps[next(i for i, u in enumerate(uses) if u.startswith("actions/cache/restore"))]
+    save = steps[next(i for i, u in enumerate(uses) if u.startswith("actions/cache/save"))]
+    collect = next(i for i, s in enumerate(steps) if "fr_collect.py" in s.get("run", ""))
+
+    assert uses.index(str(restore["uses"])) < collect < uses.index(str(save["uses"]))
+    assert "always()" in str(save.get("if", ""))
+    assert save["with"]["path"] == restore["with"]["path"]
+    assert "Federal Register/raw" in save["with"]["path"]
