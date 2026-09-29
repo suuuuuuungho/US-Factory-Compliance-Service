@@ -134,3 +134,24 @@ def test_other_http_errors_are_not_retried(monkeypatch):
         fetch("https://x/a.json", sleep=lambda s: None)
 
     assert len(calls) == 1
+
+
+# ---- SUU-303: 러너에서 8건이 SSL handshake timeout 으로 실패했다. 잠깐 끊긴 연결도 다시 시도한다
+
+from urllib.error import URLError  # noqa: E402
+
+
+@pytest.mark.parametrize("error", [
+    URLError("_ssl.c:993: The handshake operation timed out"),
+    TimeoutError("The read operation timed out"),
+], ids=["urlerror", "timeout"])
+def test_temporary_network_errors_wait_and_try_again(monkeypatch, error):
+    from fr_fetch import fetch
+
+    calls = _answers(monkeypatch, error, _Response())
+    waits = []
+
+    fetched = fetch("https://x/a.json", sleep=waits.append)
+
+    assert fetched.body == b"{}"
+    assert len(calls) == 2 and len(waits) == 1
