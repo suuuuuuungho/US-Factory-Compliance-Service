@@ -4,8 +4,13 @@
 
 ## 0. 적용 대상
 
-- `[1] docs/1) project/0_Project_summary.md`
-- `[1] docs/1) project/1_Project_full.md`
+- `[1] docs/1) project/0_summary/0_Project_summary.md`
+- `[1] docs/1) project/1_full/1_Project_full.md`
+- `[1] docs/1) project/2_프로젝트 개요/2_프로젝트 개요.md`
+- `[1] docs/1) project/3_문제 정의 및 해결/3_문제 정의 및 해결.md`
+- `[1] docs/1) project/4_데이터 파이프라인 구축/4_데이터 파이프라인 구축.md`
+- `[1] docs/1) project/5_RAG 품질 개선/5_RAG 품질 개선.md`
+- `[1] docs/1) project/6_TDD 개발 자동화/6_TDD 개발 자동화.md`
 
 `/report`는 Word를 만들기 전에 먼저 이 규칙을 검사합니다. 쉬운 것은 자동으로 고치고, 문장을 바꿔야 하는 것은 알려 주기만 합니다(6절).
 

@@ -157,7 +157,7 @@ def test_main_reports_without_touching_file(tmp_path):
 
 # ---------- 완료 기준 3: 지금 문서는 오류 0개 ----------
 
-@pytest.mark.parametrize("name", ["0_Project_summary.md", "1_Project_full.md"])
+@pytest.mark.parametrize("name", ["0_summary/0_Project_summary.md", "1_full/1_Project_full.md"])
 def test_project_docs_pass(name):
     text = (PROJECT / name).read_text(encoding="utf-8")
 
