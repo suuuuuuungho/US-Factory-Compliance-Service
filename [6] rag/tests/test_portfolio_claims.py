@@ -1,6 +1,7 @@
 """SUU-281: 프로젝트 문서 `[1] docs/1) project/1_Project_full.md`의 주장이 저장소 실측과 맞는지 검사한다.
 
-옛 과장 문구가 없고, 임베더 비교(0단계)·직접 판단 사례 3개가 들어 있어야 한다.
+옛 과장 문구가 없고, 임베더 비교 단계가 들어 있어야 한다.
+(직접 판단 사례 3개 절은 사용자 요청으로 문서에서 뺐다. SUU-296)
 """
 from pathlib import Path
 
@@ -18,11 +19,5 @@ def test_old_overclaims_are_gone():
 
 
 def test_embedder_stage_has_both_scores():
-    stage = text().split("0) 임베더 선택", 1)[1].split("\n  1)", 1)[0]
+    stage = text().split("#### 임베더 선택", 1)[1].split("\n#", 1)[0]
     assert "0.297" in stage and "0.437" in stage
-
-
-def test_own_judgement_section_lists_three_cases():
-    sec = text().split("5. 실험 결과를 보고 직접 내린 결정", 1)[1].split("\n## ", 1)[0]
-    for case in ("Subpart RRR", "Subpart A 고정 삽입", "관문(gates)"):
-        assert case in sec, case
