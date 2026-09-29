@@ -27,6 +27,7 @@ jobs:
       - run: python "[2] db/pipeline/1_eCFR/ecfr_collect.py"
       - run: python "[2] db/pipeline/1_eCFR/ecfr_parse.py"
       - id: ingest
+        shell: bash  # pipefail: python 이 실패하면 tee 가 성공해도 빨간불
         run: |
           python "[2] db/pipeline/1_eCFR/ecfr_ingest.py" | tee out.txt
           echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"
@@ -57,6 +58,7 @@ jobs:
       - run: python "[2] db/pipeline/2_Federal Register/fr_collect.py"
       - run: python "[2] db/pipeline/2_Federal Register/fr_parse.py"
       - id: ingest
+        shell: bash  # pipefail: python 이 실패하면 tee 가 성공해도 빨간불
         run: |
           python "[2] db/pipeline/2_Federal Register/fr_ingest.py" | tee out.txt
           echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"

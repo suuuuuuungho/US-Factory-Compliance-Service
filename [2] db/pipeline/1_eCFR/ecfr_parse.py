@@ -91,7 +91,7 @@ def parse_release(root: Path, as_of: str) -> dict[str, Any]:
         block_text = " ".join(
             " ".join(block["text_content"] for block in blocks).replace("|", " ").split()
         )
-        if block_text != _node_text(element):
+        if block_text != " ".join(_node_text(element).replace("|", " ").split()):  # 표 칸막이·절댓값 |x| 는 양쪽 다 뺀다
             lost_text += 1
 
         for block in blocks:

@@ -27,6 +27,7 @@ jobs:
       - run: python "[2] db/pipeline/3_ECHO/echo_collect.py"
       - run: python "[2] db/pipeline/3_ECHO/echo_parse.py"
       - id: ingest
+        shell: bash  # pipefail: python 이 실패하면 tee 가 성공해도 빨간불
         run: |
           python "[2] db/pipeline/3_ECHO/echo_ingest.py" | tee out.txt
           echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"

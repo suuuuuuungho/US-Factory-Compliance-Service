@@ -3,7 +3,8 @@ from __future__ import annotations
 import os, sys
 from pathlib import Path
 from typing import Any, Callable
-from ecfr_publish import publish_release
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "1_eCFR"))
+from ecfr_publish import publish_release  # noqa: E402
 from fr_check import check_release
 from fr_load import load_release
 from fr_release import published_release_id, register_release
