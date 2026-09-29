@@ -132,6 +132,8 @@ def test_project_layout():
     assert FULL.is_file()
     assert not (PROJECT / "0_Project_summary.md").exists()
     assert not (PROJECT / "1_Project_full.md").exists()
+    # 예전에 나눠 두었던 문서. 새 항목 폴더와 번호가 겹쳐 헷갈리므로 지운다
+    assert sorted(p.name for p in PROJECT.glob("*.md")) == []
 
 
 def test_project_items():
