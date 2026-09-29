@@ -3,13 +3,16 @@
 각 단계는 test_fr_release/load/check 에서 검증한다. 여기서는 run_fr_ingest 가 네 함수를 올바른 순서·인자로
 부르고, 검사 실패 때 공개하지 않고 release 를 failed 로 남기는지, 성공 때 공개(ecfr_publish.publish_release)가
 common_dataset_current(fr) 를 갱신하는지 본다 (SUU-126 방식: 함수를 키워드 인자로 주입).
+
+SUU-293: 같은 원본이 이미 공개돼 있으면(published_release_id) 아무것도 하지 않고 ``status=no_change``,
+새로 만들면 ``status=new`` 를 돌려준다. 자동 갱신(db-refresh.yml)이 이 값으로 Slack 에 알린다.
 """
 import re
 from pathlib import Path
 
 import pytest
 
-from fr_ingest import CheckFailed, _latest_as_of, run_fr_ingest
+from fr_ingest import CheckFailed, _latest_as_of, format_result, run_fr_ingest
 
 ROOT = Path("/fake/root")
 AS_OF = "2026-09-21"
@@ -84,7 +87,8 @@ def _fakes(calls, check_result):
     def publish(release_id, *, client):
         calls.append(("publish", release_id, client))
 
-    return dict(register_release=register, load_release=load, check_release=check, publish_release=publish)
+    return dict(published_release_id=lambda root, as_of, *, client: None,
+                register_release=register, load_release=load, check_release=check, publish_release=publish)
 
 
 def test_calls_register_load_check_publish_once_each_in_order():
@@ -92,7 +96,7 @@ def test_calls_register_load_check_publish_once_each_in_order():
 
     result = run_fr_ingest(ROOT, AS_OF, client=client, conn=conn, **_fakes(calls, {"ok": True, "problems": [], "counts": {}}))
 
-    assert result == RELEASE_ID
+    assert result == {"release_id": RELEASE_ID, "status": "new"}
     assert calls == [
         ("register", ROOT, AS_OF, client),
         ("load", ROOT, AS_OF, RELEASE_ID, conn),
@@ -144,3 +148,27 @@ def test_latest_as_of_picks_the_newest_parsed_folder_or_raises(tmp_path):
     empty.mkdir()
     with pytest.raises(FileNotFoundError, match=re.escape(str(empty))):
         _latest_as_of(empty)
+
+
+# ---- SUU-293
+
+def test_already_published_raw_skips_everything_and_reports_no_change():
+    calls, client, conn = [], FakeClient(), FakeConn()
+    fakes = _fakes(calls, {"ok": True, "problems": [], "counts": {}})
+    fakes["published_release_id"] = lambda root, as_of, *, client: RELEASE_ID
+
+    result = run_fr_ingest(ROOT, AS_OF, client=client, conn=conn, **fakes)
+
+    assert result == {"release_id": RELEASE_ID, "status": "no_change"}
+    assert calls == []  # register·load·check·publish 모두 0번
+    assert client.tables == {}
+
+
+def test_default_published_release_id_comes_from_fr_release():
+    import fr_ingest
+
+    assert fr_ingest.run_fr_ingest.__kwdefaults__["published_release_id"].__module__ == "fr_release"
+
+
+def test_format_result_is_one_line_the_workflow_can_grep():
+    assert format_result({"release_id": RELEASE_ID, "status": "no_change"}) == f"status=no_change release_id={RELEASE_ID}"

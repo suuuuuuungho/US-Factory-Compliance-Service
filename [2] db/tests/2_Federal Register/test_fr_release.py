@@ -151,3 +151,19 @@ def test_next_release_reuses_raw_objects_already_registered(fr):
     second_objects = [o for o in client.store["common_release_object"] if o["release_id"] == second]
     assert len(second_objects) == 9  # 새 release 는 기존 8개 + 새 1개를 모두 가리킨다
     assert first_ids <= {o["object_id"] for o in second_objects}
+
+
+# ---- SUU-293: 같은 원본이 이미 공개돼 있으면 release_id 를 돌려준다 (자동 갱신이 "안 바뀜"을 아는 근거)
+
+def test_published_release_id_is_none_until_the_same_raw_is_published(fr):
+    from fr_release import published_release_id
+
+    client = FakeClient()
+
+    assert published_release_id(fr.root, fr.as_of, client=client) is None  # 아무것도 없음
+
+    release_id = register_release(fr.root, fr.as_of, client=client)
+    assert published_release_id(fr.root, fr.as_of, client=client) is None  # staging 은 아직 아님
+
+    client.store["common_dataset_release"][0]["status"] = "published"
+    assert published_release_id(fr.root, fr.as_of, client=client) == release_id
