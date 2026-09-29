@@ -1,0 +1,60 @@
+name: ECHO refresh
+
+on:
+  schedule: [{cron: "17 5 * * 2"}]
+  workflow_dispatch:
+
+permissions: {contents: read}
+
+concurrency: {group: echo-refresh, cancel-in-progress: false}
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      status: ${{ steps.ingest.outputs.status }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: pip install -q -r requirements.txt
+      - run: python "[2] db/pipeline/3_ECHO/echo_collect.py"
+      - run: python "[2] db/pipeline/3_ECHO/echo_parse.py"
+      - id: ingest
+        run: |
+          python "[2] db/pipeline/3_ECHO/echo_ingest.py" | tee out.txt
+          echo "status=$(grep -o 'status=[a-z_]*' out.txt | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.ingest.outputs.status == 'new'
+        with:
+          name: echo-${{ github.run_id }}
+          path: "[2] db/3) ECHO/raw"
+          retention-days: 90
+
+  notify:
+    needs: [echo]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      ECHO_RESULT: ${{ needs.echo.result }}
+      ECHO_STATUS: ${{ needs.echo.outputs.status }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Slack 알림 보내기
+        run: |
+          if [ "$ECHO_RESULT" != success ]; then
+            text="🔴 ECHO 갱신 실패 <$RUN_URL|로그 보기>"
+          elif [ "$ECHO_STATUS" = new ]; then
+            text="🟢 ECHO 갱신 바뀜 (Part 63 시설만 적재, 이전 버전 삭제) <$RUN_URL|로그>"
+          else
+            text="⚪ ECHO 갱신 안 바뀜"
+          fi
+          jq -n --arg text "$text" '{text: $text}' | curl -sS -f -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"

@@ -34,6 +34,29 @@ def _http_date(value: str | None) -> str | None:
     return parsedate_to_datetime(value).isoformat() if value else None
 
 
+def _manifest_hash(root: Path, as_of: str) -> str:
+    manifest = json.loads((root / "raw" / as_of / "manifest.json").read_text(encoding="utf-8"))
+    entries = [_manifest_entry(manifest, name) for _, name in _ROLES]
+    return hashlib.sha256(":".join(entry["sha256"] for entry in entries).encode()).hexdigest()
+
+
+def published_release_id(root: Path, as_of: str, *, client: Any) -> str | None:
+    """Return the published release for this raw manifest, if it exists."""
+
+    existing = (
+        client.table("common_dataset_release")
+        .select("release_id")
+        .eq("dataset", DATASET)
+        .eq("scope_key", SCOPE_KEY)
+        .eq("manifest_hash", _manifest_hash(Path(root), as_of))
+        .eq("parser_version", PARSER_VERSION)
+        .eq("status", "published")
+        .execute()
+        .data
+    )
+    return str(existing[0]["release_id"]) if existing else None
+
+
 def register_release(
     root: Path,
     as_of: str,
@@ -47,7 +70,7 @@ def register_release(
     manifest = json.loads((root / "raw" / as_of / "manifest.json").read_text(encoding="utf-8"))
     entries = [(role, _manifest_entry(manifest, name)) for role, name in _ROLES]
 
-    manifest_hash = hashlib.sha256(":".join(entry["sha256"] for _, entry in entries).encode()).hexdigest()
+    manifest_hash = _manifest_hash(root, as_of)
     existing = (
         client.table("common_dataset_release")
         .select("release_id")
@@ -119,4 +142,4 @@ def register_release(
     return release_id
 
 
-__all__ = ["DATASET", "PARSER_VERSION", "SCOPE_KEY", "register_release"]
+__all__ = ["DATASET", "PARSER_VERSION", "SCOPE_KEY", "published_release_id", "register_release"]

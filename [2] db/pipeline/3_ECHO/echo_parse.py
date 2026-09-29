@@ -7,6 +7,7 @@ from decimal import Decimal
 import hashlib
 import json
 from pathlib import Path
+import sys
 import zipfile
 
 from echo_activities import activity_rows
@@ -81,7 +82,9 @@ def _code_map(path: Path) -> dict[str, dict]:
     return result
 
 
-def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
+def parse_release(
+    root: Path, as_of: date, code_map_version: str, *, part63_only: bool = True
+) -> dict:
     """Parse a raw ECHO release without retaining CSV rows in memory."""
     raw_dir = root / "raw" / as_of.isoformat()
     manifest = json.loads((raw_dir / "manifest.json").read_text(encoding="utf-8"))
@@ -96,9 +99,20 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
         if missing:
             raise ParseError(f"{member}: missing required columns: {', '.join(missing)}")
 
+    code_map = _code_map(root / "code_map" / code_map_version / "echo_code_map.jsonl")
+    part63_ids: set[str] | None = None
+    if part63_only:
+        part63_ids = set()
+        subpart_source, _ = member_sources["ICIS-AIR_PROGRAM_SUBPARTS.csv"]
+        for _, row in iter_rows(subpart_source, "ICIS-AIR_PROGRAM_SUBPARTS.csv"):
+            subpart = subpart_row(row, code_map)
+            if subpart["cfr_part"] == "63" and subpart["mapping_status"] == "mapped":
+                part63_ids.add(row["PGM_SYS_ID"])
+
     report = {
         "as_of": as_of.isoformat(), "code_map_version": code_map_version,
-        "files": {member: {"read": 0, "ok": 0, "held": 0} for member in (*ICIS_AIR_MEMBERS, *PIPELINE_MEMBERS)},
+        "scope": {"part63_only": part63_only, "part63_facilities": len(part63_ids) if part63_ids is not None else None},
+        "files": {member: {"read": 0, "ok": 0, "held": 0, "skipped": 0} for member in (*ICIS_AIR_MEMBERS, *PIPELINE_MEMBERS)},
         "identifiers": {}, "orphans": {key: 0 for key in ORPHANS},
         "duplicates": {table: 0 for table in KEYS},
         "conflicts": {table: 0 for table in CONFLICTS},
@@ -111,7 +125,6 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
     output.mkdir(parents=True)
     seen = {table: {} for table in KEYS}
     facilities, programs, activities, violations = set(), set(), set(), set()
-    code_map = _code_map(root / "code_map" / code_map_version / "echo_code_map.jsonl")
 
     with ExitStack() as stack:
         writers = {table: stack.enter_context((output / f"{table}.jsonl").open("w", encoding="utf-8")) for table in TABLES}
@@ -146,6 +159,10 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
                     if value == "": stats[column]["missing"] += 1
                     elif value in values[column]: stats[column]["duplicate"] += 1
                     else: values[column].add(value)
+                facility_id = row["SOURCE_ID"] if member in PIPELINE_MEMBERS else row["PGM_SYS_ID"]
+                if part63_ids is not None and facility_id not in part63_ids:
+                    report["files"][member]["skipped"] += 1
+                    continue
                 try:
                     if member == "ICIS-AIR_FACILITIES.csv":
                         facility, industries = facility_rows(row); records = [("echo_facility", facility)] + [("echo_industry", item) for item in industries]
@@ -196,3 +213,18 @@ def parse_release(root: Path, as_of: date, code_map_version: str) -> dict:
             if table == "echo_penalty" and ("formal", None) in activities: pass
     (output / "report.json").write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
     return report
+
+
+if __name__ == "__main__":
+    from echo_ingest import _latest_as_of
+
+    pipeline_root = Path(__file__).resolve().parents[2] / "3) ECHO"
+    try:
+        selected_as_of = sys.argv[1] if len(sys.argv) > 1 else _latest_as_of(pipeline_root / "raw")
+        code_map_version = max(
+            path.name for path in (pipeline_root / "code_map").iterdir() if path.is_dir()
+        )
+        print(json.dumps(parse_release(pipeline_root, date.fromisoformat(selected_as_of), code_map_version)))
+    except Exception as error:
+        print(error, file=sys.stderr)
+        sys.exit(2)
