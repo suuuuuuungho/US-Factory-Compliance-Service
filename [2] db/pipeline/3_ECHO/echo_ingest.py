@@ -7,11 +7,12 @@ import sys
 from pathlib import Path
 from typing import Any, Callable
 
-from ecfr_publish import publish_release  # dataset을 release 행에서 읽어 ECHO에도 그대로 쓴다 (SUU-125)
-from echo_check import check_release
-from echo_load import load_release
-from echo_release import published_release_id, register_release
-from echo_retire import retire_other_releases
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "1_eCFR"))
+from ecfr_publish import publish_release  # noqa: E402  # dataset을 release 행에서 읽어 ECHO에도 그대로 쓴다 (SUU-125)
+from echo_check import check_release  # noqa: E402
+from echo_load import load_release  # noqa: E402
+from echo_release import published_release_id, register_release  # noqa: E402
+from echo_retire import retire_other_releases  # noqa: E402
 
 
 class CheckFailed(RuntimeError):
