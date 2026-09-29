@@ -32,11 +32,11 @@ BLOCK_FIELDS = {
 }
 
 
-def put_raw(root, structure=STRUCTURE):
+def put_raw(root, structure=STRUCTURE, xml=XML):
     """1단계(ecfr_collect)가 남기는 모양 그대로 raw/{as_of}/manifest.json 과 원본 두 개를 만든다."""
     for name, body, media in (
         ("title-40-structure.json", structure, "application/json"),
-        ("title-40-part-63.xml", XML, "application/xml"),
+        ("title-40-part-63.xml", xml, "application/xml"),
     ):
         save_raw(
             root, date.fromisoformat(AS_OF), name, body,
@@ -158,3 +158,35 @@ def test_fails_when_counts_differ_from_structure(tmp_path):
     # 결과 파일은 그대로 남긴다 (왜 떨어졌는지 볼 수 있게)
     assert (out_dir(tmp_path) / "nodes.jsonl").exists()
     assert (out_dir(tmp_path) / "blocks.jsonl").exists()
+
+
+# ---- SUU-298: 9/25 개정본에 절댓값 수식 |R − A| 가 들어오자 lost_text 가짜 경보가 났다
+
+def _xml_with_absolute_value():
+    parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False, huge_tree=True)
+    tree = etree.fromstring(XML, parser)
+    paragraph = tree.find(".//DIV8[@N='63.1']//P")
+    paragraph.text = (paragraph.text or "") + " Err = |Cstd − Cmeas| ≤ 5.0% and D = ||Ci − Cf|| "
+    return etree.tostring(tree)
+
+
+def test_absolute_value_bars_are_not_counted_as_lost_text(tmp_path):
+    put_raw(tmp_path, xml=_xml_with_absolute_value())
+
+    report = parse_release(tmp_path, AS_OF)
+
+    assert report["lost_text"] == 0
+    assert report["status"] == "succeeded"
+
+
+def test_really_dropped_text_is_still_counted(tmp_path, monkeypatch):
+    import ecfr_parse
+
+    real = ecfr_parse.parse_blocks
+    monkeypatch.setattr(ecfr_parse, "parse_blocks", lambda element: real(element)[:-1])  # 조문마다 마지막 블록을 버린다
+    put_raw(tmp_path, xml=_xml_with_absolute_value())
+
+    report = parse_release(tmp_path, AS_OF)
+
+    assert report["lost_text"] > 0
+    assert report["status"] == "failed"
