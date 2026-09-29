@@ -139,11 +139,11 @@ def _csv_bytes(header, rows):
     return buf.getvalue().encode("utf-8")
 
 
-def _write_zip(root, as_of, name, members, drop_column=None):
+def _write_zip(root, as_of, name, members, drop_column=None, rows_by_member=None):
     body = io.BytesIO()
     with zipfile.ZipFile(body, "w") as zf:
         for member in members:
-            header, rows = HEADERS[member], ROWS[member]
+            header, rows = HEADERS[member], (rows_by_member or ROWS)[member]
             if drop_column and drop_column[0] == member:
                 idx = header.index(drop_column[1])
                 header = header[:idx] + header[idx + 1:]
@@ -157,20 +157,23 @@ def _write_zip(root, as_of, name, members, drop_column=None):
     return {"name": name, "path": path.relative_to(root).as_posix(), "sha256": sha}
 
 
-def _make_release(root, drop_column=None):
+CODE_MAP_61_FF = {
+    "program_code": "CAANESH", "raw_subpart_code": "CAANESHFF", "raw_description": "x", "cfr_title": "40",
+    "cfr_part": "61", "cfr_subpart": "FF", "review_status": "ok", "dictionary_version": CODE_MAP_VERSION,
+    "source_url": "u",
+}
+
+
+def _make_release(root, drop_column=None, rows_by_member=None, code_map_rows=(CODE_MAP_61_FF,)):
     icis = [m for m in HEADERS if m.startswith("ICIS-AIR_")]
     manifest = [
-        _write_zip(root, AS_OF, "ICIS-AIR_downloads.zip", icis, drop_column),
-        _write_zip(root, AS_OF, "pipeline_caa_downloads.zip", ["PIPELINE_CAA_00_COMPLETE.csv"], drop_column),
+        _write_zip(root, AS_OF, "ICIS-AIR_downloads.zip", icis, drop_column, rows_by_member),
+        _write_zip(root, AS_OF, "pipeline_caa_downloads.zip", ["PIPELINE_CAA_00_COMPLETE.csv"], drop_column, rows_by_member),
     ]
     (root / "raw" / AS_OF.isoformat() / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     code_map = root / "code_map" / CODE_MAP_VERSION / "echo_code_map.jsonl"
     code_map.parent.mkdir(parents=True, exist_ok=True)
-    code_map.write_text(json.dumps({
-        "program_code": "CAANESH", "raw_subpart_code": "CAANESHFF", "raw_description": "x", "cfr_title": "40",
-        "cfr_part": "61", "cfr_subpart": "FF", "review_status": "ok", "dictionary_version": CODE_MAP_VERSION,
-        "source_url": "u",
-    }) + "\n", encoding="utf-8")
+    code_map.write_text("".join(json.dumps(row) + "\n" for row in code_map_rows), encoding="utf-8")
     return root
 
 
@@ -182,7 +185,7 @@ def _jsonl(root, table):
 def test_fake_release_writes_13_jsonl_and_read_equals_ok_plus_held(tmp_path):
     root = _make_release(tmp_path / "echo")
 
-    report = parse_release(root, AS_OF, CODE_MAP_VERSION)
+    report = parse_release(root, AS_OF, CODE_MAP_VERSION, part63_only=False)  # SUU-294: 전국 모드는 옛 동작 그대로
 
     out = root / "parsed" / AS_OF.isoformat()
     assert sorted(p.name for p in out.glob("*.jsonl")) == sorted(f"{t}.jsonl" for t in TABLES)
@@ -192,9 +195,10 @@ def test_fake_release_writes_13_jsonl_and_read_equals_ok_plus_held(tmp_path):
     assert report["code_map_version"] == CODE_MAP_VERSION
     assert set(report["files"]) == set(HEADERS)  # 11개 파일 전부
     for name, counts in report["files"].items():
-        assert counts["read"] == counts["ok"] + counts["held"], name
+        assert counts["read"] == counts["ok"] + counts["held"] + counts["skipped"], name
         assert counts["read"] == len(ROWS[name]), name
-    assert report["files"]["ICIS-AIR_FORMAL_ACTIONS.csv"] == {"read": 3, "ok": 2, "held": 1}
+    assert report["files"]["ICIS-AIR_FORMAL_ACTIONS.csv"] == {"read": 3, "ok": 2, "held": 1, "skipped": 0}
+    assert report["scope"] == {"part63_only": False, "part63_facilities": None}
 
     # 원본 행은 전부 echo_source_row 에 남는다 (보류 행 포함, 이유와 함께)
     source_rows = _jsonl(root, "echo_source_row")
@@ -236,7 +240,7 @@ def test_fake_release_writes_13_jsonl_and_read_equals_ok_plus_held(tmp_path):
 def test_report_counts_orphans_duplicates_missing_and_penalties(tmp_path):
     root = _make_release(tmp_path / "echo")
 
-    report = parse_release(root, AS_OF, CODE_MAP_VERSION)
+    report = parse_release(root, AS_OF, CODE_MAP_VERSION, part63_only=False)
 
     assert report["orphans"] == {
         "echo_industry.pgm_sys_id": 0,
@@ -281,7 +285,7 @@ def test_missing_required_column_raises_and_leaves_no_parsed_dir(tmp_path):
     root = _make_release(tmp_path / "echo", drop_column=("ICIS-AIR_STACK_TESTS.csv", "ACTIVITY_ID"))
 
     with pytest.raises(ParseError, match="ICIS-AIR_STACK_TESTS.csv.*ACTIVITY_ID"):
-        parse_release(root, AS_OF, CODE_MAP_VERSION)
+        parse_release(root, AS_OF, CODE_MAP_VERSION, part63_only=False)
 
     assert not (root / "parsed" / AS_OF.isoformat()).exists()  # 반쪽짜리 결과를 남기지 않는다
 
@@ -300,9 +304,74 @@ def test_pipeline_rows_share_one_known_set_built_once(tmp_path, monkeypatch):
     monkeypatch.setattr(echo_parse, "pipeline_row", spy)
     root = _make_release(tmp_path / "echo")
 
-    parse_release(root, AS_OF, CODE_MAP_VERSION)
+    parse_release(root, AS_OF, CODE_MAP_VERSION, part63_only=False)
 
     assert len(calls) == 2  # Pipeline 행 2개
     assert all(known is calls[0] for known in calls)  # 같은 객체를 다시 쓴다
     expected = {(a["activity_kind"], a["activity_id"]) for a in _jsonl(root, "echo_activity")} | {("violation", v["violation_id"]) for v in _jsonl(root, "echo_violation")}
     assert set(calls[0]) == expected
+
+
+# ---- SUU-294: 기본값은 Part 63 공장만 남긴다 (DB 2.9GB → 약 0.5GB, 매주 갈아끼워도 안 커짐)
+#
+# F1 에 CAAMACT6J(→ Part 63 Subpart JJJJJJ) 를 붙인다. F2 는 Part 63 아님, F9 는 시설 없는 프로그램.
+# 그러면 F1 과 F1 에 딸린 행만 남고, F2·F9 행은 어느 표에도(echo_source_row 에도) 안 남는다.
+
+CODE_MAP_63_6J = {
+    "program_code": "CAAMACT", "raw_subpart_code": "CAAMACT6J", "raw_description": "y", "cfr_title": "40",
+    "cfr_part": "63", "cfr_subpart": "JJJJJJ", "review_status": "ok", "dictionary_version": CODE_MAP_VERSION,
+    "source_url": "u",
+}
+
+
+def _part63_rows():
+    rows = {member: [list(r) for r in member_rows] for member, member_rows in ROWS.items()}
+    rows["ICIS-AIR_PROGRAMS.csv"].append(["F1", "CAAMACT", "MACT", "OPR", "Operating", "02/22/2017", "02/21/2020"])
+    rows["ICIS-AIR_PROGRAM_SUBPARTS.csv"].append(["F1", "CAAMACT", "MACT", "CAAMACT6J", "NESHAP Part 63 - Subpart JJJJJJ"])
+    return rows
+
+
+def test_part63_only_keeps_part63_facilities_and_their_rows(tmp_path):
+    root = _make_release(tmp_path / "echo", rows_by_member=_part63_rows(), code_map_rows=(CODE_MAP_61_FF, CODE_MAP_63_6J))
+
+    report = parse_release(root, AS_OF, CODE_MAP_VERSION)  # 기본값 = part63_only=True
+
+    assert report["scope"] == {"part63_only": True, "part63_facilities": 1}
+    assert [f["pgm_sys_id"] for f in _jsonl(root, "echo_facility")] == ["F1"]
+    assert {p["pgm_sys_id"] for p in _jsonl(root, "echo_program")} == {"F1"}  # F9 도 걸러진다
+    assert sorted(s["subpart_code"] for s in _jsonl(root, "echo_program_subpart")) == ["CAAGACTZZZZZZ", "CAAMACT6J", "CAANESHFF"]
+    links = _jsonl(root, "echo_activity_facility")
+    assert {l["pgm_sys_id"] for l in links} == {"F1"}
+    assert len(links) == 5  # A1, A2, A3, E1, N1 — F2 쪽 A1·E1 연결이 빠진다
+    assert [p["penalty_key"] for p in _jsonl(root, "echo_penalty")] == ["formal:1"]  # F2 의 500 달러 행은 없다
+    assert [l["pgm_sys_id"] for l in _jsonl(root, "echo_pipeline_link")] == ["F1"]
+    assert {v["pgm_sys_id"] for v in _jsonl(root, "echo_violation_facility")} == {"F1"}
+    assert all(count == 0 for count in report["orphans"].values()), report["orphans"]  # 남은 행끼리 고아 0
+
+
+def test_part63_only_skips_rows_without_writing_them_anywhere(tmp_path):
+    root = _make_release(tmp_path / "echo", rows_by_member=_part63_rows(), code_map_rows=(CODE_MAP_61_FF, CODE_MAP_63_6J))
+
+    report = parse_release(root, AS_OF, CODE_MAP_VERSION)
+
+    # read 는 원본 그대로(echo_check 가 manifest row_count 와 비교한다). 걸러진 행은 skipped 로만 센다
+    assert report["files"]["ICIS-AIR_FACILITIES.csv"] == {"read": 3, "ok": 2, "held": 0, "skipped": 1}  # F2
+    assert report["files"]["ICIS-AIR_PROGRAMS.csv"] == {"read": 5, "ok": 4, "held": 0, "skipped": 1}  # F9
+    assert report["files"]["ICIS-AIR_FORMAL_ACTIONS.csv"] == {"read": 3, "ok": 1, "held": 1, "skipped": 1}  # F1 abc 는 여전히 held
+    assert report["files"]["PIPELINE_CAA_00_COMPLETE.csv"] == {"read": 2, "ok": 1, "held": 0, "skipped": 1}  # SOURCE_ID=F2
+    for name, counts in report["files"].items():
+        assert counts["read"] == counts["ok"] + counts["held"] + counts["skipped"], name
+
+    source_rows = _jsonl(root, "echo_source_row")
+    assert {r["raw_payload"].get("PGM_SYS_ID", r["raw_payload"].get("SOURCE_ID")) for r in source_rows} == {"F1"}
+    assert sum(r["parse_status"] == "held" for r in source_rows) == 1
+
+
+def test_part63_only_with_no_part63_facility_writes_empty_tables_not_an_error(tmp_path):
+    root = _make_release(tmp_path / "echo")  # 사전에 Part 63 이 없다 → Part 63 시설 0
+
+    report = parse_release(root, AS_OF, CODE_MAP_VERSION)
+
+    assert report["scope"]["part63_facilities"] == 0
+    assert _jsonl(root, "echo_facility") == [] and _jsonl(root, "echo_source_row") == []
+    assert report["files"]["ICIS-AIR_FACILITIES.csv"] == {"read": 3, "ok": 0, "held": 0, "skipped": 3}
