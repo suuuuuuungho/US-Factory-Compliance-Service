@@ -205,3 +205,25 @@ def test_main_defaults_to_several_workers(tmp_path, capsys, monkeypatch):
     main(["--root", str(tmp_path / "fr")])
 
     assert seen["workers"] >= 4
+
+
+# ---- SUU-299: 상세를 못 받은 문서는 release 에서 통째로 빠진다 → 일부만 받은 채 공개하면 안 된다
+
+def test_document_without_detail_makes_the_run_fail_so_nothing_partial_is_published(tmp_path):
+    root = tmp_path / "fr"
+    url = detail_url("2026-03638", "2026-02-24")
+
+    run = collect(root, END, fetch=make_fetch([], broken={url: HTTPError(url, 429, "Too Many Requests", hdrs=None, fp=None)}))
+
+    assert run["status"] == "failed"
+    assert run["obtained"]["detail"] == 4
+    retry = (root / "raw" / "lists" / END.isoformat() / "retry.jsonl").read_text(encoding="utf-8")
+    assert url in retry  # 다음 실행이 다시 받는다
+
+
+def test_main_exits_nonzero_when_a_detail_is_missing(tmp_path, capsys, monkeypatch):
+    import fr_collect
+
+    monkeypatch.setattr(fr_collect, "collect", lambda root, end, **kw: {"status": "failed"})
+
+    assert main(["--root", str(tmp_path / "fr")]) != 0

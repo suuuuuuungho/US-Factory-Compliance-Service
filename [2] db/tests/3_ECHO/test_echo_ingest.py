@@ -70,16 +70,17 @@ def _fakes(calls, check_result):
                 load_release=load, check_release=check, publish_release=publish, retire_other_releases=retire)
 
 
-def test_calls_register_load_check_publish_retire_in_order_with_the_same_release_id():
+def test_calls_register_load_check_publish_retire_in_order_with_the_same_release_id(tmp_path):
+    (tmp_path / "code_map" / "2026-09-17").mkdir(parents=True)
     calls, client, conn = [], FakeClient(), FakeConn()
 
-    result = run_echo_ingest(ROOT, AS_OF, client=client, conn=conn, **_fakes(calls, {"ok": True, "problems": [], "counts": {}}))
+    result = run_echo_ingest(tmp_path, AS_OF, client=client, conn=conn, **_fakes(calls, {"ok": True, "problems": [], "counts": {}}))
 
     assert result == {"release_id": RELEASE_ID, "status": "new"}
     assert calls == [
-        ("register", ROOT, AS_OF, client),
-        ("load", ROOT, AS_OF, RELEASE_ID, AS_OF, conn),  # code_map_version 기본값 = as_of
-        ("check", ROOT, AS_OF, RELEASE_ID, conn),
+        ("register", tmp_path, AS_OF, client),
+        ("load", tmp_path, AS_OF, RELEASE_ID, "2026-09-17", conn),  # SUU-299: code_map_version 기본값 = 가장 최근 code_map 폴더
+        ("check", tmp_path, AS_OF, RELEASE_ID, conn),
         ("publish", RELEASE_ID, client),
         ("retire", RELEASE_ID, client, conn),  # SUU-294: 공개 성공 뒤에만 옛 release 를 지운다
     ]
@@ -112,12 +113,13 @@ def test_format_result_is_one_line_the_workflow_can_grep():
     assert format_result({"release_id": RELEASE_ID, "status": "new"}) == f"status=new release_id={RELEASE_ID}"
 
 
-def test_failed_check_skips_publish_marks_release_failed_and_raises_with_problems():
+def test_failed_check_skips_publish_marks_release_failed_and_raises_with_problems(tmp_path):
+    (tmp_path / "code_map" / "2026-09-17").mkdir(parents=True)
     calls, client, conn = [], FakeClient(), FakeConn()
     problems = ["echo_activity: db 3 != jsonl 4", "orphan echo_penalty.activity: 1"]
 
     with pytest.raises(CheckFailed, match=re.escape("echo_activity: db 3 != jsonl 4")) as info:
-        run_echo_ingest(ROOT, AS_OF, client=client, conn=conn, **_fakes(calls, {"ok": False, "problems": problems, "counts": {}}))
+        run_echo_ingest(tmp_path, AS_OF, client=client, conn=conn, **_fakes(calls, {"ok": False, "problems": problems, "counts": {}}))
 
     assert [c[0] for c in calls] == ["register", "load", "check"]  # publish 없음, retire 도 없음 (옛 행은 그대로)
     assert info.value.release_id == RELEASE_ID and info.value.problems == problems
@@ -134,3 +136,16 @@ def test_latest_as_of_picks_the_newest_parsed_folder_or_raises(tmp_path):
     empty.mkdir()
     with pytest.raises(FileNotFoundError, match=re.escape(str(empty))):
         _latest_as_of(empty)
+
+
+# ---- SUU-299: 9/29 러너에서 code_map/<오늘> 을 찾다가 FileNotFoundError. 코드표는 가끔만 새로 만든다
+
+def test_code_map_defaults_to_the_newest_code_map_folder_not_as_of(tmp_path):
+    for version in ("2026-08-01", "2026-09-17"):
+        (tmp_path / "code_map" / version).mkdir(parents=True)
+    calls, client, conn = [], FakeClient(), FakeConn()
+
+    run_echo_ingest(tmp_path, "2026-09-29", client=client, conn=conn, **_fakes(calls, {"ok": True, "problems": [], "counts": {}}))
+
+    load = next(c for c in calls if c[0] == "load")
+    assert load[4] == "2026-09-17"

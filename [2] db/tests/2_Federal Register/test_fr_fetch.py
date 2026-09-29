@@ -53,3 +53,84 @@ def test_check_format_rejects_html_in_place_of_xml_pdf_json(kind, body):
     with pytest.raises(FormatMismatch) as info:
         check_format(body, kind)
     assert kind in str(info.value)
+
+
+# ---- SUU-299: GitHub 러너에서 1,533건 중 1,149건이 HTTP 429(너무 많이 요청함)로 거절됐다
+
+class _Response:
+    status = 200
+    headers = {"Content-Type": "application/json"}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def read(self):
+        return b"{}"
+
+    def geturl(self):
+        return "https://x/a.json"
+
+
+def _answers(monkeypatch, *answers):
+    import fr_fetch
+
+    calls = []
+
+    def urlopen(request, timeout):
+        calls.append(request.full_url)
+        answer = answers[len(calls) - 1]
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    monkeypatch.setattr(fr_fetch, "urlopen", urlopen)
+    return calls
+
+
+def _too_many(url="https://x/a.json"):
+    from urllib.error import HTTPError
+
+    return HTTPError(url, 429, "Too Many Requests", hdrs=None, fp=None)
+
+
+def test_429_waits_and_tries_again(monkeypatch):
+    from fr_fetch import fetch
+
+    calls = _answers(monkeypatch, _too_many(), _too_many(), _Response())
+    waits = []
+
+    fetched = fetch("https://x/a.json", sleep=waits.append)
+
+    assert fetched.body == b"{}"
+    assert len(calls) == 3
+    assert len(waits) == 2 and waits[0] < waits[1]  # 점점 더 오래 기다린다
+
+
+def test_429_gives_up_after_a_few_tries(monkeypatch):
+    from urllib.error import HTTPError
+
+    from fr_fetch import fetch
+
+    calls = _answers(monkeypatch, *[_too_many()] * 10)
+
+    with pytest.raises(HTTPError) as info:
+        fetch("https://x/a.json", sleep=lambda s: None)
+
+    assert info.value.code == 429
+    assert 2 <= len(calls) < 10  # 끝없이 매달리지 않는다
+
+
+def test_other_http_errors_are_not_retried(monkeypatch):
+    from urllib.error import HTTPError
+
+    from fr_fetch import fetch
+
+    calls = _answers(monkeypatch, HTTPError("https://x/a.json", 404, "Not Found", hdrs=None, fp=None), _Response())
+
+    with pytest.raises(HTTPError):
+        fetch("https://x/a.json", sleep=lambda s: None)
+
+    assert len(calls) == 1
