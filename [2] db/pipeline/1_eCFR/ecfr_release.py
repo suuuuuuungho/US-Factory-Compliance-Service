@@ -28,6 +28,35 @@ def _timestamp(now: datetime | None) -> str:
     return value.isoformat()
 
 
+def _manifest_hash(root: Path, as_of: str) -> str:
+    """Return the release identity for the collected eCFR files."""
+
+    manifest_path = root / "raw" / as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    structure = _manifest_entry(manifest, "title-40-structure.json")
+    xml = _manifest_entry(manifest, "title-40-part-63.xml")
+    return hashlib.sha256(
+        f'{structure["sha256"]}:{xml["sha256"]}'.encode()
+    ).hexdigest()
+
+
+def published_release_id(root: Path, as_of: str, *, client: Any) -> str | None:
+    """Return the published release for this raw manifest, if it exists."""
+
+    existing = (
+        client.table("common_dataset_release")
+        .select("release_id")
+        .eq("dataset", DATASET)
+        .eq("scope_key", SCOPE_KEY)
+        .eq("manifest_hash", _manifest_hash(Path(root), as_of))
+        .eq("parser_version", PARSER_VERSION)
+        .eq("status", "published")
+        .execute()
+        .data
+    )
+    return str(existing[0]["release_id"]) if existing else None
+
+
 def register_release(
     root: Path,
     as_of: str,
@@ -43,9 +72,7 @@ def register_release(
     structure = _manifest_entry(manifest, "title-40-structure.json")
     xml = _manifest_entry(manifest, "title-40-part-63.xml")
 
-    manifest_hash = hashlib.sha256(
-        f'{structure["sha256"]}:{xml["sha256"]}'.encode()
-    ).hexdigest()
+    manifest_hash = _manifest_hash(root, as_of)
     existing = (
         client.table("common_dataset_release")
         .select("release_id")
@@ -117,4 +144,4 @@ def register_release(
     return release_id
 
 
-__all__ = ["DATASET", "SCOPE_KEY", "register_release"]
+__all__ = ["DATASET", "SCOPE_KEY", "published_release_id", "register_release"]

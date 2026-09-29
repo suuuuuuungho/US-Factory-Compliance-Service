@@ -118,6 +118,23 @@ def test_reuses_existing_release_id_without_creating_duplicate_rows(tmp_path):
     second_id = register_release(tmp_path, AS_OF, client=client)
 
     assert second_id == first_id
+
+
+# ---- SUU-293: 같은 원본이 이미 공개돼 있으면 release_id 를 돌려준다 (자동 갱신이 "안 바뀜"을 아는 근거)
+
+def test_published_release_id_is_none_until_the_same_raw_is_published(tmp_path):
+    from ecfr_release import published_release_id
+
+    put_raw(tmp_path)
+    client = FakeClient()
+
+    assert published_release_id(tmp_path, AS_OF, client=client) is None  # 아무것도 없음
+
+    release_id = register_release(tmp_path, AS_OF, client=client)
+    assert published_release_id(tmp_path, AS_OF, client=client) is None  # staging 은 아직 아님
+
+    client.store["common_dataset_release"][0]["status"] = "published"
+    assert published_release_id(tmp_path, AS_OF, client=client) == release_id
     assert len(client.store["common_ingest_run"]) == 1
     assert len(client.store["common_raw_object"]) == 2
     assert len(client.store["common_dataset_release"]) == 1

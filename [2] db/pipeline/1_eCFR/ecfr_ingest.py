@@ -11,7 +11,7 @@ from supabase import create_client
 
 from ecfr_load import load_release
 from ecfr_publish import publish_release
-from ecfr_release import register_release
+from ecfr_release import published_release_id, register_release
 
 
 def _latest_as_of(raw_root: Path) -> str:
@@ -28,16 +28,27 @@ def run_ecfr_ingest(
     as_of: str,
     *,
     client: Any,
+    published_release_id: Callable[..., str | None] = published_release_id,
     register_release: Callable[..., str] = register_release,
     load_release: Callable[..., None] = load_release,
     publish_release: Callable[..., None] = publish_release,
-) -> str:
+) -> dict[str, str]:
     """Register, load, and publish one eCFR release."""
+
+    existing = published_release_id(root, as_of, client=client)
+    if existing:
+        return {"release_id": existing, "status": "no_change"}
 
     release_id = register_release(root, as_of, client=client)
     load_release(root, as_of, release_id, client=client)
     publish_release(release_id, client=client)
-    return release_id
+    return {"release_id": release_id, "status": "new"}
+
+
+def format_result(result: dict[str, str]) -> str:
+    """Format an ingest result for the workflow output parser."""
+
+    return f"status={result['status']} release_id={result['release_id']}"
 
 
 if __name__ == "__main__":
@@ -48,7 +59,7 @@ if __name__ == "__main__":
         os.environ["SUPABASE_URL"],
         os.environ["SUPABASE_SECRET_KEY"],
     )
-    print(run_ecfr_ingest(pipeline_root, selected_as_of, client=client))
+    print(format_result(run_ecfr_ingest(pipeline_root, selected_as_of, client=client)))
 
 
-__all__ = ["run_ecfr_ingest"]
+__all__ = ["format_result", "run_ecfr_ingest"]
