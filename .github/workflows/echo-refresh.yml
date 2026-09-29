@@ -35,7 +35,7 @@ jobs:
         if: steps.ingest.outputs.status == 'new'
         with:
           name: echo-${{ github.run_id }}
-          path: "[2] db/3) ECHO/raw"
+          path: "[[]2] db/3) ECHO/raw"
           retention-days: 90
 
   notify:

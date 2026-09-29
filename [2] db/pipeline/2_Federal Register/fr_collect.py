@@ -113,7 +113,8 @@ def collect(root: Path, end_date: date, *, fetch=None, pause: float = 0.0, worke
     elif retry_path.exists():
         retry_path.unlink()
     return {
-        "status": "succeeded", "end_date": end_date.isoformat(), "pages": listed["pages"],
+        # 상세를 못 받은 문서는 release 에서 통째로 빠진다 → 일부만 공개하지 않게 실패로 멈춘다 (SUU-299)
+        "status": "failed" if obtained["detail"] < len(listed["rows"]) else "succeeded", "end_date": end_date.isoformat(), "pages": listed["pages"],
         "count": listed["count"], "documents": len(listed["rows"]), "obtained": obtained,
         "missing": missing, "started_at": started_at,
         "finished_at": datetime.now(timezone.utc).isoformat(),
