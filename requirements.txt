@@ -9,5 +9,6 @@ PyYAML==6.0.3
 fastapi==0.141.1
 uvicorn==0.52.1
 httpx==0.28.1
+python-docx==1.2.0
 
 # 로컬 리랭커(SUU-131, 선택·CI 미설치): torch 2.13.0+cu126 (https://download.pytorch.org/whl/cu126), sentence-transformers 6.0.1
