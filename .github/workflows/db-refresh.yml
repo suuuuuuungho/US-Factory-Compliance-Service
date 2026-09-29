@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-python@v6
         with: {python-version: '3.12'}
       - run: pip install -q -r requirements.txt
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         with:
           path: "[[]2] db/2) Federal Register/raw"
           key: fr-raw-${{ github.run_id }}
@@ -68,6 +68,11 @@ jobs:
           name: fr-${{ github.run_id }}
           path: "[[]2] db/2) Federal Register/parsed"
           retention-days: 90
+      - uses: actions/cache/save@v4
+        if: always()  # 몇 건 실패해도 받은 원본은 남긴다 → 다음 실행은 빠진 것만 받는다
+        with:
+          path: "[[]2] db/2) Federal Register/raw"
+          key: fr-raw-${{ github.run_id }}
 
   notify:
     needs: [ecfr, fr]
