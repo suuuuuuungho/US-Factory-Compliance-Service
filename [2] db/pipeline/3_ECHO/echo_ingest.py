@@ -10,7 +10,8 @@ from typing import Any, Callable
 from ecfr_publish import publish_release  # dataset을 release 행에서 읽어 ECHO에도 그대로 쓴다 (SUU-125)
 from echo_check import check_release
 from echo_load import load_release
-from echo_release import register_release
+from echo_release import published_release_id, register_release
+from echo_retire import retire_other_releases
 
 
 class CheckFailed(RuntimeError):
@@ -38,12 +39,18 @@ def run_echo_ingest(
     client: Any,
     conn: Any,
     code_map_version: str | None = None,
+    published_release_id: Callable[..., str | None] = published_release_id,
     register_release: Callable[..., str] = register_release,
     load_release: Callable[..., dict] = load_release,
     check_release: Callable[..., dict] = check_release,
     publish_release: Callable[..., None] = publish_release,
-) -> str:
-    """Register, load, check and publish one ECHO release; return its release_id."""
+    retire_other_releases: Callable[..., list[str]] = retire_other_releases,
+) -> dict[str, str]:
+    """Register, load, check, publish, and retire one ECHO release."""
+
+    existing = published_release_id(root, as_of, client=client)
+    if existing:
+        return {"release_id": existing, "status": "no_change"}
 
     release_id = register_release(root, as_of, client=client)
     load_release(root, as_of, release_id, code_map_version or as_of, conn=conn)
@@ -52,7 +59,14 @@ def run_echo_ingest(
         client.table("common_dataset_release").update({"status": "failed"}).eq("release_id", release_id).execute()
         raise CheckFailed(release_id, result["problems"])
     publish_release(release_id, client=client)
-    return release_id
+    retire_other_releases(release_id, client=client, conn=conn)
+    return {"release_id": release_id, "status": "new"}
+
+
+def format_result(result: dict[str, str]) -> str:
+    """Format an ingest result for the workflow output parser."""
+
+    return f"status={result['status']} release_id={result['release_id']}"
 
 
 if __name__ == "__main__":
@@ -64,10 +78,10 @@ if __name__ == "__main__":
     client = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
     with psycopg.connect(os.environ["SUPABASE_DB_URL"]) as conn:
         try:
-            print(run_echo_ingest(pipeline_root, selected_as_of, client=client, conn=conn))
+            print(format_result(run_echo_ingest(pipeline_root, selected_as_of, client=client, conn=conn)))
         except CheckFailed as failed:
             print(f"release {failed.release_id} failed check:\n{failed}", file=sys.stderr)
             sys.exit(1)
 
 
-__all__ = ["CheckFailed", "run_echo_ingest"]
+__all__ = ["CheckFailed", "format_result", "run_echo_ingest"]
